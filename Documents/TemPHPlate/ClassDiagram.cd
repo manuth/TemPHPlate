@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="TemPHPlate.WebContent">
+    <Position X="1.75" Y="4" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAACEAAAAAAAAAAAgBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>WebContent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.Template">
+    <Position X="4" Y="7.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Template.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.StyleDefinition">
+    <Position X="14.75" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAgAAAAAEAAA=</HashCode>
+      <FileName>StyleDefinition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TemPHPlate.StyleSheet">
+    <Position X="13.25" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAA=</HashCode>
+      <FileName>StyleSheet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.InlineStyle">
+    <Position X="16.25" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAEAAA=</HashCode>
+      <FileName>InlineStyle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.ScriptDefinition">
+    <Position X="8.75" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAgAAAAAEAAA=</HashCode>
+      <FileName>ScriptDefinition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TemPHPlate.ScriptFile">
+    <Position X="7.25" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAA=</HashCode>
+      <FileName>ScriptFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.InlineScript">
+    <Position X="10.25" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>InlineScript.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TemPHPlate.Page">
+    <Position X="0.5" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Page.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TemPHPlate.Printable">
+    <Position X="2.75" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Printable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TemPHPlate.Object">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Object.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="TemPHPlate.IPrintable" Collapsed="true">
+    <Position X="21" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>IPrintable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="TemPHPlate.IMenuPage" Collapsed="true">
+    <Position X="19.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IMenuPage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
