@@ -64,7 +64,6 @@
       <HashCode>AAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
       <FileName>Page.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="TemPHPlate.Printable">
     <Position X="2.75" Y="2" Width="1.75" />
@@ -81,18 +80,11 @@
       <FileName>Object.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="TemPHPlate.IPrintable" Collapsed="true">
+  <Interface Name="TemPHPlate.IPrintable">
     <Position X="21" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
       <FileName>IPrintable.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="TemPHPlate.IMenuPage" Collapsed="true">
-    <Position X="19.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IMenuPage.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

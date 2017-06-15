@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TemPHPlate
 {
-    public class Page : WebContent, IMenuPage
+    public class Page : WebContent
     {
 
         public MenuBar MenuBar { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
