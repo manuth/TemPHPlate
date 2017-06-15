@@ -3,7 +3,6 @@
     {
         class Settings
         {
-            public static $Namespace = 'manuth\\MyDemoSite';
         }
     }
 ?>

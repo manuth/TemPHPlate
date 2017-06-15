@@ -1,7 +1,7 @@
 <?php
     /**
      * @author Manuel Thalmann <m@nuth.ch>
-     * @license Apache
+     * @license Apache-2.0
      */
     use \manuth\TemPHPlate\Properties\Settings;
     use \System\Exception;
@@ -28,7 +28,7 @@
                 }
                 catch (Exception $e)
                 {
-                    require GetPath($class, Settings::$Namespace);
+                    require GetPath($class, TemPHPlateNamespace);
                 }
             }
 
