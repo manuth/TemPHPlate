@@ -1,14 +1,27 @@
 <?php
-
+    /**
+     * @author Manuel Thalmann <m@nuth.ch>
+     * @license Apache-2.0
+     */
     namespace System;
     use System\Exception;
     {
         /**
          * Supports all classes in the class hierarchy.
          * This is the ultimate base class of all classes in the Framework; it is the root of the type hierarchy.
+         * 
+         * @property \ReflectionClass $CastedType
+         * Gets or sets the current type of the object.
          */
         class Object
         {
+            /**
+             * The current type of the object.
+             *
+             * @var \ReflectionClass
+             */
+            private $castedType;
+
             /**
              * The data of the object.
              *
@@ -24,10 +37,11 @@
             }
 
             /**
-             * Automatically calls the proper constructor.
+             * Automaticaölly calls the proper constructor.
              */
             public function __construct()
             {
+                $this->CastedType = new \ReflectionClass($this);
                 $this->InvokeConstructor(func_get_args());
             }
 
@@ -51,13 +65,35 @@
                 return $this->$functionname();
             }
 
+
+            /**
+             * @ignore
+             */
+            private function getCastedType()
+            {
+                if ($this->castedType == null)
+                {
+                    $this->castedType = new \ReflectionClass($this);
+                }
+
+                return $this->castedType;
+            }
+
+            /**
+             * @ignore
+             */
+            private function setCastedType($value)
+            {
+                $this->castedType = $value;
+            }
+
             /**
              * Casts the object to another type.
              *
              * @param \string $class
              * The type to convert the object to.
              * 
-             * @return object
+             * @return \object
              * The casted object.
              */
             public function Cast(string $class)
@@ -117,11 +153,11 @@
              */
             protected function Base()
             {
-                $base = $this->Cast(get_parent_class($this));
+                $type = $this->CastedType;
+                $this->CastedType = $this->CastedType->getParentClass();
                 $args = func_get_args();
-                $base->InvokeConstructor($args);
-                $base = $base->Cast(get_class($this));
-                $this->Merge($base);
+                $this->InvokeConstructor($args);
+                $this->CastedType = $type;
             }
 
             /**
@@ -164,7 +200,7 @@
              */
             private function getAllowsAutoConstruct()
             {
-                $class = new \ReflectionClass($this);
+                $class = $this->CastedType;
                 $constructors = $this->GetConstructors();
                 $autoConstructor = array_filter($constructors, function($constructor) use ($class)
                 {
@@ -182,13 +218,12 @@
             private function GetConstructors()
             {
                 $result = array();
-                $class = new \ReflectionClass($this);
-
-                foreach ($class->getMethods() as $method)
+                
+                foreach ($this->CastedType->getMethods() as $method)
                 {
-                    if ($method->class == $class->name)
+                    if ($method->class == $this->CastedType->name)
                     {
-                        if (preg_match(sprintf('/^%s[0-9]*$/', $class->getShortName()), $method->name))
+                        if (preg_match(sprintf('/^%s[0-9]*$/', $this->CastedType->getShortName()), $method->name))
                         {
                             $result[] = $method;
                         }
@@ -206,8 +241,7 @@
             private function InvokeConstructor(array $args)
             {
                 $count = count($args);
-                $class = new \ReflectionClass($this);
-                $className = $class->getShortName();
+                $className = $this->CastedType->getShortName();
                 $functionName = $className.($count > 0 ? $count : '');
                 $constructors = $this->GetConstructors();
                 $matchingConstructor = array_values(
@@ -228,16 +262,19 @@
 
                 if ($matchingConstructor || count($args) == 0)
                 {
-                    if (get_parent_class($this))
+                    if ($this->CastedType->getParentClass())
                     {
-                        $base = $this->Cast(get_parent_class($this));
-
                         if (
                             ($matchingConstructor && !self::HasConstructorCall($matchingConstructor)) ||
                             $matchingConstructor == null
                         )
                         {
-                            if ($base->getAllowsAutoConstruct())
+                            $type = $this->CastedType;
+                            $this->CastedType = $this->CastedType->getParentClass();
+                            $autoConstruct = $this->getAllowsAutoConstruct();
+                            $this->CastedType = $type;
+
+                            if ($autoConstruct)
                             {
                                 $this->Base();
                             }
@@ -250,7 +287,7 @@
 
                     if ($matchingConstructor)
                     {
-                        $matchingConstructor->invoke($this, $args);
+                        call_user_func_array(array($matchingConstructor, 'invoke'), array_merge(array($this), $args));
                     }
                 }
                 else
@@ -277,6 +314,26 @@
                     $property->setAccessible(true);
                     $property->setValue($this, $property->getValue($obj));
                 }
+            }
+
+            /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             */
+            public final function __toString()
+            {
+                return $this->ToString();
+            }
+
+            /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             */
+            public function ToString()
+            {
+                return 'Type: '.(new \ReflectionClass($this))->name;
             }
         }
     }
