@@ -11,7 +11,25 @@
     }
 
     require('autoload.php');
+    use System\{
+        Exception,
+        Globalization\CultureInfo
+    };
+    use ManuTh\TemPHPlate\Properties\Settings;
     {
-        phpinfo();
+        for ($i = 0; $i < count(Settings::$Locales); $i++)
+        {
+            $cultureInfo = new CultureInfo(Settings::$Locales[$i]);
+
+            try
+            {
+                $cultureInfo->SetLocale();
+                break;
+            }
+            catch (Exception $e)
+            { }
+        }
+
+        include 'UnitTests/index.php';
     }
 ?>
