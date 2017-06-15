@@ -10,6 +10,8 @@
          */
         class Exception extends \Exception
         {
+            use ObjectBase;
+
             /**
              * Gets a collection of key/value pairs that provide additional user-defined information about the exception.
              *
