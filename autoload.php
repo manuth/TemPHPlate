@@ -3,8 +3,7 @@
      * @author Manuel Thalmann <m@nuth.ch>
      * @license Apache-2.0
      */
-    use \manuth\TemPHPlate\Properties\Settings;
-    use \System\Exception;
+    use System\IO\FileNotFoundException;
     {
         DEFINED('TemPHPlate') or DIE('Restricted Access');
 
@@ -13,24 +12,14 @@
          */
         spl_autoload_register(function ($class)
         {
-            // The root-namespace of TemPHPlate.
-            $namespace = 'manuth\\TemPHPlate\\';
+            $path = null;
 
-            try
+            if (!file_exists(($path = GetPath($class))))
             {
-                require GetPath($class);
+                $path = GetPath($class, TemPHPlateNamespace);
             }
-            catch (Exception $e)
-            {
-                try
-                {
-                    require GetPath($class, $namespace, __DIR__.DIRECTORY_SEPARATOR.'TemPHPlate');
-                }
-                catch (Exception $e)
-                {
-                    require GetPath($class, TemPHPlateNamespace);
-                }
-            }
+
+            require $path;
 
             if (method_exists($class, 'Initialize'))
             {
@@ -55,24 +44,22 @@
          */
         function GetPath($class, $namespace = '', $basePath = __DIR__)
         {
+            $namespace .= '\\';
             $lastSeparator = strrpos($class, '\\');
             $subNamespace = substr($class, 0, $lastSeparator + 1);
+            $class = substr($class, strlen($subNamespace));
 
-            if (substr_compare($class, $namespace, 0, strlen($namespace)) == 0)
+            if (substr_compare($subNamespace, $namespace, 0, strlen($namespace)) === 0)
             {
                 $subNamespace = substr($subNamespace, strlen($namespace));
             }
-
-            $class = substr($class, strlen($subNamespace));            
+        
             $result = str_replace(['\\', '/', '_'], DIRECTORY_SEPARATOR, __DIR__.DIRECTORY_SEPARATOR.$subNamespace.$class).'.php';
-
-            if (file_exists($result))
-            {
-                return $result;
-            }
-            // ToDo Throw an error if the file's not found
+            
+            return $result;
         }
     }
 
+    /* Files located at special directories */
     require('Properties'.DIRECTORY_SEPARATOR.'Settings.php');
 ?>

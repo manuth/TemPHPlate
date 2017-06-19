@@ -1,0 +1,15 @@
+RewriteEngine On
+    RewriteCond %{QUERY_STRING} ^.*Page=([^&]*)$  [OR]
+    RewriteCond %{REQUEST_FILENAME} -f  [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+        RewriteRule ^ -  [L]
+    
+    RewriteCond %{REQUEST_URI} ^(.*)/$
+    RewriteCond %{REQUEST_URI} ^(.*?)/?$
+        RewriteRule ^ %1  [R=301,L]
+    RewriteRule ^(.*?)/?$ $1  [E=Page:$1]
+    RewriteCond Pages/%{ENV:Page}.php -F  [OR]
+    RewriteCond Pages/%{ENV:Page}.md -F   [OR]
+    RewriteCond Pages/%{ENV:Page} -F
+        RewriteRule ^ index.php?Page=%{ENV:Page}  [QSA,L]
+    RewriteRule ^ -  [R=404]
