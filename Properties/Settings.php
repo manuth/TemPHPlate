@@ -7,8 +7,9 @@
         class Settings
         {
             /**
-             * @var string[]
              * The locales to use to execute php
+             * 
+             * @var string[]
              */
             public static $Locales = array
             (
@@ -21,6 +22,23 @@
                 'de_CH.UTF8',
                 'de_DE.UTF8'
             );
+
+            /**
+             * The default menu-bar of the project.
+             *
+             * @var MenuBar
+             */
+            public static $MenuBar;
+
+            /**
+             * Initializes the settings.
+             *
+             * @return void
+             */
+            public static function Initialize()
+            {
+                self::$MenuBar = MenuBar::FromJSON('Properties'.DIRECTORY_SEPARATOR.'MenuBar.json');
+            }
         }
     }
 ?>
