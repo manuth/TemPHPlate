@@ -55,7 +55,7 @@
              */
             private function getCastedType()
             {
-                if ($this->castedType == null)
+                if ($this->castedType === null)
                 {
                     $this->castedType = new \ReflectionClass($this);
                 }
@@ -188,9 +188,9 @@
                 $constructors = $this->GetConstructors();
                 $autoConstructor = array_filter($constructors, function($constructor) use ($class)
                 {
-                    return $constructor->name == $class->getShortName();
+                    return $constructor->name === $class->getShortName();
                 });
-                return count($constructors) == 0 || count($autoConstructor) > 0;
+                return count($constructors) === 0 || count($autoConstructor) > 0;
             }
 
             /**
@@ -205,7 +205,7 @@
                 
                 foreach ($this->CastedType->getMethods() as $method)
                 {
-                    if ($method->class == $this->CastedType->name)
+                    if ($method->class === $this->CastedType->name)
                     {
                         if (preg_match(sprintf('/^%s[0-9]*$/', $this->CastedType->getShortName()), $method->name))
                         {
@@ -231,11 +231,11 @@
                 $matchingConstructor = array_values(
                     array_filter($constructors, function($constructor) use ($functionName)
                     {
-                        return $constructor->name == $functionName;
+                        return $constructor->name === $functionName;
                     })
                 );
 
-                if (count($matchingConstructor) == 0)
+                if (count($matchingConstructor) === 0)
                 {
                     $matchingConstructor = null;
                 }
@@ -244,13 +244,13 @@
                     $matchingConstructor = $matchingConstructor[0];
                 }
 
-                if ($matchingConstructor || count($args) == 0)
+                if ($matchingConstructor || count($args) === 0)
                 {
                     if ($this->CastedType->getParentClass())
                     {
                         if (
                             ($matchingConstructor && !self::HasConstructorCall($matchingConstructor)) ||
-                            $matchingConstructor == null
+                            $matchingConstructor === null
                         )
                         {
                             $type = $this->CastedType;

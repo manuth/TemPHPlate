@@ -8,23 +8,17 @@
         /**
          * The exception that is thrown when one of the arguments provided to a method is not valid.
          */
-        class ArgumentException extends Exception
+        class ArgumentNullException extends Exception
         {
             /**
-             * Gets or sets the name of the argument which caused the exception.
-             * @var string
-             */
-            public $ParamName;
-
-            /**
-             * Initializes a new instance of the ArgumentException class.
+             * Initializes a new instance of the ArgumentNullException class.
              *
              * @param string $paramName
              * The name of the argument which caused the exception.
              */
-            public function ArgumentException1($paramName)
+            public function ArgumentNullException1($paramName)
             {
-                $this->This($paramName, '', null);
+                $this->Base($paramName, '', null);
             }
 
             /**
@@ -41,8 +35,7 @@
              */
             public function ArgumentException3($paramName, $message, $innerException)
             {
-                $this->Base($message, $innerException);
-                $this->ParamName = $paramName;
+                $this->Base($paramName, $message, $innerException);
             }
         }
     }

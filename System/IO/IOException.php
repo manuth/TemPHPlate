@@ -13,6 +13,14 @@
         {
             /**
              * Initializes a new instance of the Exception class.
+             */
+            public function IOException()
+            {
+                $this->This('', null);
+            }
+
+            /**
+             * Initializes a new instance of the Exception class.
              * 
              * @param string $message
              * The message of the exception.
@@ -20,7 +28,7 @@
              * @param Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function IOException2($message = '', $innerException = null)
+            public function IOException2($message, $innerException)
             {
                 $this->Base($message, 0, $innerException);
             }

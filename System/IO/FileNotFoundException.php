@@ -3,13 +3,13 @@
      * @author Manuel Thalmann <m@nuth.ch>
      * @license Apache-2.0
      */
-    namespace System\Security;
+    namespace System\IO;
     use System\Exception;
     {
         /**
          * The exception that is thrown when an attempt to access a file that does not exist on disk fails.
          */
-        class SecurityException extends Exception
+        class FileNotFoundException extends Exception
         {
             /**
              * Gets the name of the file that cannot be found.
@@ -17,6 +17,11 @@
              * @var string
              */
             public $FileName;
+
+            public function FileNotFoundException1($fileName)
+            {
+                $this->This($fileName, '', null);
+            }
 
             /**
              * Initializes a new instance of the FileNotFoundException class with a specified error message and a reference to the inner exception that is the cause of this exception.
@@ -30,10 +35,10 @@
              * @param Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function SecurityException3($fileName, $message = '', $innerException = null)
+            public function FileNotFoundException3($fileName, $message, $innerException)
             {
                 $this->Base($fileName, $innerException);
-                $this->Demanded = $demanded;
+                $this->FileName = $fileName;
             }
         }
     }
