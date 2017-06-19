@@ -80,13 +80,6 @@
       <FileName>Object.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="TemPHPlate.MenuBarRenderer">
-    <Position X="7.75" Y="7.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MenuBarRenderer.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Interface Name="TemPHPlate.IPrintable">
     <Position X="21" Y="0.5" Width="1.5" />
     <TypeIdentifier>
