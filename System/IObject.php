@@ -20,7 +20,7 @@
              * @return \object
              * The casted object.
              */
-            function Cast(string $class);
+            function Cast($class);
 
             /**
              * Returns a string which represents the object.
@@ -28,6 +28,14 @@
              * @return string
              */
             function ToString();
+
+            /**
+             * Serves as the default hash function.
+             *
+             * @return int
+             * A hash code for the current object.
+             */
+            function GetHashCode();
         }
     }
 ?>

@@ -80,7 +80,7 @@
              * @return \object
              * The casted object.
              */
-            public function Cast(string $class)
+            public function Cast($class)
             {
                 $class = new \ReflectionClass($class);
 
@@ -130,6 +130,37 @@
                     throw new Exception(sprintf('Cannot cast to %s', $class->getShortName()));
                 }
                 return $castedObject;
+            }
+
+            /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             */
+            public final function __toString()
+            {
+                return $this->ToString();
+            }
+
+            /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             */
+            public function ToString()
+            {
+                return 'Type: '.(new \ReflectionClass($this))->name;
+            }
+
+            /**
+             * Serves as the default hash function.
+             *
+             * @return int
+             * A hash code for the current object.
+             */
+            public function GetHashCode()
+            {
+                return hexdec(spl_object_hash($this));
             }
 
             /**
@@ -298,26 +329,6 @@
                     $property->setAccessible(true);
                     $property->setValue($this, $property->getValue($obj));
                 }
-            }
-
-            /**
-             * Returns a string which represents the object.
-             *
-             * @return string
-             */
-            public final function __toString()
-            {
-                return $this->ToString();
-            }
-
-            /**
-             * Returns a string which represents the object.
-             *
-             * @return string
-             */
-            public function ToString()
-            {
-                return 'Type: '.(new \ReflectionClass($this))->name;
             }
         }
     }
