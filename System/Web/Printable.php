@@ -19,7 +19,9 @@
              */
             public function Print()
             {
-                return $this->PrintInternal();
+                ob_start();
+                $this->PrintInternal();
+                return ob_get_clean();
             }
 
             /**

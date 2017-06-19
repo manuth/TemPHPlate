@@ -28,9 +28,9 @@
             /**
              * Gets or sets the style-definitions of the content.
              *
-             * @var StyleDefinition[]
+             * @var StyleCollection
              */
-            public $StyleDefinitions = array();
+            public $StyleDefinitions;
 
             /**
              * Gets or sets the script-definitions of the content.
@@ -51,6 +51,7 @@
              */
             public function WebContent()
             {
+                //$this->StyleDefinitions = new StyleCollection();
             }
 
             /**
@@ -59,6 +60,36 @@
             public function WebContent1($template)
             {
                 $this->Template = $template;
+            }
+
+            /**
+             * Prints the object.
+             *
+             * @return string
+             * The content of the printable object.
+             */
+            public final function Print()
+            {
+                $format;
+
+                if ($this->Template === null)
+                {
+                    $format = "
+                        <html>
+                            <head>
+                                <title>{$this->Title}</title>
+                            </head>
+                            <body>
+                                %s
+                            </body>
+                        </html>";
+                }
+                else
+                {
+                    $format = '%s';
+                }
+                
+                return sprintf($format, parent::Print());
             }
         }
     }
