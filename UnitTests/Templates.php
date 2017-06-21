@@ -36,7 +36,7 @@
         echo "
             <p>
                 Checking <code>\$template1->Locale</code>: {$template1->Locale} (excepting 'en-GB')<br />
-                <b>".($template1->Locale === 'en-GB' ? 'Test passed!' : 'Test not passed')."</b>
+                <b>".($template1->Locale->ToString() === 'en-GB' ? 'Test passed!' : 'Test not passed')."</b>
             </p>";
         echo "
             <p>
@@ -53,7 +53,7 @@
         echo "
             <p>
                 Checking <code>\$template2->Locale</code>: {$template2->Locale} (excepting 'en-US')<br />
-                <b>".($template2->Locale === 'en-US' ? 'Test passed!' : 'Test not passed')."</b>
+                <b>".($template2->Locale->ToString() === 'en-US' ? 'Test passed!' : 'Test not passed')."</b>
             </p>";
         echo "
             <p>
@@ -70,7 +70,7 @@
         echo "
             <p>
                 Checking <code>\$page->Locale</code>: {$page->Locale} (excepting 'de-CH')<br />
-                <b>".($page->Locale === 'de-CH' ? 'Test passed!' : 'Test not passed')."</b>
+                <b>".($page->Locale->ToString() === 'de-CH' ? 'Test passed!' : 'Test not passed')."</b>
             </p>";
     }
 ?>

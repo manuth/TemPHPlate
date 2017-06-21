@@ -60,6 +60,50 @@
             {
                 return $this->GetHashCodeInternal();
             }
+
+            /**
+             * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+             *
+             * @param mixed $x
+             * The first object to compare.
+             * 
+             * @param mixed $y
+             * The second object to compare.
+             *
+             * @return int
+             * A signed integer that indicates the relative values of _x_ and _y_.
+             */
+            public static function Compare($x, $y)
+            {
+                if ($x instanceof IComparble && $y instanceof IComparable)
+                {
+                    return $x->CompareTo($y);
+                }
+                else if (is_string($x) && is_string($y))
+                {
+                    $result = strcasecmp($x, $y);
+                    
+                    if ($result == 0)
+                    {
+                        return strcmp($x, $y) * -1;
+                    }
+                    else
+                    {
+                        return $result;
+                    }
+                }
+                else
+                {
+                    if ($x === $y)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return $x > $y ? 1 : -1;
+                    }
+                }
+            }
         }
     }
 ?>

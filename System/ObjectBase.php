@@ -164,6 +164,20 @@
             }
 
             /**
+             * Determines whether the specified object is equal to the current object.
+             *
+             * @param Object $obj
+             * The object to compare with the current object.
+             * 
+             * @return bool
+             * **true** if the specified object is equal to the current object; otherwise, **false**.
+             */
+            public function Equals($obj)
+            {
+                return $this->GetHashCode() == $obj->GetHashCode();
+            }
+
+            /**
              * Calls a base-constructor.
              */
             protected function Base()
@@ -296,6 +310,7 @@
                             else
                             {
                                 // ToDo throw error if the base class has no parameterless constructor
+                                throw new NotImplementedException();
                             }
                         }
                     }
@@ -308,6 +323,7 @@
                 else
                 {
                     //ToDo throw error if the constructor couldn't be found
+                    throw new NotImplementedException();
                 }
             }
 
