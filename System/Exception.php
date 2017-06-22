@@ -55,7 +55,7 @@
              */
             public function Exception2($message, $innerException)
             {
-                $this->Base($message, 0, $innerException);
+                parent::__construct($message, 0, $innerException);
             }
 
             /**

@@ -15,7 +15,7 @@
              */
             public function NotImplementedException()
             {
-                $this->This('');
+                $this->Base();
             }
 
             /**
@@ -26,7 +26,7 @@
              */
             public function NotImplementedException1($message)
             {
-                $this->This($message, null);
+                $this->Base($message);
             }
 
             /**
@@ -40,7 +40,7 @@
              */
             public function NotImplementedException2($message, $innerException)
             {
-                $this->Base($message, 0, $innerException);
+                $this->Base($message, $innerException);
             }
         }
     }

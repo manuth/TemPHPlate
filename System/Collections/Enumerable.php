@@ -106,6 +106,7 @@
                 while ($enumerator->Valid)
                 {
                     $count++;
+                    $enumerator->MoveNext();
                 }
 
                 return $count;
@@ -511,7 +512,14 @@
              */
             public function ToArray()
             {
-                return iterator_to_array($this);
+                $array = array();
+
+                foreach ($this as $key => $entry)
+                {
+                    $array[$key] = $entry;
+                }
+                
+                return $array;
             }
 
             public function ToDictionary()
@@ -526,7 +534,7 @@
              */
             public function ToList()
             {
-                return new ArrayList($this->ToArray());
+                return new ArrayList($this);
             }
 
             /**

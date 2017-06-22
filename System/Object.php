@@ -81,16 +81,15 @@
                 }
                 else if (is_string($x) && is_string($y))
                 {
-                    $result = strcasecmp($x, $y);
+                    for ($i = 0; $i < min(array(strlen($x), strlen($y))); $i++)
+                    {
+                        if (strncasecmp($x, $y, $i) == 0 && strncmp($x, $y, $i) != 0)
+                        {
+                            return strncmp($x, $y, $i) * -1;
+                        }
+                    }
                     
-                    if ($result == 0)
-                    {
-                        return strcmp($x, $y) * -1;
-                    }
-                    else
-                    {
-                        return $result;
-                    }
+                    return strcasecmp($x, $y);
                 }
                 else
                 {
