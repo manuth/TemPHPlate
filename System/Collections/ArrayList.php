@@ -493,7 +493,7 @@
             {
                 if ($index >= 0 && $index <= $this->Count)
                 {
-                    array_splice($this->InnerList, $index, 0, $item);
+                    array_splice($this->InnerList, $index, 0, array($item));
                 }
                 else
                 {
