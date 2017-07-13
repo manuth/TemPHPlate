@@ -27,15 +27,6 @@
             }
 
             /**
-             * Prints the object.
-             *
-             * @return void
-             */
-            protected function PrintInternal()
-            {
-            }
-
-            /**
              * @ignore
              */
             protected function getMenuBar()
@@ -49,6 +40,15 @@
             protected function setMenuBar($value)
             {
                 $this->menuBar = $value;
+            }
+
+            /**
+             * Prints the object.
+             *
+             * @return void
+             */
+            protected function PrintInternal()
+            {
             }
         }
     }
