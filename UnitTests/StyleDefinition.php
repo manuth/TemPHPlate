@@ -1,8 +1,13 @@
 <?php
+    /**
+     * @author Manuel Thalmann <m@nuth.ch>
+     * @license Apache-2.0
+     */
     use System\Web\{
-        StyleSheet,
+        ScriptDefinition,
+        StyleCollection,
         StyleDefinition,
-        ScriptDefinition
+        StyleSheet
     };
     {
         $testScript = ScriptDefinition::FromCode('
@@ -37,17 +42,16 @@
                     $("#styleTest-result").html("<b>" + text + "</b>");
                 }
             });');
-        $bootstrap = new StyleSheet('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
-        $bootstrapTheme = StyleDefinition::FromFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css');
-        $style = StyleDefinition::FromCode('
+        $styleCollection = new StyleCollection();
+        $styleCollection->Add(new StyleSheet('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'));
+        $styleCollection->Add(StyleDefinition::FromFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css'));
+        $styleCollection->Add(StyleDefinition::FromCode('
             #styleTest
             {
                 color: skyblue !important;
-            }');
+            }'));
         echo $testScript->Print();
-        echo $bootstrap->Print();
-        echo $bootstrapTheme->Print();
-        echo $style->Print();
+        echo $styleCollection->Print();
         echo '
             <h2>Including Bootstrap using <code>StyleSheet</code></h2>
             <p>
