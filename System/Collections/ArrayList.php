@@ -202,7 +202,7 @@
              * 
              * @return void
              */
-            public function CopyTo(array $array, $arrayIndex = 0, $index = 0, $count = null)
+            public function CopyTo($array, $arrayIndex = 0, $index = 0, $count = null)
             {
                 if ($count === null)
                 {
@@ -217,7 +217,7 @@
                         {
                             if ($count >= 0)
                             {
-                                if (($arrayIndex + $count < count($array)) && ($index + $count < $this->Count))
+                                if (($arrayIndex + $count <= count($array)) && ($index + $count <= $this->Count))
                                 {
                                     for ($i = 0; $i < $count; $i++)
                                     {
@@ -282,7 +282,7 @@
              */
             public function Find(callable $match)
             {
-                $index = $this>FindIndex($match);
+                $index = $this->FindIndex($match);
 
                 if ($index >= 0)
                 {
@@ -380,7 +380,7 @@
             {
                 if ($match !== null)
                 {
-                    for ($i = $this->Count - 1; $i >= 0; $i++)
+                    for ($i = $this->Count - 1; $i >= 0; $i--)
                     {
                         if ($match($this[$i]))
                         {
@@ -428,9 +428,9 @@
             {
                 return new Enumerator(function ()
                 {
-                    foreach ($this->InnerList as $key => $value)
+                    foreach ($this->InnerList as $value)
                     {
-                        yield $key => $value;
+                        yield $value;
                     }
                 });
             }
@@ -533,9 +533,9 @@
                         $array = $collection;
                         $collection = new EnumerableIterator(function () use ($array)
                         {
-                            foreach ($array as $key => $value)
+                            foreach ($array as $value)
                             {
-                                yield $key => $value;
+                                yield $value;
                             }
                         });
                     }
@@ -589,11 +589,11 @@
              */
             public function Remove($item)
             {
-                $index = $this->FirstIndexOf($item);
+                $index = $this->IndexOf($item);
 
                 if ($index >= 0)
                 {
-                    $this->RemoveAt($this->FirstIndexOf($item));
+                    $this->RemoveAt($this->IndexOf($item));
                     return true;
                 }
                 else
@@ -666,6 +666,10 @@
                         if (($index + $count) <= $this->Count)
                         {
                             array_splice($this->InnerList, $index, $count);
+                        }
+                        else
+                        {
+                            throw new ArgumentException();
                         }
                     }
                     else

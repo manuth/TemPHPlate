@@ -17,7 +17,7 @@
         /**
          * Represents a collection of items.
          */
-        abstract class Enumerable extends Object implements \IteratorAggregate
+        abstract class Enumerable extends Object implements \IteratorAggregate, \Countable
         {
             /**
              * Initializes a new instance of the Enumerable class.
