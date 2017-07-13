@@ -275,7 +275,7 @@
                 {
                     $selector = function ($item)
                     {
-                    return $item;
+                        return $item;
                     };
                 }
 
@@ -283,7 +283,7 @@
                     function ($item)
                     {
                         return $item;
-                })->GetEnumerator();
+                    })->GetEnumerator();
 
                 if ($enumerator->Valid)
                 {
@@ -310,7 +310,7 @@
                 {
                     $selector = function ($item)
                     {
-                    return $item;
+                        return $item;
                     };
                 }
 
@@ -318,7 +318,7 @@
                     function ($item)
                     {
                         return $item;
-                })->GetEnumerator();
+                    })->GetEnumerator();
 
                 if ($enumerator->Valid)
                 {
@@ -593,9 +593,63 @@
                 return $array;
             }
 
-            public function ToDictionary()
+            /**
+             * Creates a Dictionary from an Enumerable according to a specified key selector function, a comparer, and an element selector function.
+             *
+             * @param callable $keySelector
+             * A function to extract a key from each element.
+             * 
+             * @param callable $elementSelector
+             * A transform function to produce a result element value from each element.
+             * 
+             * @param EqualityComparer $comparer
+             * An EqualityComparer to compare keys.
+             * 
+             * @return Dictionary
+             * A Dictionary that contains values selected from the input sequence.
+             */
+            public function ToDictionary(callable $keySelector, callable $elementSelector = null, EqualityComparer $comparer = null)
             {
-                throw new NotImplementedException();
+                if ($elementSelector === null)
+                {
+                    $elementSelector = function ($item)
+                    {
+                        return $item;
+                    };
+                }
+
+                if ($keySelector !== null)
+                {
+
+                    if ($comparer !== null)
+                    {
+                        $dictionary = new Dictionary(new Dictionary(), $comparer);
+                    }
+                    else
+                    {
+                        $dictionary = new Dictionary();
+                    }
+
+                    for ($enumerator = $this->GetEnumerator(); $enumerator->Valid; $enumerator->MoveNext())
+                    {
+                        $key = $keySelector($enumerator->Current);
+
+                        if ($key !== null)
+                        {
+                            $dictionary->Add($key, $elementSelector($enumerator->Current));
+                        }
+                        else
+                        {
+                            throw new ArgumentNullException('keySelector');
+                        }
+                    }
+
+                    return $dictionary;
+                }
+                else
+                {
+                    throw new ArgumentNullException('keySelector');
+                }
             }
 
             /**
