@@ -438,11 +438,9 @@
              */
             public function Skip($count)
             {
-                $enumerable = $this;
-
-                return new EnumerableIterator(function () use ($enumerable, $count)
+                return new EnumerableIterator(function () use ($count)
                 {
-                    $enumerator = $enumerable->GetEnumerator();
+                    $enumerator = $this->GetEnumerator();
 
                     for ($i = 0; $i < $count; $i++)
                     {
