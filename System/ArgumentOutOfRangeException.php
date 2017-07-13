@@ -24,7 +24,7 @@
              * @param string $name
              * The name of the argument which caused the exception.
              */
-            public function ArgumentException2($paramName, $actualValue)
+            public function ArgumentOutOfRangeException2($paramName, $actualValue)
             {
                 $this->This($paramName, $actualValue, '', null);
             }
@@ -45,7 +45,7 @@
              */
             public function ArgumentOutOfRangeException4($paramName, $actualValue, $message, $innerException)
             {
-                $this->Base($invalidCultureName, $message, $innerException);
+                $this->Base($paramName, $message, $innerException);
                 $this->ActualValue = $actualValue;
             }
         }
