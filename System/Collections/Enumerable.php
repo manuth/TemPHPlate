@@ -69,8 +69,16 @@
              * @return bool
              * **true** if any elements in the source sequence pass the test in the specified predicate; otherwise, **false**.
              */
-            public function Any(callable $predicate)
+            public function Any(callable $predicate = null)
             {
+                if ($predicate === null)
+                {
+                    $predicate = function ($item)
+                    {
+                        return true;
+                    };
+                }
+
                 $enumerator = $this->Where($predicate)->GetEnumerator();
                 return $enumerator->Valid;
             }
@@ -95,13 +103,24 @@
             /**
              * Returns the number of elements in a sequence.
              *
+             * @param callable $predicate
+             * A function to test each element for a condition.
+             * 
              * @return int
              * The number of elements in the input sequence.
              */
-            public function Count()
+            public function Count(callable $predicate = null)
             {
+                if ($predicate === null)
+                {
+                    $predicate = function ($item)
+                    {
+                        return true;
+                    };
+                }
+
                 $count = 0;
-                $enumerator = $this->GetEnumerator();
+                $enumerator = $this->Where($predicate)->GetEnumerator();
 
                 while ($enumerator->Valid)
                 {
@@ -121,8 +140,16 @@
              * @return mixed
              * The first element in the sequence that passes the test in the specified predicate function.
              */
-            public function First(callable $predicate)
+            public function First(callable $predicate = null)
             {
+                if ($predicate === null)
+                {
+                    $predicate = function ($item)
+                    {
+                        return true;
+                    };
+                }
+
                 $enumerator = $this->Where($predicate)->GetEnumerator();
 
                 if ($enumerator->Valid)
@@ -144,7 +171,7 @@
              * @return mixed
              * **null** if no element passes the test specified by predicate; otherwise, the first element in source that passes the test specified by predicate.
              */
-            public function FirstOrDefault(callable $predicate)
+            public function FirstOrDefault(callable $predicate = null)
             {
                 try
                 {
@@ -165,8 +192,16 @@
              * @return mixed
              * The last element in the sequence that passes the test in the specified predicate function.
              */
-            public function Last(callable $predicate)
+            public function Last(callable $predicate = null)
             {
+                if ($predicate === null)
+                {
+                    $predicate = function ($item)
+                    {
+                        return true;
+                    };
+                }
+
                 $array = $this->Where($predicate)->ToArray();
 
                 if (count($array) > 0)
@@ -188,7 +223,7 @@
              * @return mixed
              * **null** if the sequence is empty or if no elements pass the test in the predicate function; otherwise, the last element that passes the test in the predicate function.
              */
-            public function LastOrDefault(callable $predicate)
+            public function LastOrDefault(callable $predicate = null)
             {
                 try
                 {
@@ -209,11 +244,20 @@
              * @return int
              * The maximum value in the sequence.
              */
-            public function Max(callable $selector)
+            public function Max(callable $selector = null)
             {
-                $enumerator = $this->Select($selector)->OrderByDescending(function ($item)
+                if ($selector === null)
                 {
+                    $selector = function ($item)
+                    {
                     return $item;
+                    };
+                }
+
+                $enumerator = $this->Select($selector)->OrderByDescending(
+                    function ($item)
+                    {
+                        return $item;
                 })->GetEnumerator();
 
                 if ($enumerator->Valid)
@@ -235,11 +279,20 @@
              * @return int
              * The minimum value in the sequence.
              */
-            public function Min(callable $selector)
+            public function Min(callable $selector = null)
             {
-                $enumerator = $this->Select($selector)->OrderBy(function ($item)
+                if ($selector === null)
                 {
+                    $selector = function ($item)
+                    {
                     return $item;
+                    };
+                }
+
+                $enumerator = $this->Select($selector)->OrderBy(
+                    function ($item)
+                    {
+                        return $item;
                 })->GetEnumerator();
 
                 if ($enumerator->Valid)
@@ -294,11 +347,12 @@
              */
             public function Reverse()
             {
-                $enumerable = $this;
-
-                return new EnumerableIterator(function () use ($enumerable)
+                return new EnumerableIterator(function ()
                 {
-                    array_reverse($enumerable->ToArray());
+                    foreach (array_reverse($this->ToArray()) as $value)
+                    {
+                        yield $value;
+                    }
                 });
             }
 
@@ -315,7 +369,7 @@
             {
                 return new EnumerableIterator(function () use ($selector)
                 {
-                    foreach ($this as $key => $value)
+                    foreach ($this as $value)
                     {
                         yield $selector($value);
                     }
@@ -335,7 +389,7 @@
             {
                 return new EnumerableIterator(function () use ($selector)
                 {
-                    foreach ($this->Select($selector) as $key => $value)
+                    foreach ($this->Select($selector) as $value)
                     {
                         foreach ($value as $item)
                         {
@@ -414,11 +468,9 @@
              */
             public function SkipWhile(callable $predicate)
             {
-                $enumerable = $this;
-
-                return new EnumerableIterator(function () use ($enumerable, $predicate)
+                return new EnumerableIterator(function () use ($predicate)
                 {
-                    $enumerator = $enumerable->GetEnumerator();
+                    $enumerator = $this->GetEnumerator();
 
                     while ($enumerator->Valid && $predicate($enumerator->Current))
                     {
@@ -465,11 +517,9 @@
              */
             public function Take($count)
             {
-                $enumerable = $this;
-
-                return new EnumerableIterator(function () use ($enumerable, $count)
+                return new EnumerableIterator(function () use ($count)
                 {
-                    $enumerator = $enumerable->GetEnumerator();
+                    $enumerator = $this->GetEnumerator();
                     
                     for ($i = 0; $i < $count && $enumerator->Valid; $i++)
                     {
@@ -490,11 +540,9 @@
              */
             public function TakeWhile(callable $predicate)
             {
-                $enumerable = $this;
-
-                return new EnumerableIteratoe(function () use ($enumerable, $predicate)
+                return new EnumerableIterator(function () use ($predicate)
                 {
-                    $enumerator = $enumerable->GetEnumerator();
+                    $enumerator = $this->GetEnumerator();
 
                     while ($enumerator->Valid && $predicate($enumerator->Current))
                     {
@@ -552,11 +600,11 @@
                 {
                     return new EnumerableIterator(function () use ($predicate)
                     {
-                        foreach ($this as $key => $value)
+                        foreach ($this as $value)
                         {
                             if ($predicate($value))
                             {
-                                yield $key => $value;
+                                yield $value;
                             }
                         }
                     });
@@ -594,20 +642,18 @@
                         };
                     }
 
-                    $enumerable = $this;
-
-                    return new EnumerableIterator(function () use ($enumerable, $keySelector, $comparer, $descending)
+                    return new EnumerableIterator(function () use ($keySelector, $comparer, $descending)
                     {
-                        $array = $enumerable->ToArray();
+                        $array = $this->ToArray();
 
                         usort($array, function ($x, $y) use ($keySelector, $comparer, $descending)
                         {
                             return $comparer($keySelector($x), $keySelector($y)) * ($descending ? -1 : 1);
                         });
 
-                        foreach ($array as $key => $value)
+                        foreach ($array as $value)
                         {
-                            yield $key => $value;
+                            yield $value;
                         }
                     });
                 }
