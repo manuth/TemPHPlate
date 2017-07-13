@@ -35,9 +35,9 @@
             /**
              * Gets or sets the script-definitions of the content.
              *
-             * @var ScriptDefinition[]
+             * @var ScriptCollection
              */
-            public $ScriptDefinitions = array();
+            public $ScriptDefinitions;
 
             /**
              * Gets or sets the template of the content.
@@ -51,7 +51,8 @@
              */
             public function WebContent()
             {
-                //$this->StyleDefinitions = new StyleCollection();
+                $this->StyleDefinitions = new StyleCollection();
+                $this->ScriptDefinitions = new ScriptCollection();
             }
 
             /**
@@ -70,26 +71,43 @@
              */
             public final function Print()
             {
-                $format;
+                $formatter;
 
                 if ($this->Template === null)
                 {
-                    $format = "
-                        <html>
+                    $styleDefinitions = new StyleCollection();
+                    $scriptDefinitions = new ScriptCollection();
+
+                    for ($template = $this; $template != null; $template = $template->Template)
+                    {
+                        $styleDefinitions->AddRange($template->StyleDefinitions);
+                        $scriptDefinitions->AddRange($template->ScriptDefinitions);
+                    }
+
+                    $formatter = function ($content) use ($styleDefinitions, $scriptDefinitions)
+                    {
+                        return "
+                        <html lang=\"{$this->Locale}\">
                             <head>
                                 <title>{$this->Title}</title>
+                                {$styleDefinitions->Print()}
                             </head>
                             <body>
-                                %s
+                                {$content}
+                                {$scriptDefinitions->Print()}
                             </body>
                         </html>";
+                    };
                 }
                 else
                 {
-                    $format = '%s';
+                    $formatter = function ($content)
+                    {
+                        return $content;
+                    };
                 }
                 
-                return sprintf($format, parent::Print());
+                return $formatter(parent::Print());
             }
         }
     }
