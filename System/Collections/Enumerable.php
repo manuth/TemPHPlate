@@ -96,7 +96,7 @@
             {
                 return $this->Any(function ($item) use ($value)
                 {
-                    return $item == $value;
+                    return EqualityComparer::$Default->Equals($item, $value);
                 });
             }
 
@@ -311,13 +311,13 @@
              * @param callable $keySelector
              * A function to extract a key from an element.
              *
-             * @param callable $comparer
+             * @param Comparer $comparer
              * A Comparer to compare keys.
              * 
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            public function OrderBy(callable $keySelector, callable $comparer = null)
+            public function OrderBy(callable $keySelector, Comparer $comparer = null)
             {
                 return $this->OrderByInternal($keySelector, $comparer, false);
             }
@@ -328,13 +328,13 @@
              * @param callable $keySelector
              * A function to extract a key from an element.
              * 
-             * @param callable $comparer
+             * @param Comparer $comparer
              * A comparer to compare keys.
              * 
              * @return Enumerable
              * An Enumerable whose elements are sorted in descending order according to a key.
              */
-            public function OrderByDescending(callable $keySelector, callable $comparer = null)
+            public function OrderByDescending(callable $keySelector, Comparer $comparer = null)
             {
                 return $this->OrderByInternal($keySelector, $comparer, true);
             }
@@ -415,7 +415,7 @@
 
                 while ($xIterator->Valid && $yIterator->Valid)
                 {
-                    if (Object::Compare($xIterator->Current, $yIterator->Current) !== 0)
+                    if (!EqualityComparer::$Default->Equals($xIterator->Current, $yIterator->Current))
                     {
                         return false;
                     }
@@ -619,7 +619,7 @@
              * @param callable $keySelector
              * A function to extract a key from an element.
              * 
-             * @param callable $comparer
+             * @param Comparer $comparer
              * A comparar to compare keys.
              * 
              * @param bool $descending
@@ -628,16 +628,13 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            private function OrderByInternal(callable $keySelector, callable $comparer = null, $descending)
+            private function OrderByInternal(callable $keySelector, Comparer $comparer = null, $descending)
             {
                 if ($keySelector !== null)
                 {
                     if ($comparer === null)
                     {
-                        $comparer = function ($x, $y)
-                        {
-                            return Object::Compare($x, $y);
-                        };
+                        $comparer = Comparer::$Default;
                     }
 
                     return new EnumerableIterator(function () use ($keySelector, $comparer, $descending)
@@ -646,7 +643,7 @@
 
                         usort($array, function ($x, $y) use ($keySelector, $comparer, $descending)
                         {
-                            return $comparer($keySelector($x), $keySelector($y)) * ($descending ? -1 : 1);
+                            return $comparer->Compare($keySelector($x), $keySelector($y)) * ($descending ? -1 : 1);
                         });
 
                         foreach ($array as $value)

@@ -486,7 +486,7 @@
             {
                 return $this->FindIndex(function ($entry) use ($item)
                 {
-                    return $entry === $item;
+                    return EqualityComparer::$Default->Equals($entry, $item);
                 });
             }
 
@@ -574,7 +574,7 @@
             {
                 return $this->FindLastIndex(function ($entry) use ($item)
                 {
-                    return $entry === $item;
+                    return EqualityComparer::$Default->Equals($entry, $item);
                 });
             }
 
@@ -686,12 +686,12 @@
             /**
              * Sorts the elements in the entire ArrayList using the default comparer.
              * 
-             * @param callable $comparer
+             * @param Comparer $comparer
              * The comparer implementation to use when comparing elements, or **null** to use the default comparer.
              *
              * @return void
              */
-            public function Sort(callable $comparer = null)
+            public function Sort(Comparer $comparer = null)
             {
                 $this->InnerList = $this->OrderBy(function ($item)
                 {
