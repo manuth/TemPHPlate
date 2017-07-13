@@ -5,7 +5,10 @@
      */
     namespace System\Collections;
     {
-        class EnumerableIterator extends Enumerable implements \IteratorAggregate
+        /**
+         * An Enumerable that which wraps an iterator.
+         */
+        class EnumerableIterator extends Enumerable
         {
             /**
              * The iterator to iterate over.
