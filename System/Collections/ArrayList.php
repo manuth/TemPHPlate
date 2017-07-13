@@ -188,10 +188,18 @@
             /**
              * Copies the entire ArrayList to a compatible one-dimensional array, starting at the specified index of the target array.
              *
-             * @param array $array
+             * @param mixed $array
              * The one-dimensional array that is the destination of the elements copied from List<T>. The Array must have zero-based indexing.
              * 
-             * @param integer $arrayIndex
+             * @param int $arrayIndex
+             * The zero-based index in array at which copying begins.
+             * 
+             * @param int $index
+             * The zero-based index in the source ArrayList at which copying begins.
+             * 
+             * @param int $count
+             * The number of elements to copy.
+             * 
              * @return void
              */
             public function CopyTo(array $array, $arrayIndex = 0, $index = 0, $count = null)
