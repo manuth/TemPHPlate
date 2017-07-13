@@ -1,10 +1,12 @@
 <?php
     namespace System
     {
-        DEFINED('TemPHPlate') or DIE('Restricted Access');
-
-        class Exception extends \Exception
+        class Exception extends Object
         {
+            public function getException()
+            {
+                return new \Exception();
+            }
         }
     }
 ?>

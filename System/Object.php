@@ -1,13 +1,11 @@
 <?php
 
     namespace System;
-    use System\{
-        Exception
-    };
+    use System\Exception;
     {
         /**
-         * Supports all classes in the TemPHPlate class hierarchy.
-         * This is the ultimate base class of all classes in the TemPHPlate Framework; it is the root of the TemPHPlate type hierarchy.
+         * Supports all classes in the class hierarchy.
+         * This is the ultimate base class of all classes in the Framework; it is the root of the type hierarchy.
          */
         class Object
         {
