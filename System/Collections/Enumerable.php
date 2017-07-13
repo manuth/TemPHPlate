@@ -132,6 +132,31 @@
             }
 
             /**
+             * Returns distinct elements from a sequence by using a specified EqualityComparer to compare values.
+             *
+             * @param EqualityComparer $comparer
+             * An EqualityComparer to compare values.
+             * 
+             * @return void
+             */
+            public function Distinct(EqualityComparer $comparer = null)
+            {
+                return new EnumerableIterator(
+                    function() use ($comparer)
+                    {
+                        $set = new Set($comparer);
+
+                        foreach ($this as $item)
+                        {
+                            if ($set->Add($item))
+                            {
+                                yield $item;
+                            }
+                        }
+                    });
+            }
+
+            /**
              * Returns the first element in a sequence that satisfies a specified condition.
              *
              * @param callable $predicate
@@ -655,6 +680,130 @@
                 else
                 {
                     throw new ArgumentNullException('keySelector');
+                }
+            }
+        }
+
+        /**
+         * Represents a set of distinct items.
+         */
+        class Set extends Object
+        {
+            /**
+             * A set of distinct items.
+             *
+             * @var ArrayList
+             */
+            private $innerList;
+            
+            /**
+             * A comparer for comparing items.
+             *
+             * @var callable
+             */
+            private $comparer;
+
+            /**
+             * Initializes a new instance of the Set class.
+             */
+            public function Set()
+            {
+                $this->This(null);
+            }
+
+            /**
+             * Initializes a new instance of the Set class.
+             *
+             * @param EqualityComparer $comparer
+             * The comparer for comparing items.
+             */
+            public function Set1(EqualityComparer $comparer = null)
+            {
+                if ($comparer === null)
+                {
+                    $comparer = new EqualityComparer(
+                        function ($x, $y)
+                        {
+                            return $x === $y;
+                        });
+                }
+
+                $this->comparer = $comparer;
+                $this->innerList = new ArrayList();
+            }
+
+            /**
+             * Adds the value to the set if it doesn't exist.
+             *
+             * @param mixed $value
+             * The value to add to the set.
+             * 
+             * @return bool
+             * **true** if the value doesn't exist inside the Set and could be added; otherwise **false**.
+             */
+            public function Add($value)
+            {
+                return !$this->Find($value, true);
+            }
+
+            /**
+             * Determines whether the Set contains the specified value.
+             *
+             * @param mixed $value
+             * The value to locate in the Set.
+             * 
+             * @return bool
+             * **true** if the Set contains an element that has the specified value; otherwise, **false**.
+             */
+            public function Contains($value)
+            {
+                return $this->Find($value, false);
+            }
+
+            /**
+             * Removes the first occurrence of a specific object from the Set.
+             *
+             * @param mixed $item
+             * The object to remove from the Set. The value can be **null**.
+             * 
+             * @return bool
+             * **true** if item is successfully removed; otherwise, **false**. This method also returns **false** if item was not found in the Set.
+             */
+            public function Remove($value)
+            {
+                return $this->innerList->Remove($value);
+            }
+
+            /**
+             * Determines whether the Set contains the specified value.
+             *
+             * @param mixed $value
+             * The value to locate in the Set.
+             * 
+             * @param bool $add
+             * Indicates whether the item should be added to the sequence if it doesn't exist.
+             * 
+             * @return bool
+             * **true** if the Set contains an element that has the specified value; otherwise, **false**.
+             */
+            private function Find($value, $add)
+            {
+                if ($this->innerList->Any(
+                    function ($item) use ($value)
+                    {
+                        return $this->comparer->Equals($item, $value);
+                    }))
+                {
+                    return true;
+                }
+                else
+                {
+                    if ($add)
+                    {
+                        $this->innerList->Add($value);
+                    }
+
+                    return false;
                 }
             }
         }
