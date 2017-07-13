@@ -178,7 +178,7 @@
              */
             public function Equals($obj)
             {
-                return $this->GetHashCode() == $obj->GetHashCode();
+                return $this === $obj;
             }
 
             /**
