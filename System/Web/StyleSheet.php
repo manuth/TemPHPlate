@@ -30,7 +30,7 @@
              * @param string $fileName
              * The path to the Cascading StyleSheet-file.
              */
-            public function StyleSheet1($fileName)
+            public function StyleSheet1(string $fileName)
             {
                 $this->FileName = $fileName;
             }
@@ -41,7 +41,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 return '
                     <link href="'.htmlspecialchars($this->FileName).'" rel="stylesheet" />';

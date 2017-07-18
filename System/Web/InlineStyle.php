@@ -30,7 +30,7 @@
              * @param string $code
              * The CSS-code.
              */
-            public function InlineStyle1($code)
+            public function InlineStyle1(string $code)
             {
                 $this->Code = $code;
             }
@@ -41,7 +41,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 return '
                     <style>

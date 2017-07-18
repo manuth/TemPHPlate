@@ -58,7 +58,7 @@
              * @param Dictionary $dictionary
              * The Dictionary whose elements are copied to the new Dictionary.
              */
-            public function Dictionary1($dictionary)
+            public function Dictionary1(Dictionary $dictionary)
             {
                 $this->This();
                 if ($dictionary !== null)
@@ -93,7 +93,7 @@
              * @param EqualityComparer $comparer
              * The EqualityComparer implementation to use when comparing keys, or null to use the default EqualityComparer.
              */
-            public function Dictionary2($dictionary, EqualityComparer $comparer)
+            public function Dictionary2(Dictionary $dictionary, EqualityComparer $comparer)
             {
                 $this->This();
 
@@ -116,7 +116,7 @@
              * @ignore
              * @return EqualityComparer
              */
-            public function getComparer()
+            public function getComparer() : EqualityComparer
             {
                 return $this->comparer;
             }
@@ -125,7 +125,7 @@
              * @ignore
              * @return int
              */
-            public function getCount()
+            public function getCount() : int
             {
                 return $this->Count();
             }
@@ -134,7 +134,7 @@
              * @ignore
              * @return Enumerable
              */
-            public function getKeys()
+            public function getKeys() : Enumerable
             {
                 return new EnumerableIterator(function ()
                 {
@@ -149,7 +149,7 @@
              * @ignore
              * @return Enumerable
              */
-            public function getValues()
+            public function getValues() : Enumerable
             {
                 return new EnumerableIterator(function ()
                 {
@@ -162,11 +162,14 @@
 
             /**
              * Returns a value indicating whether the offset exists.
+             * 
+             * @param mixed $key
+             * The key whose existence is to be checked.
              *
              * @return bool
              * A value indicating whether the offset exists.
              */
-            public function offsetExists($key)
+            public function offsetExists($key) : bool
             {
                 return $this->ContainsKey($key);
             }
@@ -199,7 +202,7 @@
             /**
              * Sets the element with the specified key.
              *
-             * @param int $key
+             * @param mixed $key
              * The key of the element to return.
              * 
              * @param mixed $value
@@ -285,7 +288,7 @@
              * @return bool
              * **true** if _keyValuePair_ is found in the collection; otherwise, **false**.
              */
-            public function Contains($keyValuePair)
+            public function Contains($keyValuePair) : bool
             {
                 return parent::Contains($keyValuePair);
             }
@@ -299,7 +302,7 @@
              * @return bool
              * **true** if the Dictionary contains an element with the specified key; otherwise, **false**.
              */
-            public function ContainsKey($key)
+            public function ContainsKey($key) : bool
             {
                 if ($key !== null)
                 {
@@ -323,7 +326,7 @@
              * @return bool
              * **true** if the Dictionary contains an element with the specified value; otherwise, **false**.
              */
-            public function ContainsValue($value)
+            public function ContainsValue($value) : bool
             {
                 return $this->Any(function ($item) use ($value)
                 {
@@ -337,7 +340,7 @@
              * @return Enumerator
              * An Enumerator structure for the Dictionary.
              */
-            public function GetEnumerator()
+            public function GetEnumerator() : Enumerator
             {
                 return new Enumerator(function ()
                 {
@@ -357,7 +360,7 @@
              * @return bool
              * **true** if the element is successfully found and removed; otherwise, **false**. This method returns **false** if key is not found in the Dictionary.
              */
-            public function Remove($key)
+            public function Remove($key) : bool
             {
                 if ($key !== null)
                 {
@@ -395,7 +398,7 @@
              * @return bool
              * **true** if the Dictionary contains an element with the specified key; otherwise, **false**.
              */
-            public function TryGetValue($key, &$value)
+            public function TryGetValue($key, &$value) : bool
             {
                 if ($key !== null)
                 {

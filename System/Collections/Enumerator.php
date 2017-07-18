@@ -11,6 +11,9 @@
          * 
          * @property-read mixed $Current
          * Gets the element in the collection at the current position of the enumerator.
+         * 
+         * @property-read mixed $Valid
+         * Gets a value indicating whether the current item could be determined.
          */
         class Enumerator extends Object implements \Iterator
         {
@@ -31,10 +34,10 @@
             /**
              * Initializes a new instance of the Enumerator class with a function to iterate.
              *
-             * @param Closure $function
+             * @param \Closure $function
              * The function to iterate.
              */
-            public function Enumerator1($function)
+            public function Enumerator1(\Closure $function)
             {
                 $this->function = $function;
                 $this->innerIterator = $function();
@@ -53,7 +56,7 @@
              * @ignore
              * @return bool
              */
-            public function getValid()
+            public function getValid() : bool
             {
                 return $this->valid();
             }
@@ -72,7 +75,7 @@
             /**
              * Returns the key of the current element.
              *
-             * @return scalar
+             * @return mixed
              * The key of the current element.
              */
             public function key()
@@ -106,7 +109,7 @@
              * @return bool
              * A value indicating whether the current element is valid.
              */
-            public function valid()
+            public function valid() : bool
             {
                 return $this->innerIterator->valid();
             }
@@ -114,11 +117,13 @@
             /**
              * Advances the enumerator to the next element of the collection.
              *
-             * @return void
+             * @return bool
+             * **true** if the enumerator was successfully advanced to the next element; **false** if the enumerator has passed the end of the collection.
              */
-            public function MoveNext()
+            public function MoveNext() : bool
             {
                 $this->next();
+                return $this->Valid;
             }
 
             /**

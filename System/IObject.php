@@ -14,20 +14,20 @@
             /**
              * Casts the object to another type.
              *
-             * @param \string $class
+             * @param string $class
              * The type to convert the object to.
              * 
-             * @return \object
+             * @return mixed
              * The casted object.
              */
-            function Cast($class);
+            function Cast(string $class);
 
             /**
              * Returns a string which represents the object.
              *
              * @return string
              */
-            function ToString();
+            function ToString() : string;
 
             /**
              * Serves as the default hash function.
@@ -35,7 +35,15 @@
              * @return int
              * A hash code for the current object.
              */
-            function GetHashCode();
+            function GetHashCode() : int;
+
+            /**
+             * Gets the Type of the current instance.
+             *
+             * @return Type
+             * The exact runtime type of the current instance.
+             */
+            public function GetType() : ?Type;
         }
     }
 ?>

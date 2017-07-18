@@ -57,8 +57,11 @@
 
             /**
              * Initializes a new instance of the WebContent class with a template.
+             * 
+             * @param Template $template
+             * The template of the WebContent.
              */
-            public function WebContent1($template)
+            public function WebContent1(Template $template)
             {
                 $this->Template = $template;
             }
@@ -69,7 +72,7 @@
              * @return string
              * The content of the printable object.
              */
-            public final function Print()
+            public final function Print() : string
             {
                 $formatter;
 

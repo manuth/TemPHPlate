@@ -30,7 +30,7 @@
              * @param string $fileName
              * The path to the JavaScript-file.
              */
-            public function ScriptFile1($fileName)
+            public function ScriptFile1(string $fileName)
             {
                 $this->FileName = $fileName;
             }
@@ -41,7 +41,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 return '
                     <script src="'.htmlspecialchars($this->FileName).'"></script>';

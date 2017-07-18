@@ -26,7 +26,7 @@
              * @param WebContent $content
              * The content of the template.
              */
-            public function Template1($content)
+            public function Template1(WebContent $content)
             {
                 $this->Content = $content;
             }
@@ -34,7 +34,7 @@
             /**
              * @ignore
              */
-            public function getPage()
+            public function getPage() : WebContent
             {
                 if ($this->Content instanceof Template)
                 {
@@ -46,6 +46,11 @@
                 }
             }
 
+            /**
+             * Prints the object.
+             *
+             * @return void
+             */
             public function PrintInternal()
             {
                 

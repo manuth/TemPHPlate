@@ -31,7 +31,7 @@
              *
              * @return Enumerator
              */
-            public function getIterator()
+            public function getIterator() : Enumerator
             {
                 return $this->GetEnumerator();
             }
@@ -41,7 +41,7 @@
              *
              * @return Enumerator
              */
-            public abstract function GetEnumerator();
+            public abstract function GetEnumerator() : Enumerator;
             
             /**
              * Determines whether all elements of a sequence satisfy a condition.
@@ -52,7 +52,7 @@
              * @return bool
              * **true** if every element of the source sequence passes the test in the specified predicate, or if the sequence is empty; otherwise, **false**.
              */
-            public function All(callable $predicate)
+            public function All(callable $predicate) : bool
             {
                 return !$this->Any(function ($entry) use ($predicate)
                 {
@@ -69,7 +69,7 @@
              * @return bool
              * **true** if any elements in the source sequence pass the test in the specified predicate; otherwise, **false**.
              */
-            public function Any(callable $predicate = null)
+            public function Any(callable $predicate = null) : bool
             {
                 if ($predicate === null)
                 {
@@ -92,7 +92,7 @@
              * @return bool
              * **true** if the source sequence contains an element that has the specified value; otherwise, **false**.
              */
-            public function Contains($value)
+            public function Contains($value) : bool
             {
                 return $this->Any(function ($item) use ($value)
                 {
@@ -109,7 +109,7 @@
              * @return int
              * The number of elements in the input sequence.
              */
-            public function Count(callable $predicate = null)
+            public function Count(callable $predicate = null) : int
             {
                 if ($predicate === null)
                 {
@@ -137,9 +137,10 @@
              * @param EqualityComparer $comparer
              * An EqualityComparer to compare values.
              * 
-             * @return void
+             * @return Enumerable
+             * An Enumerable that contains distinct elements from the source sequence.
              */
-            public function Distinct(EqualityComparer $comparer = null)
+            public function Distinct(EqualityComparer $comparer = null) : self
             {
                 return new EnumerableIterator(
                     function() use ($comparer)
@@ -227,11 +228,11 @@
                     };
                 }
 
-                $array = $this->Where($predicate)->ToArray();
+                $enumerator = $this->Where($predicate)->Reverse()->GetEnumerator();
 
-                if (count($array) > 0)
+                if ($enumerator->Valid)
                 {
-                    return $array[count($array) - 1];
+                    return $enumerator->Current;
                 }
                 else
                 {
@@ -266,7 +267,7 @@
              * @param callable $selector
              * A transform function to apply to each element.
              * 
-             * @return int
+             * @return mixed
              * The maximum value in the sequence.
              */
             public function Max(callable $selector = null)
@@ -301,7 +302,7 @@
              * @param callable $selector
              * A transform function to apply to each element.
              * 
-             * @return int
+             * @return mixed
              * The minimum value in the sequence.
              */
             public function Min(callable $selector = null)
@@ -342,7 +343,7 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            public function OrderBy(callable $keySelector, Comparer $comparer = null)
+            public function OrderBy(callable $keySelector, Comparer $comparer = null) : self
             {
                 return $this->OrderByInternal($keySelector, $comparer, false);
             }
@@ -354,12 +355,12 @@
              * A function to extract a key from an element.
              * 
              * @param Comparer $comparer
-             * A comparer to compare keys.
+             * A Comparer to compare keys.
              * 
              * @return Enumerable
              * An Enumerable whose elements are sorted in descending order according to a key.
              */
-            public function OrderByDescending(callable $keySelector, Comparer $comparer = null)
+            public function OrderByDescending(callable $keySelector, Comparer $comparer = null) : self
             {
                 return $this->OrderByInternal($keySelector, $comparer, true);
             }
@@ -370,7 +371,7 @@
              * @return Enumerable
              * A sequence whose elements correspond to those of the input sequence in reverse order.
              */
-            public function Reverse()
+            public function Reverse() : self
             {
                 return new EnumerableIterator(function ()
                 {
@@ -390,7 +391,7 @@
              * @return Enumerable
              * An Enumerable whose elements are the result of invoking the transform function on each element of _source_.
              */
-            public function Select(callable $selector)
+            public function Select(callable $selector) : self
             {
                 return new EnumerableIterator(function () use ($selector)
                 {
@@ -410,7 +411,7 @@
              * @return Enumerable
              * An Enumerable whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.
              */
-            public function SelectMany(callable $selector)
+            public function SelectMany(callable $selector) : self
             {
                 return new EnumerableIterator(function () use ($selector)
                 {
@@ -433,7 +434,7 @@
              * @return bool
              * true if the two source sequences are of equal length and their corresponding elements are equal according to the default equality comparer for their type; otherwise, **false**.
              */
-            public function SequenceEqual($second)
+            public function SequenceEqual(self $second) : bool
             {
                 $xIterator = $this->GetEnumerator();
                 $yIterator = $second->GetEnumerator();
@@ -461,7 +462,7 @@
              * @return Enumerable
              * An Enumerable that contains the elements that occur after the specified index in the input sequence.
              */
-            public function Skip($count)
+            public function Skip(int $count) : self
             {
                 return new EnumerableIterator(function () use ($count)
                 {
@@ -489,7 +490,7 @@
              * @return Enumerable
              * An Enumerable that contains the elements from the input sequence starting at the first element in the linear series that does not pass the test specified by _predicate_.
              */
-            public function SkipWhile(callable $predicate)
+            public function SkipWhile(callable $predicate) : self
             {
                 return new EnumerableIterator(function () use ($predicate)
                 {
@@ -517,7 +518,7 @@
              * @return int
              * The sum of the projected values.
              */
-            public function Sum(callable $selector)
+            public function Sum(callable $selector) : int
             {
                 $result = 0;
 
@@ -538,7 +539,7 @@
              * @return Enumerable
              * An Enumerable that contains the specified number of elements from the start of the input sequence.
              */
-            public function Take($count)
+            public function Take(int $count) : self
             {
                 return new EnumerableIterator(function () use ($count)
                 {
@@ -561,7 +562,7 @@
              * @return Enumerable
              * An Enumerable that contains the elements from the input sequence that occur before the element at which the test no longer passes.
              */
-            public function TakeWhile(callable $predicate)
+            public function TakeWhile(callable $predicate) : self
             {
                 return new EnumerableIterator(function () use ($predicate)
                 {
@@ -581,7 +582,7 @@
              * @return array
              * An array that contains the elements from the input sequence.
              */
-            public function ToArray()
+            public function ToArray() : array
             {
                 $array = array();
 
@@ -608,7 +609,7 @@
              * @return Dictionary
              * A Dictionary that contains values selected from the input sequence.
              */
-            public function ToDictionary(callable $keySelector, callable $elementSelector = null, EqualityComparer $comparer = null)
+            public function ToDictionary(callable $keySelector, callable $elementSelector = null, EqualityComparer $comparer = null) : Dictionary
             {
                 if ($elementSelector === null)
                 {
@@ -656,8 +657,9 @@
              * Creates an ArrayList from an Enumerable.
              *
              * @return ArrayList
+             * An ArrayList that contains elements from the input sequence.
              */
-            public function ToList()
+            public function ToList() : ArrayList
             {
                 return new ArrayList($this);
             }
@@ -671,7 +673,7 @@
              * @return Enumerable
              * An Enumerable that contains elements from the input sequence that satisfy the condition.
              */
-            public function Where(callable $predicate)
+            public function Where(callable $predicate) : self
             {
                 if ($predicate !== null)
                 {
@@ -707,7 +709,7 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            private function OrderByInternal(callable $keySelector, Comparer $comparer = null, $descending)
+            private function OrderByInternal(callable $keySelector, Comparer $comparer = null, $descending) : self
             {
                 if ($keySelector !== null)
                 {
@@ -771,7 +773,7 @@
              * @param EqualityComparer $comparer
              * The comparer for comparing items.
              */
-            public function Set1(EqualityComparer $comparer = null)
+            public function Set1(?EqualityComparer $comparer)
             {
                 if ($comparer === null)
                 {
@@ -795,7 +797,7 @@
              * @return bool
              * **true** if the value doesn't exist inside the Set and could be added; otherwise **false**.
              */
-            public function Add($value)
+            public function Add($value) : bool
             {
                 return !$this->Find($value, true);
             }
@@ -809,7 +811,7 @@
              * @return bool
              * **true** if the Set contains an element that has the specified value; otherwise, **false**.
              */
-            public function Contains($value)
+            public function Contains($value) : bool
             {
                 return $this->Find($value, false);
             }
@@ -823,7 +825,7 @@
              * @return bool
              * **true** if item is successfully removed; otherwise, **false**. This method also returns **false** if item was not found in the Set.
              */
-            public function Remove($value)
+            public function Remove($value) : bool
             {
                 return $this->innerList->Remove($value);
             }
@@ -840,7 +842,7 @@
              * @return bool
              * **true** if the Set contains an element that has the specified value; otherwise, **false**.
              */
-            private function Find($value, $add)
+            private function Find($value, bool $add) : bool
             {
                 if ($this->innerList->Any(
                     function ($item) use ($value)

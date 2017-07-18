@@ -5,6 +5,7 @@
      */
     namespace System\Web;
     use ManuTh\TemPHPlate\Properties\Settings;
+    use System\Web\Forms\MenuBar;
     {
         /**
          * Represents a page.
@@ -23,11 +24,12 @@
 
             public function Page()
             {
-                $this->MenuBar = Settings::$MenuBar;
+                //$this->MenuBar = Settings::$MenuBar;
             }
 
             /**
              * @ignore
+             * @return MenuBar
              */
             protected function getMenuBar()
             {
@@ -36,8 +38,9 @@
 
             /**
              * @ignore
+             * @param MenuBar $value
              */
-            protected function setMenuBar($value)
+            protected function setMenuBar(MenuBar $value)
             {
                 $this->menuBar = $value;
             }

@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     namespace System;
+    use System\Collections\ArrayList;
     {
         /**
          * Provides basic functionalities for objects.
@@ -34,30 +35,32 @@
             }
 
             /**
+             * Provides the functionallity for get-property-accessors.
+             * @ignore
+             */
+            public function __get(string $property)
+            {
+                var_dump(debug_backtrace()[1]);
+                var_dump($property);
+                $functionname = 'get'.$property;
+                return $this->$functionname();
+            }
+
+            /**
              * Provides the functionality for set-property-accessors.
              * @ignore
              */
-            public function __set($property, $value)
+            public function __set(string $property, $value)
             {
                 $functionname = 'set'.$property;
                 return $this->$functionname($value);
             }
 
-            /**
-             * Provides the functionallity for get-property-accessors.
-             * @ignore
-             */
-            public function __get($property)
-            {
-                $functionname = 'get'.$property;
-                return $this->$functionname();
-            }
-
 
             /**
              * @ignore
              */
-            private function getCastedType()
+            private function getCastedType()// : Type TODO
             {
                 if ($this->castedType === null)
                 {
@@ -70,7 +73,7 @@
             /**
              * @ignore
              */
-            private function setCastedType($value)
+            private function setCastedType(/* TODO Type */$value)
             {
                 $this->castedType = $value;
             }
@@ -78,13 +81,13 @@
             /**
              * Casts the object to another type.
              *
-             * @param \string $class
+             * @param string $class
              * The type to convert the object to.
              * 
-             * @return \object
+             * @return mixed
              * The casted object.
              */
-            public function Cast($class)
+            public function Cast(string $class)
             {
                 $class = new \ReflectionClass($class);
 
@@ -141,7 +144,7 @@
              *
              * @return string
              */
-            public final function __toString()
+            public final function __toString() : string
             {
                 return $this->ToString();
             }
@@ -151,7 +154,7 @@
              *
              * @return string
              */
-            public function ToString()
+            public function ToString() : string
             {
                 return 'Type: '.(new \ReflectionClass($this))->name;
             }
@@ -162,21 +165,32 @@
              * @return int
              * A hash code for the current object.
              */
-            public function GetHashCode()
+            public function GetHashCode() : int
             {
                 return hexdec(spl_object_hash($this));
             }
 
             /**
+             * Gets the Type of the current instance.
+             *
+             * @return Type
+             * The exact runtime type of the current instance.
+             */
+            public function GetType() : ?Type
+            {
+                return Type::GetByName(get_class($this));
+            }
+
+            /**
              * Determines whether the specified object is equal to the current object.
              *
-             * @param Object $obj
+             * @param mixed $obj
              * The object to compare with the current object.
              * 
              * @return bool
              * **true** if the specified object is equal to the current object; otherwise, **false**.
              */
-            public function Equals($obj)
+            public function Equals($obj) : bool
             {
                 return $this === $obj;
             }
@@ -211,7 +225,7 @@
              * @return bool
              * A value indicating whether the constructor calls another constructor.
              */
-            private static function HasConstructorCall(\ReflectionMethod $constructor)
+            private static function HasConstructorCall(\ReflectionMethod $constructor) : bool
             {
                 $sourceCode = implode(
                     "",
@@ -231,7 +245,7 @@
              * @return bool
              * A value indicating whether the class allows auto-construct.
              */
-            private function getAllowsAutoConstruct()
+            private function getAllowsAutoConstruct() : bool
             {
                 $class = $this->CastedType;
                 $constructors = $this->GetConstructors();
@@ -248,7 +262,7 @@
              * @return \ReflectionMethod[]
              * The constructors of the class.
              */
-            private function GetConstructors()
+            private function GetConstructors() : array
             {
                 $result = array();
                 
@@ -334,7 +348,7 @@
             /**
              * Merges the properties of $obj into this object.
              *
-             * @param object $obj
+             * @param mixed $obj
              * The object to merge into this object.
              */
             private function Merge($obj)

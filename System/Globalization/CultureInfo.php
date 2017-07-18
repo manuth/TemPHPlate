@@ -18,9 +18,12 @@
             public $Name;
 
             /**
-             * Initializes a new instance of the CultureInfo class.
+             * Initializes a new instance of the CultureInfo class with a name.
+             * 
+             * @param string $name
+             * The name of the culture.
              */
-            public function CultureInfo1($name)
+            public function CultureInfo1(string $name)
             {
                 $this->Name = $name;
             }
@@ -29,8 +32,9 @@
              * Sets the locale for the specified type.
              *
              * @param int $category
+             * The category to assign the culture to.
              */
-            public function SetLocale($category = LC_ALL)
+            public function SetLocale(int $category = LC_ALL)
             {
                 if (!setlocale($category, $this->Name))
                 {
@@ -43,7 +47,7 @@
              *
              * @return string
              */
-            public function ToString()
+            public function ToString() : string
             {
                 return $this->Name;
             }

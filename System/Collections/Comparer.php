@@ -96,7 +96,7 @@
              * @return int
              * A signed integer that indicates the relative values of _x_ and _y_, as shown in the following table.
              */
-            public function Compare($x, $y)
+            public function Compare($x, $y) : int
             {
                 return ($this->comparer)($x, $y);
             }

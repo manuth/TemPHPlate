@@ -20,7 +20,7 @@
              * @return InlineScript
              * The script-definition that contains the code.
              */
-            public static function FromCode($code)
+            public static function FromCode(string $code) : InlineScript
             {
                 return new InlineScript($code);
             }
@@ -34,7 +34,7 @@
              * @return ScriptFile
              * The script-definition that contains the file.
              */
-            public static function FromFile($fileName)
+            public static function FromFile(string $fileName) : ScriptFile
             {
                 return new ScriptFile($fileName);
             }
@@ -45,6 +45,6 @@
              * @return string
              * The content of the printable object.
              */
-            public abstract function Print();
+            public abstract function Print() : string;
         }
     }

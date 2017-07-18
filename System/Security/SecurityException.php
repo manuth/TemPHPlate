@@ -14,14 +14,14 @@
             /**
              * Gets or sets the demanded security permission, permission set, or permission set collection that failed.
              *
-             * @var object
+             * @var mixed
              */
             public $Demanded;
 
             /**
              * Initializes a new instance of the SecurityException class.
              *
-             * @param object $demanded
+             * @param mixed $demanded
              * The demanded security permission, permission set, or permission set collection that failed.
              */
             public function SecurityException1($demanded)
@@ -32,16 +32,16 @@
             /**
              * Initializes a new instance of the SecurityException class.
              *
-             * @param object $demanded
+             * @param mixed $demanded
              * The demanded security permission, permission set, or permission set collection that failed.
              * 
              * @param string $message
              * The message of the exception.
              * 
-             * @param Exception $innerException
+             * @param \Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function SecurityException3($demanded, $message, $innerException)
+            public function SecurityException3($demanded, string $message, ?\Exception $innerException)
             {
                 $this->Base($message, $innerException);
                 $this->Demanded = $demanded;

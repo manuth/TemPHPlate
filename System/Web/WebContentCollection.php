@@ -25,7 +25,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 $result = '';
                 

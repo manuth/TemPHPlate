@@ -17,7 +17,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 ob_start();
                 $this->PrintInternal();
@@ -27,8 +27,7 @@
             /**
              * Prints the object.
              *
-             * @return string
-             * The content of the printable object.
+             * @return void
              */
             protected abstract function PrintInternal();
         }

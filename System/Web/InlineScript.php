@@ -30,7 +30,7 @@
              * @param string $code
              * The JavaScript-code.
              */
-            public function InlineScript1($code)
+            public function InlineScript1(string $code)
             {
                 $this->Code = $code;
             }
@@ -41,7 +41,7 @@
              * @return string
              * The content of the printable object.
              */
-            public function Print()
+            public function Print() : string
             {
                 return '
                     <script type="text/javascript">

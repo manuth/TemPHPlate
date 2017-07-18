@@ -9,7 +9,7 @@
         /**
          * The exception that is thrown when an attempt to access a file that does not exist on disk fails.
          */
-        class FileNotFoundException extends Exception
+        class FileNotFoundException extends IOException
         {
             /**
              * Gets the name of the file that cannot be found.
@@ -18,7 +18,7 @@
              */
             public $FileName;
 
-            public function FileNotFoundException1($fileName)
+            public function FileNotFoundException1(string $fileName)
             {
                 $this->This($fileName, '', null);
             }
@@ -32,10 +32,10 @@
              * @param string $fileName
              * The message of the exception.
              * 
-             * @param Exception $innerException
+             * @param \Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function FileNotFoundException3($fileName, $message, $innerException)
+            public function FileNotFoundException3(string $fileName, string $message, ?\Exception $innerException)
             {
                 $this->Base($fileName, $innerException);
                 $this->FileName = $fileName;

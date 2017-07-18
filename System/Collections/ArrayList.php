@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     namespace System\Collections;
+    use System\Object;
     use System\{
         ArgumentException,
         ArgumentNullException,
@@ -48,7 +49,7 @@
              * @ignore
              * @return int
              */
-            public function getCount()
+            public function getCount() : int
             {
                 return $this->Count();
             }
@@ -59,7 +60,7 @@
              * @return bool
              * A value indicating whether the offset exists.
              */
-            public function offsetExists($index)
+            public function offsetExists($index) : bool
             {
                 return $index >= 0 && $index < $this->Count;
             }
@@ -166,7 +167,7 @@
              * @return bool
              * **true** if item is found in the ArrayList; otherwise, **false**.
              */
-            public function Contains($item)
+            public function Contains($item) : bool
             {
                 return parent::Contains($item);
             }
@@ -180,7 +181,7 @@
              * @return ArrayList
              * An ArrayList of the target type containing the converted elements from the current ArrayList.
              */
-            public function ConvertAll(callable $converter)
+            public function ConvertAll(callable $converter) : ArrayList
             {
                 return $this->Select($converter)->ToList();
             }
@@ -202,7 +203,7 @@
              * 
              * @return void
              */
-            public function CopyTo($array, $arrayIndex = 0, $index = 0, $count = null)
+            public function CopyTo($array, int $arrayIndex = 0, int $index = 0, int $count = null)
             {
                 if ($count === null)
                 {
@@ -259,7 +260,7 @@
              * @return bool
              * **true** if the ArrayList contains one or more elements that match the conditions defined by the specified predicate; otherwise, **false**.
              */
-            public function Exists(callable $match)
+            public function Exists(callable $match) : bool
             {
                 if ($match !== null)
                 {
@@ -303,7 +304,7 @@
              * @return ArrayList
              * An ArrayList containing all the elements that match the conditions defined by the specified predicate, if found; otherwise, an empty ArrayList.
              */
-            public function FindAll(callable $match)
+            public function FindAll(callable $match) : ArrayList
             {
                 if ($match !== null)
                 {
@@ -324,7 +325,7 @@
              * @return int
              * The zero-based index of the first occurrence of an element that matches the conditions defined by _match_, if found; otherwise, –1.
              */
-            public function FindIndex(callable $match)
+            public function FindIndex(callable $match) : int
             {
                 if ($match !== null)
                 {
@@ -376,7 +377,7 @@
              * @return int
              * The zero-based index of the last occurrence of an element that matches the conditions defined by _match_, if found; otherwise, –1.
              */
-            public function FindLastIndex(callable $match)
+            public function FindLastIndex(callable $match) : int
             {
                 if ($match !== null)
                 {
@@ -423,8 +424,9 @@
              * Returns an enumerator that iterates through the collection.
              *
              * @return Enumerator
+             * An enumerator that can be used to iterate through the collection.
              */
-            public function GetEnumerator()
+            public function GetEnumerator() : Enumerator
             {
                 return new Enumerator(function ()
                 {
@@ -447,7 +449,7 @@
              * @return ArrayList
              * A shallow copy of a range of elements in the source ArrayList.
              */
-            public function GetRange($index, $count)
+            public function GetRange(int $index, int $count) : ArrayList
             {
                 if ($index >= 0)
                 {
@@ -482,7 +484,7 @@
              * @return int
              * The zero-based index of the first occurrence of item within the entire ArrayList, if found; otherwise, –1.
              */
-            public function IndexOf($item)
+            public function IndexOf($item) : int
             {
                 return $this->FindIndex(function ($entry) use ($item)
                 {
@@ -501,7 +503,7 @@
              * 
              * @return void
              */
-            public function Insert($index, $item)
+            public function Insert(int $index, $item)
             {
                 if ($index >= 0 && $index <= $this->Count)
                 {
@@ -519,12 +521,12 @@
              * @param int $index
              * The zero-based index at which the new elements should be inserted.
              * 
-             * @param Enumerable $collection
+             * @param mixed $collection
              * The collection whose elements should be inserted into the ArrayList. The collection itself cannot be **null**, but it can contain elements that are null.
              * 
              * @return void
              */
-            public function InsertRange($index, $collection)
+            public function InsertRange(int $index, $collection)
             {
                 if ($collection !== null)
                 {
@@ -570,7 +572,7 @@
              * @return int
              * The zero-based index of the last occurrence of item within the entire the ArrayList, if found; otherwise, –1.
              */
-            public function LastIndexOf($item)
+            public function LastIndexOf($item) : int
             {
                 return $this->FindLastIndex(function ($entry) use ($item)
                 {
@@ -587,7 +589,7 @@
              * @return bool
              * **true** if item is successfully removed; otherwise, **false**. This method also returns **false** if item was not found in the ArrayList.
              */
-            public function Remove($item)
+            public function Remove($item) : bool
             {
                 $index = $this->IndexOf($item);
 
@@ -611,7 +613,7 @@
              * @return int
              * The number of elements removed from the ArrayList.
              */
-            public function RemoveAll(callable $match)
+            public function RemoveAll(callable $match) : int
             {
                 $count = 0;
 
@@ -634,7 +636,7 @@
              * 
              * @return void
              */
-            public function RemoveAt($index)
+            public function RemoveAt(int $index)
             {
                 if ($this->offsetExists($index))
                 {
@@ -657,7 +659,7 @@
              * 
              * @return void
              */
-            public function RemoveRange($index, $count)
+            public function RemoveRange(int $index, int $count)
             {
                 if ($index >= 0)
                 {
@@ -691,7 +693,7 @@
              *
              * @return void
              */
-            public function Sort(Comparer $comparer = null)
+            public function Sort(?Comparer $comparer = null)
             {
                 $this->InnerList = $this->OrderBy(function ($item)
                 {
@@ -705,7 +707,7 @@
              * @return mixed[]
              * An array containing copies of the elements of the ArrayList.
              */
-            public function ToArray()
+            public function ToArray() : array
             {
                 return parent::ToArray();
             }
@@ -719,7 +721,7 @@
              * @return bool
              * **true** if every element in the ArrayList matches the conditions defined by the specified predicate; otherwise, **false**. If the list has no elements, the return value is **true**.
              */
-            public function TrueForAll(callable $match)
+            public function TrueForAll(callable $match) : bool
             {
                 if ($match !== null)
                 {

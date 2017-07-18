@@ -20,10 +20,10 @@
             /**
              * Initializes a new instance of the EnumerableIterator class.
              *
-             * @param \Generator $generator
-             * The generator to create the iterator.
+             * @param callable $generator
+             * The generator-function to create the iterator.
              */
-            public function EnumerableIterator1($generator)
+            public function EnumerableIterator1(callable $generator)
             {
                 $this->function = $generator;
             }
@@ -31,10 +31,10 @@
             /**
              * Returns an enumerator that iterates through the collection.
              *
-             * @return Traversable
+             * @return Enumerator
              * An enumerator that can be used to iterate through the collection.
              */
-            public function GetEnumerator()
+            public function GetEnumerator() : Enumerator
             {
                 return new Enumerator($this->function);
             }

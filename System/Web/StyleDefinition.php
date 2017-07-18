@@ -20,7 +20,7 @@
              * @return InlineStyle
              * The style-definition that contains the code.
              */
-            public static function FromCode($code)
+            public static function FromCode(string $code) : InlineStyle
             {
                 return new InlineStyle($code);
             }
@@ -34,7 +34,7 @@
              * @return StyleSheet
              * The style-definition that contains the file.
              */
-            public static function FromFile($fileName)
+            public static function FromFile(string $fileName) : StyleSheet
             {
                 return new StyleSheet($fileName);
             }
@@ -45,6 +45,6 @@
              * @return string
              * The content of the printable object.
              */
-            public abstract function Print();
+            public abstract function Print() : string;
         }
     }

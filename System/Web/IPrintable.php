@@ -16,7 +16,7 @@
              * @return string
              * The content of the printed object.
              */
-            function Print();
+            function Print() : string;
         }
     }
 ?>

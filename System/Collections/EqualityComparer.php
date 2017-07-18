@@ -70,7 +70,7 @@
              * @return bool
              * **true** if the specified objects are equal; otherwise, **false**.
              */
-            public function Equals($x, $y = null)
+            public function Equals($x, $y = null) : bool
             {
                 if (func_num_args() == 2)
                 {
