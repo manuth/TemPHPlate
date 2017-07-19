@@ -19,11 +19,14 @@
                 $path = GetPath($class, TemPHPlateNamespace);
             }
 
-            require $path;
-
-            if (method_exists($class, 'Initialize'))
+            if (file_exists($path))
             {
-                $class::Initialize();
+                require $path;
+
+                if (method_exists($class, 'Initialize'))
+                {
+                    $class::Initialize();
+                }
             }
         });
 
