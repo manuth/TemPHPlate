@@ -37,10 +37,10 @@
             /**
              * Initializes a new instance of the ArrayList class that contains elements copied from the specified collection.
              *
-             * @param Enumerable $collection
+             * @param iterable $collection
              * The collection whose elements are copied to the new list.
              */
-            public function ArrayList1($collection)
+            public function ArrayList1(iterable $collection)
             {
                 $this->AddRange($collection);
             }
@@ -138,12 +138,12 @@
             /**
              * Adds the elements of the specified collection to the end of the ArrayList.
              *
-             * @param Enumerable $ccollection
+             * @param iterable $ccollection
              * The collection whose elements should be added to the end of the ArrayList. The collection itself cannot be null, but it can contain elements that are null.
              * 
              * @return void
              */
-            public function AddRange($collection)
+            public function AddRange(iterable $collection)
             {
                 $this->InsertRange($this->Count, $collection);
             }
