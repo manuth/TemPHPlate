@@ -57,7 +57,7 @@
                 $subNamespace = substr($subNamespace, strlen($namespace));
             }
         
-            $result = str_replace(['\\', '/', '_'], DIRECTORY_SEPARATOR, __DIR__.DIRECTORY_SEPARATOR.$subNamespace.$class).'.php';
+            $result = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, __DIR__.DIRECTORY_SEPARATOR.$subNamespace.$class).'.php';
             
             return $result;
         }
