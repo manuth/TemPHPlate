@@ -26,7 +26,7 @@
             private $data = array();
 
             /**
-             * Automaticaölly calls the proper constructor.
+             * Automatically calls the proper constructor.
              */
             public function __construct()
             {
