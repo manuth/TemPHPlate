@@ -40,8 +40,15 @@
              */
             public function __get(string $property)
             {
-                $functionname = 'get'.$property;
-                return $this->$functionname();
+                $callerClass = $this->GetCallerClass();
+                $functionName = 'get'.$property;
+                $method = $this->GetProperty($callerClass, $functionName);
+
+                if ($this->IsAccessible($callerClass, $method))
+                {
+                    $method->setAccessible(true);
+                    return $method->Invoke($this);
+                }
             }
 
             /**
@@ -50,8 +57,15 @@
              */
             public function __set(string $property, $value)
             {
-                $functionname = 'set'.$property;
-                return $this->$functionname($value);
+                $callerClass = $this->GetCallerClass();
+                $functionName = 'set'.$property;
+                $method = $this->GetProperty($callerClass, $functionName);
+
+                if ($this->IsAccessible($callerClass, $method))
+                {
+                    $method->setAccessible(true);
+                    $method->invoke($this, $value);
+                }
             }
 
 
@@ -74,67 +88,6 @@
             private function setCastedType(/* TODO Type */$value)
             {
                 $this->castedType = $value;
-            }
-
-            /**
-             * Casts the object to another type.
-             *
-             * @param string $class
-             * The type to convert the object to.
-             * 
-             * @return mixed
-             * The casted object.
-             */
-            public function Cast(string $class)
-            {
-                $class = new \ReflectionClass($class);
-
-                $orgClass = new \ReflectionClass($this);
-                if ($class->isSubclassOf($orgClass) || $orgClass->isSubclassOf($class))
-                {
-                    $castedObject = $class->newInstanceWithoutConstructor();
-
-                    $upCast = $orgClass->isSubclassOf($class);
-
-                    foreach ($orgClass->getProperties(
-                        \ReflectionProperty::IS_PUBLIC |
-                        \ReflectionProperty::IS_PROTECTED |
-                        \ReflectionProperty::IS_PRIVATE) as $orgProperty)
-                    {
-                        $orgProperty->setAccessible(true);
-
-                        if ($class->hasProperty($orgProperty->name))
-                        {
-                            $property = $class->getProperty($orgProperty->name);
-                            $property->setAccessible(true);
-                            $property->setValue($castedObject, $orgProperty->getValue($this));
-                        }
-                        else if ($upCast)
-                        {
-                            // Store values into the data-variable if an upcast is performed.
-                            $castedObject->data[$orgProperty->name] = $orgProperty->getValue($this);
-                        }
-                    }
-
-                    if (!$upCast)
-                    {
-                        // Restore the values from the data-variable if a downcast is preformed.
-                        foreach ($this->data as $key => $value)
-                        {
-                            if ($class->hasProperty($key))
-                            {
-                                $property = $class->getProperty($key);
-                                $property->setAccessible(true);
-                                $property->setValue($castedObject, $value);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    throw new Exception(sprintf('Cannot cast to %s', $class->getShortName()));
-                }
-                return $castedObject;
             }
 
             /**
@@ -235,6 +188,90 @@
                 );
 
                 return preg_match('/\{[\s]*\$this[\s]*->[\s]*(?:Base|This)[\s]*\(.*\)[\s\S]*\}/', $sourceCode);
+            }
+            
+            /**
+             * Returns the class of the caller of a method.
+             *
+             * @param int $level
+             * The backtrace-level of the function-call.
+             * 
+             * @return string
+             * The name of the class of the caller.
+             */
+            private function GetCallerClass(int $level = 1) : string
+            {
+                $level += 1;
+                $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $level + 1);
+                
+                if (
+                    array_key_exists($level, $backtrace) &&
+                    array_key_exists('class', $backtrace[$level]))
+                {
+                    return $backtrace[$level]['class'];
+                }
+                else
+                {
+                    return '';
+                }
+            }
+
+            /**
+             * Determines whether a method is accessible for a class.
+             *
+             * @param string $class
+             * The class whose access to the method is to be checked.
+             * 
+             * @param \ReflectionMethod $method
+             * The method whose accessibility is to be checked.
+             * 
+             * @return bool
+             * Returns a value indicating whether $methodName is accessible for the $class.
+             */
+            private function IsAccessible(string $class, \ReflectionMethod $method) : bool
+            {
+                if ($method->isPrivate())
+                {
+                    return $method->getDeclaringClass() == new \ReflectionClass($class);
+                }
+                else if ($method->isProtected())
+                {
+                    return _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this)));
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            /**
+             * Determines the \Reflectionmethod that is to be called.
+             *
+             * @param string $class
+             * The class that tries to access the property.
+             * 
+             * @param string $methodName
+             * The name of the method to access the property.
+             * 
+             * @return \ReflectionMethod
+             * A \ReflectionMethod that represents the method that is to be called.
+             */
+            private function GetProperty(string $class, string $methodName) : \ReflectionMethod
+            {
+                if (_Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))))
+                {
+                    if (method_exists($class, $methodName))
+                    {
+                        $method = new \ReflectionMethod($class, $methodName);
+
+                        if ($method->getDeclaringClass() == new \ReflectionClass($class) && $method->isPrivate())
+                        {
+                            return $method;
+                        }
+                    }
+                }
+                
+                return new \ReflectionMethod($this, $methodName);
             }
 
             /**
@@ -340,26 +377,6 @@
                 {
                     //ToDo throw error if the constructor couldn't be found
                     throw new NotImplementedException();
-                }
-            }
-
-            /**
-             * Merges the properties of $obj into this object.
-             *
-             * @param mixed $obj
-             * The object to merge into this object.
-             */
-            private function Merge($obj)
-            {
-                $class = new \ReflectionClass($this);
-
-                foreach ($class->getProperties(
-                    \ReflectionProperty::IS_PUBLIC |
-                    \ReflectionProperty::IS_PROTECTED |
-                    \ReflectionProperty::IS_PRIVATE) as $property)
-                {
-                    $property->setAccessible(true);
-                    $property->setValue($this, $property->getValue($obj));
                 }
             }
         }
