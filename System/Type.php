@@ -6,10 +6,13 @@
     namespace System
     {
         /**
-         * Represents type declarations: class types and interface types.
+         * Represents type declarations: class types, interface types, array types, value types and enumeration types.
          * 
          * @property-read Type $BaseType
          * Gets the type from which the current Type directly inherits.
+         * 
+         * @property-read string $FullName
+         * Gets the fully qualified name of the type, including its namespace but not its assembly.
          * 
          * @property-read bool $IsAbstract
          * Gets a value indicating whether the Type is abstract and must be overridden.
@@ -26,6 +29,9 @@
          * @property-read bool $IsSealed
          * Gets a value indicating whether the Type is declared sealed.
          * 
+         * @property-read bool $IsValueType
+         * Gets a value indicating whether the Type is a value type.
+         * 
          * @property-read string $Name
          * Gets the name of the current member.
          * 
@@ -37,14 +43,12 @@
             /**
              * The ReflectionClass of the type.
              *
-             * @var \ReflectionClass
+             * @var \ReflectionClass|\ReflectionType
              */
             private $phpType;
 
             /**
-             * Undocumented function
-             *
-             * @return void
+             * Initializes a new instance of the Type class.
              */
             protected function Type()
             {
@@ -56,7 +60,18 @@
              */
             public function getBaseType() : self
             {
-                return $this->phpType->getParentClass();
+                if (!$this->IsValueType)
+                {
+                    $type = new Type();
+                    $parentType = $this->phpType->getParentClass();
+
+                    if ($parentType)
+                    {
+                        $type->phpType = $parentType;
+                        return $type;
+                    }
+                }
+                return null;
             }
 
             /**
@@ -65,7 +80,14 @@
              */
             public function getFullName() : string
             {
-                return $this->phpType->getName();
+                if ($this->IsValueType)
+                {
+                    return (string)$this->phpType;
+                }
+                else
+                {
+                    return $this->phpType->getName();
+                }
             }
 
             /**
@@ -74,7 +96,7 @@
              */
             public function getIsAbstract() : bool
             {
-                return $this->phpType->isAbstract();
+                return !$this->IsValueType && $this->phpType->isAbstract();
             }
 
             /**
@@ -83,7 +105,7 @@
              */
             public function getIsClass() : bool
             {
-                return !$this->phpType->isInterface() && !$this->phpType->isTrait();
+                return !$this->IsValueType && (!$this->phpType->isInterface() && !$this->phpType->isTrait());
             }
 
             /**
@@ -92,7 +114,7 @@
              */
             public function getIsEnum() : bool
             {
-                return $this->phpType->isSubclassOf('System\Enum');
+                return !$this->IsValueType && $this->phpType->isSubclassOf('System\Enum');
             }
 
             /**
@@ -101,7 +123,7 @@
              */
             public function getIsInterface() : bool
             {
-                return $this->phpType->isInterface();
+                return !$this->IsValueType && $this->phpType->isInterface();
             }
 
             /**
@@ -110,7 +132,16 @@
              */
             public function getIsSealed() : bool
             {
-                return $this->phpType->isFinal();
+                return !$this->IsValueType && $this->phpType->isFinal();
+            }
+
+            /**
+             * @ignore
+             * @return bool
+             */
+            public function getIsValueType() : bool
+            {
+                return !($this->phpType instanceof \ReflectionClass);
             }
 
             /**
@@ -119,7 +150,14 @@
              */
             public function getName() : string
             {
-                return $this->phpType->getShortName();
+                if ($this->IsValueType)
+                {
+                    return (string)$this->phpType;
+                }
+                else
+                {
+                    return $this->phpType->getShortName();
+                }
             }
 
             /**
@@ -128,30 +166,112 @@
              */
             public function getNamespace() : string
             {
-                return $this->phpType->getNamespaceName();
+                if ($this->IsValueType)
+                {
+                    return null;
+                }
+                else
+                {
+                    return $this->phpType->getNamespaceName();
+                }
             }
 
             /**
-             * Undocumented function
+             * Searches for an instance constructor whose parameters match the types in the specified array.
              *
-             * @return void
+             * @param Type[] $types
+             * An array of Type objects representing the number, order, and type of the parameters for the desired constructor.
+             * 
+             * @return \ReflectionMethod
+             * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
+             */
+            public function GetConstructor(array $types) : ?\ReflectionMethod
+            {
+                $matchingConstructors = array();
+                $constructors = $this->GetConstructors();
+                
+                if (in_array(null, $types, true))
+                {
+                    throw new ArgumentNullException('types');
+                }
+                else
+                {
+                    foreach ($constructors as $constructor)
+                    {
+                        if (count($types) >= $constructor->getNumberOfRequiredParameters() && count($types) <= $constructor->getNumberOfParameters())
+                        {
+                            if (
+                                (function () use ($constructor, $types)
+                                {
+                                    $parameters = $constructor->getParameters();
+                                    for ($i = 0; $i < count($types); $i++)
+                                    {
+                                        if (!$types[$i]->IsValueType && class_exists($parameters[$i]->getType()->getName()))
+                                        {
+                                            if (!$types[$i]->phpType->isSubclassOf($parameters[$i]->getType()->getName()))
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if ($types[$i]->FullName != $parameters[$i]->getType()->getName())
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                })())
+                            {}
+                        }
+                    }
+                }
+                return null;
+            }
+
+            /**
+             * Returns all the constructors defined for the current Type.
+             *
+             * @return \ReflectionMethod[]
+             * An array of ConstructorInfo objects representing all the instance constructors defined for the current Type.
              */
             public function GetConstructors() : array
             {
                 $result = array();
 
-                foreach ($this->phpType->getMethods() as $method)
+                if (!$this->IsValueType)
                 {
-                    if ($method->class === $this->phpType->name)
+                    foreach ($this->phpType->getMethods() as $method)
                     {
-                        if (preg_match("/^{$this->phpType->getShortName()}[0-9]*$/", $method->name))
+                        if ($method->class === $this->phpType->name)
                         {
-                            $result[] = $method;
+                            if (preg_match("/^{$this->phpType->getShortName()}[0-9]*$/", $method->name))
+                            {
+                                $result[] = $method;
+                            }
                         }
                     }
                 }
 
                 return $result;
+            }
+
+            /**
+             * Returns all the public methods of the current Type.
+             *
+             * @return \ReflectionMethod[]
+             * An array of \ReflectionMethod objects representing all the public methods defined for the current Type.
+             */
+            public function GetMethods() : array
+            {
+                if ($this->IsValueType)
+                {
+                    return array();
+                }
+                else
+                {
+                    return $this->phpType->getMethods();
+                }
             }
 
             /**
@@ -169,9 +289,23 @@
                 {
                     try
                     {
-                        $phpType = new \ReflectionClass($typeName);
                         $type = new Type();
-                        $type->phpType = $phpType;
+
+                        switch ($typeName)
+                        {
+                            case 'array':
+                            case 'callable':
+                            case 'bool':
+                            case 'float':
+                            case 'int':
+                            case 'string':
+                                $type->phpType = $typeName;
+                                break;
+                            default:
+                                $phpType = new \ReflectionClass($typeName);
+                                $type->phpType = $phpType;
+                                break;
+                        }
                         return $type;
                     }
                     catch (\ReflectionException $exception)
@@ -182,6 +316,31 @@
                 else
                 {
                     throw new ArgumentNullException('typeName');
+                }
+            }
+
+            /**
+             * Determines whether the current Type derives from the specified Type.
+             *
+             * @param Type $c
+             * The type to compare with the current type.
+             * 
+             * @return bool
+             * **true** if the current **Type** derives from _c_; otherwise, **false**. This method also returns **false** if _c_ and the current **Type** are equal.
+             */
+            public function IsSubclassOf(Type $c) : bool
+            {
+                if (!$this->IsValueType)
+                {
+                    if ($this->FullName)
+                    {
+
+                    }
+                    return $this->phpType->isSubclassOf($c->FullName);
+                }
+                else
+                {
+                    return false;
                 }
             }
         }
