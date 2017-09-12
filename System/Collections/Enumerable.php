@@ -113,21 +113,29 @@
             {
                 if ($predicate === null)
                 {
-                    $predicate = function ($item)
+                    if ($this instanceof ICollection)
                     {
-                        return true;
-                    };
+                        return $this->Count;
+                    }
+                    else
+                    {
+                        return $this->Count(
+                            function ($item)
+                            {
+                                return true;
+                            });
+                    }
                 }
 
                 $count = 0;
-                $enumerator = $this->Where($predicate)->GetEnumerator();
-
-                while ($enumerator->Valid)
+                
+                foreach ($this as $item)
                 {
-                    $count++;
-                    $enumerator->MoveNext();
+                    if ($predicate($item))
+                    {
+                        $count++;
+                    }
                 }
-
                 return $count;
             }
 
