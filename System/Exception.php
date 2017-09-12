@@ -10,15 +10,6 @@
          */
         class Exception extends \Exception implements IObject
         {
-            use ObjectBase
-            {
-
-                Cast as private CastInternal;
-                ToString as private ToStringInternal;
-                GetHashCode as private GetHashCodeInternal;
-                GetType as private GetTypeInternal;
-            }
-
             /**
              * Gets a collection of key/value pairs that provide additional user-defined information about the exception.
              *
@@ -103,6 +94,15 @@
             public function GetType() : ?Type
             {
                 return $this->GetTypeInternal();
+            }
+            
+            use ObjectBase
+            {
+
+                Cast as private CastInternal;
+                ToString as private ToStringInternal;
+                GetHashCode as private GetHashCodeInternal;
+                GetType as private GetTypeInternal;
             }
         }
     }

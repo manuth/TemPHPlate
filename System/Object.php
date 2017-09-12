@@ -11,13 +11,6 @@
          */
         class Object implements IObject
         {
-            use ObjectBase
-            {
-                ToString as private ToStringInternal;
-                GetHashCode as private GetHashCodeInternal;
-                GetType as private GetTypeInternal;
-            }
-
             /**
              * Initializes a new instance of the Object class.
              */
@@ -70,6 +63,13 @@
             public function GetType() : ?Type
             {
                 return $this->GetTypeInternal();
+            }
+            
+            use ObjectBase
+            {
+                ToString as private ToStringInternal;
+                GetHashCode as private GetHashCodeInternal;
+                GetType as private GetTypeInternal;
             }
         }
     }
