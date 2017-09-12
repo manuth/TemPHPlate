@@ -23,7 +23,7 @@
              * @param string $name
              * The name of the culture.
              */
-            public function CultureInfo1(string $name)
+            public function CultureInfo1(?string $name)
             {
                 $this->Name = $name;
             }
