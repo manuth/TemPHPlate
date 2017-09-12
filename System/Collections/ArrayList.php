@@ -18,8 +18,15 @@
          * @property-read int $Count
          * Gets the number of elements contained in the ArrayList.
          */
-        class ArrayList extends Enumerable implements \ArrayAccess
+        class ArrayList extends Enumerable implements ICollection, \ArrayAccess
         {
+            /**
+             * The number of elements inside the arraylist.
+             *
+             * @var integer
+             */
+            private $size = 0;
+
             /**
              * The items of the list.
              *
@@ -51,7 +58,7 @@
              */
             public function getCount() : int
             {
-                return $this->Count();
+                return $this->size;
             }
 
             /**
@@ -156,6 +163,7 @@
             public function Clear()
             {
                 $this->InnerList = array();
+                $this->size = 0;
             }
 
             /**
@@ -505,7 +513,12 @@
              */
             public function Insert(int $index, $item)
             {
-                if ($index >= 0 && $index <= $this->Count)
+                if ($index == $this->Count)
+                {
+                    $this->InnerList[] = $item;
+                    $this->size++;
+                }
+                else if ($index >= 0 && $index < $this->Count)
                 {
                     array_splice($this->InnerList, $index, 0, array($item));
                 }
@@ -526,30 +539,15 @@
              * 
              * @return void
              */
-            public function InsertRange(int $index, $collection)
+            public function InsertRange(int $index, iterable $collection)
             {
                 if ($collection !== null)
                 {
-                    if (is_array($collection))
-                    {
-                        $array = $collection;
-                        $collection = new EnumerableIterator(function () use ($array)
-                        {
-                            foreach ($array as $value)
-                            {
-                                yield $value;
-                            }
-                        });
-                    }
-
                     if ($index >= 0 && $index <= $this->Count)
                     {
-                        $enumerator = $collection->GetEnumerator();
-
-                        for ($i = 0; $enumerator->Valid; $i++)
+                        foreach ($collection as $key => $item)
                         {
-                            $this->Insert($index + $i, $enumerator->Current);
-                            $enumerator->MoveNext();
+                            $this->Insert($index + $key, $item);
                         }
                     }
                     else
@@ -595,7 +593,7 @@
 
                 if ($index >= 0)
                 {
-                    $this->RemoveAt($this->IndexOf($item));
+                    $this->RemoveAt($index);
                     return true;
                 }
                 else
@@ -668,6 +666,7 @@
                         if (($index + $count) <= $this->Count)
                         {
                             array_splice($this->InnerList, $index, $count);
+                            $this->size -= $count;
                         }
                         else
                         {
