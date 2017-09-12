@@ -40,8 +40,6 @@
              */
             public function __get(string $property)
             {
-                var_dump(debug_backtrace()[1]);
-                var_dump($property);
                 $functionname = 'get'.$property;
                 return $this->$functionname();
             }
