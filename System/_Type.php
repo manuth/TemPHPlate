@@ -381,6 +381,10 @@
                 {
                     return $c->getIsArray() || self::GetByName('\Traversable')->IsAssignableFrom($c);
                 }
+                else if ($this->getFullName() == 'callable')
+                {
+                    return self::GetByName('\Closure')->IsAssignableFrom($c);
+                }
                 else if (($this->phpType instanceof \ReflectionClass) && ($c->phpType instanceof \ReflectionClass))
                 {
                     if ($this->getFullName() == $c->getFullName())
