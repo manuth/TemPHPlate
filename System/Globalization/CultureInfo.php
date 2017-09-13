@@ -29,14 +29,23 @@
             }
 
             /**
-             * Sets the locale for the specified type.
+             * The current culture of the php-website.
+             * @var CultureInfo
+             */
+            public static function GetCurrentCulture() : self
+            {
+                return new self(locale_get_default());
+            }
+
+            /**
+             * Sets the current culture.
              *
-             * @param int $category
+             * @param CultureInfo $cultureInfo
              * The category to assign the culture to.
              */
-            public function SetLocale(int $category = LC_ALL)
+            public static function SetCurrentCulture(self $cultureInfo)
             {
-                if (!setlocale($category, $this->Name))
+                if (!setlocale(LC_ALL, $cultureInfo->Name))
                 {
                     throw new CultureNotFoundException($this->Name);
                 }

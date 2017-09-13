@@ -13,14 +13,14 @@
         echo "
             <h3>Changing the current locale to \"{$englishCulture->Name}\"</h3>";
         
-        RunTest('$englishCulture->SetLocale()');
+        RunTest('System\Globalization\CultureInfo::SetCurrentCulture($englishCulture)');
 
         RunTest('setlocale(LC_ALL, 0)', $englishCulture->Name);
 
         echo "
             <h3>Changing the current locale to \"{$germanCulture->Name}\"</h3>";
 
-        RunTest('$germanCulture->SetLocale()');
+        RunTest('System\Globalization\CultureInfo::SetCurrentCulture($germanCulture)');
 
         $locale = setlocale(LC_ALL, 0);
         

@@ -17,13 +17,14 @@
     };
     use ManuTh\TemPHPlate\Properties\Settings;
     {
+        $mainTime = microtime(true);
         for ($i = 0; $i < count(Settings::$Locales); $i++)
         {
             $cultureInfo = new CultureInfo(Settings::$Locales[$i]);
 
             try
             {
-                $cultureInfo->SetLocale();
+                CultureInfo::SetCurrentCulture($cultureInfo);
                 break;
             }
             catch (Exception $e)
@@ -31,5 +32,6 @@
         }
 
         include 'UnitTests/index.php';
+        var_dump(microtime(true) - $mainTime);
     }
 ?>
