@@ -12,13 +12,6 @@
         trait ObjectBase
         {
             /**
-             * The current type of the object.
-             *
-             * @var \ReflectionClass
-             */
-            private $castedType;
-
-            /**
              * The data of the object.
              *
              * @var array
@@ -26,12 +19,20 @@
             private $data = array();
 
             /**
+             * The current type of the object.
+             *
+             * @var _Type
+             */
+            private $castedType;
+
+            /**
              * Automatically calls the proper constructor.
              */
             public function __construct()
             {
-                $this->CastedType = new \ReflectionClass($this);
-                $this->InvokeConstructor(func_get_args());
+                $callerClass = $this->GetCallerClass();
+                $this->castedType = _Type::GetByName(get_class($this));
+                $this->InvokeConstructor($callerClass, $this->castedType, func_get_args());
             }
 
             /**
@@ -46,7 +47,10 @@
 
                 if ($this->IsAccessible($callerClass, $method))
                 {
-                    $method->setAccessible(true);
+                    if ($method->isPrivate())
+                    {
+                        $method->setAccessible(true);
+                    }
                     return $method->Invoke($this);
                 }
             }
@@ -63,31 +67,12 @@
 
                 if ($this->IsAccessible($callerClass, $method))
                 {
-                    $method->setAccessible(true);
+                    if ($method->isPrivate())
+                    {
+                        $method->setAccessible(true);
+                    }
                     $method->invoke($this, $value);
                 }
-            }
-
-
-            /**
-             * @ignore
-             */
-            private function getCastedType()// : Type TODO
-            {
-                if ($this->castedType === null)
-                {
-                    $this->castedType = new \ReflectionClass($this);
-                }
-
-                return $this->castedType;
-            }
-
-            /**
-             * @ignore
-             */
-            private function setCastedType(/* TODO Type */$value)
-            {
-                $this->castedType = $value;
             }
 
             /**
@@ -151,11 +136,11 @@
              */
             protected function Base()
             {
-                $type = $this->CastedType;
-                $this->CastedType = $this->CastedType->getParentClass();
+                $type = $this->castedType;
+                $this->castedType = $this->castedType->getBaseType();
                 $args = func_get_args();
-                $this->InvokeConstructor($args);
-                $this->CastedType = $type;
+                $this->InvokeConstructor($type->getFullName(), $this->castedType, $args);
+                $this->castedType = $type;
             }
 
             /**
@@ -164,7 +149,7 @@
             protected function This()
             {
                 $args = func_get_args();
-                $this->InvokeConstructor($args);
+                $this->InvokeConstructor($this->castedType->getFullName(), $this->castedType, $args);
             }
 
             /**
@@ -202,7 +187,7 @@
             private function GetCallerClass(int $level = 1) : string
             {
                 $level += 1;
-                $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $level + 1);
+                $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $level + 1);
                 
                 if (
                     array_key_exists($level, $backtrace) &&
@@ -258,15 +243,18 @@
              */
             private function GetProperty(string $class, string $methodName) : \ReflectionMethod
             {
-                if (_Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))))
+                if ($class)
                 {
-                    if (method_exists($class, $methodName))
+                    if (_Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))))
                     {
-                        $method = new \ReflectionMethod($class, $methodName);
-
-                        if ($method->getDeclaringClass() == new \ReflectionClass($class) && $method->isPrivate())
+                        if (method_exists($class, $methodName))
                         {
-                            return $method;
+                            $method = new \ReflectionMethod($class, $methodName);
+    
+                            if ($method->getDeclaringClass() == new \ReflectionClass($class) && $method->isPrivate())
+                            {
+                                return $method;
+                            }
                         }
                     }
                 }
@@ -275,107 +263,81 @@
             }
 
             /**
-             * Determines whether the class allows auto-construct.
-             * 
-             * @return bool
-             * A value indicating whether the class allows auto-construct.
-             */
-            private function getAllowsAutoConstruct() : bool
-            {
-                $class = $this->CastedType;
-                $constructors = $this->GetConstructors();
-                $autoConstructor = array_filter($constructors, function($constructor) use ($class)
-                {
-                    return $constructor->name === $class->getShortName();
-                });
-                return count($constructors) === 0 || count($autoConstructor) > 0;
-            }
-
-            /**
-             * Determines all constructors of a class.
-             * 
-             * @return \ReflectionMethod[]
-             * The constructors of the class.
-             */
-            private function GetConstructors() : array
-            {
-                $result = array();
-                
-                foreach ($this->CastedType->getMethods() as $method)
-                {
-                    if ($method->class === $this->CastedType->name)
-                    {
-                        if (preg_match(sprintf('/^%s[0-9]*$/', $this->CastedType->getShortName()), $method->name))
-                        {
-                            $result[] = $method;
-                        }
-                    }
-                }
-                return $result;
-            }
-
-            /**
              * Invokes a constructor.
              *
+             * @param string $callerClass
+             * The class that tries to invoke the constructor.
+             * 
+             * @param _Type $targetType
+             * The _Type whose constructor is to be invoked.
+             * 
              * @param array $args
-             * The parameters of the constructor.
+             * The arguments to use.
+             * 
+             * @return void
              */
-            private function InvokeConstructor(array $args)
+            private function InvokeConstructor(string $callerClass, _Type $targetType, array $args)
             {
-                $count = count($args);
-                $className = $this->CastedType->getShortName();
-                $functionName = $className.($count > 0 ? $count : '');
-                $constructors = $this->GetConstructors();
-                $matchingConstructor = array_values(
-                    array_filter($constructors, function($constructor) use ($functionName)
+                $typeList = array();
+                
+                foreach ($args as $arg)
+                {
+                    switch (gettype($arg))
                     {
-                        return $constructor->name === $functionName;
-                    })
-                );
-
-                if (count($matchingConstructor) === 0)
-                {
-                    $matchingConstructor = null;
-                }
-                else
-                {
-                    $matchingConstructor = $matchingConstructor[0];
+                        case 'object' :
+                            $typeList[] = _Type::GetByName(get_class($arg));
+                            break;
+                        default :
+                            $typeList[] = _Type::GetByName(gettype($arg));
+                            break;
+                    }
                 }
 
-                if ($matchingConstructor || count($args) === 0)
+                $constructor = $targetType->GetConstructor($typeList);
+
+                if (
+                    $constructor != null ||
+                    $targetType->getBaseType() == null ||
+                    (
+                        $targetType->getBaseType()->GetConstructor(array()) != null ||
+                        count($targetType->getBaseType()->GetConstructors()) == 0))
                 {
-                    if ($this->CastedType->getParentClass())
+                    if ($targetType->getBaseType() != null)
                     {
-                        if (
-                            ($matchingConstructor && !self::HasConstructorCall($matchingConstructor)) ||
-                            $matchingConstructor === null
-                        )
+                        if ($constructor == null || !self::HasConstructorCall($constructor))
                         {
-                            $type = $this->CastedType;
-                            $this->CastedType = $this->CastedType->getParentClass();
-                            $autoConstruct = $this->getAllowsAutoConstruct();
-                            $this->CastedType = $type;
-
-                            if ($autoConstruct)
+                            if (
+                                $targetType->getBaseType()->GetConstructor(array()) != null ||
+                                count($targetType->getBaseType()->GetConstructors()) == 0)
                             {
                                 $this->Base();
                             }
                             else
                             {
-                                // ToDo throw error if the base class has no parameterless constructor
                                 throw new NotImplementedException();
                             }
                         }
                     }
 
-                    if ($matchingConstructor)
+                    if ($constructor != null)
                     {
-                        call_user_func_array(array($matchingConstructor, 'invoke'), array_merge(array($this), $args));
+                        if ($this->IsAccessible($callerClass, $constructor))
+                        {
+                            if ($constructor->isPrivate())
+                            {
+                                $constructor->setAccessible(true);
+                            }
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+
+                        $constructor->invokeArgs($this, $args);
                     }
                 }
                 else
                 {
-                    //ToDo throw error if the constructor couldn't be found
                     throw new NotImplementedException();
                 }
             }
