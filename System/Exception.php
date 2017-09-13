@@ -98,8 +98,6 @@
             
             use ObjectBase
             {
-
-                Cast as private CastInternal;
                 ToString as private ToStringInternal;
                 GetHashCode as private GetHashCodeInternal;
                 GetType as private GetTypeInternal;
