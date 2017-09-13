@@ -83,13 +83,27 @@
                 }
             }
 
+            $time = microtime(true);
             include 'JavaScript.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'StyleDefinition.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'Templates.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'CultureInfo.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'ArrayList.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'Dictionary.php';
+            var_dump(microtime(true) - $time);
+            $time = microtime(true);
             include 'Pages.php';
+            var_dump(microtime(true) - $time);
         }
     ?>
 </div>
