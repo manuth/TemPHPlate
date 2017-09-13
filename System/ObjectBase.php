@@ -19,11 +19,11 @@
             private $data = array();
 
             /**
-             * The current type of the object.
+             * Returns the type of the current constructor-level.
              *
              * @var _Type
              */
-            private $castedType;
+            private $constructorLevelType;
 
             /**
              * Automatically calls the proper constructor.
@@ -31,8 +31,8 @@
             public function __construct()
             {
                 $callerClass = $this->GetCallerClass();
-                $this->castedType = _Type::GetByName(get_class($this));
-                $this->InvokeConstructor($callerClass, $this->castedType, func_get_args());
+                $this->constructorLevelType = _Type::GetByName(get_class($this));
+                $this->InvokeConstructor($callerClass, $this->constructorLevelType, func_get_args());
             }
 
             /**
@@ -136,11 +136,11 @@
              */
             protected function Base()
             {
-                $type = $this->castedType;
-                $this->castedType = $this->castedType->getBaseType();
+                $type = $this->constructorLevelType;
+                $this->constructorLevelType = $this->constructorLevelType->getBaseType();
                 $args = func_get_args();
-                $this->InvokeConstructor($type->getFullName(), $this->castedType, $args);
-                $this->castedType = $type;
+                $this->InvokeConstructor($type->getFullName(), $this->constructorLevelType, $args);
+                $this->constructorLevelType = $type;
             }
 
             /**
@@ -149,7 +149,7 @@
             protected function This()
             {
                 $args = func_get_args();
-                $this->InvokeConstructor($this->castedType->getFullName(), $this->castedType, $args);
+                $this->InvokeConstructor($this->constructorLevelType->getFullName(), $this->constructorLevelType, $args);
             }
 
             /**
