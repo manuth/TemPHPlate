@@ -47,7 +47,7 @@
 
                 if ($this->IsAccessible($callerClass, $method))
                 {
-                    if ($method->isPrivate())
+                    if (!$method->isPublic())
                     {
                         $method->setAccessible(true);
                     }
@@ -67,7 +67,7 @@
 
                 if ($this->IsAccessible($callerClass, $method))
                 {
-                    if ($method->isPrivate())
+                    if (!$method->isPublic())
                     {
                         $method->setAccessible(true);
                     }
@@ -103,7 +103,7 @@
 
                 if ($this->IsAccessible($callerClass, $method))
                 {
-                    if ($method->isPrivate())
+                    if (!$method->isPublic())
                     {
                         $method->setAccessible(true);
                     }
@@ -360,7 +360,7 @@
                     {
                         if ($this->IsAccessible($callerClass, $constructor))
                         {
-                            if ($constructor->isPrivate())
+                            if (!$constructor->isPublic())
                             {
                                 $constructor->setAccessible(true);
                             }
