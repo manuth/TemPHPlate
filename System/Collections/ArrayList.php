@@ -23,7 +23,7 @@
             /**
              * The number of elements inside the arraylist.
              *
-             * @var integer
+             * @var int
              */
             private $size = 0;
 
