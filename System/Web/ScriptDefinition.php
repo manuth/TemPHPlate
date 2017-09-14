@@ -9,7 +9,7 @@
         /**
          * Represents a JavaScript-definition.
          */
-        abstract class ScriptDefinition extends Object implements IPrintable
+        abstract class ScriptDefinition extends Object implements IDrawable
         {
             /**
              * Genmerates a script-definition from a code-block.
@@ -40,11 +40,11 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public abstract function Print() : string;
+            public abstract function Draw() : string;
         }
     }

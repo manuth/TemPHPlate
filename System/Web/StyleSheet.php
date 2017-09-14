@@ -36,12 +36,12 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public function Print() : string
+            public function Draw() : string
             {
                 return '
                     <link href="'.htmlspecialchars($this->FileName).'" rel="stylesheet" />';

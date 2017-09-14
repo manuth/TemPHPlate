@@ -46,11 +46,11 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return void
              */
-            protected function PrintInternal()
+            protected function DrawInternal()
             {
             }
         }

@@ -9,7 +9,7 @@
         /**
          * Represents content of a website.
          */
-        abstract class WebContent extends Printable
+        abstract class WebContent extends Drawable
         {
             /**
              * Gets or sets the title of the content.
@@ -67,12 +67,12 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public final function Print() : string
+            public final function Draw() : string
             {
                 $formatter;
 
@@ -93,11 +93,11 @@
                         <html lang=\"{$this->Locale}\">
                             <head>
                                 <title>{$this->Title}</title>
-                                {$styleDefinitions->Print()}
+                                {$styleDefinitions->Draw()}
                             </head>
                             <body>
                                 {$content}
-                                {$scriptDefinitions->Print()}
+                                {$scriptDefinitions->Draw()}
                             </body>
                         </html>";
                     };
@@ -110,7 +110,7 @@
                     };
                 }
                 
-                return $formatter(parent::Print());
+                return $formatter(parent::Draw());
             }
         }
     }

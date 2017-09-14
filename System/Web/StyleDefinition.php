@@ -9,7 +9,7 @@
         /**
          * Represents a CSS-style-definition.
          */
-        abstract class StyleDefinition extends Object implements IPrintable
+        abstract class StyleDefinition extends Object implements IDrawable
         {
             /**
              * Genmerates a style-definition from a code-block.
@@ -40,11 +40,11 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public abstract function Print() : string;
+            public abstract function Draw() : string;
         }
     }

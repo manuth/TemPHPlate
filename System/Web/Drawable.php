@@ -7,29 +7,29 @@
     use System\Object;
     {
         /**
-         * Represents a printable object.
+         * Represents a drawable object.
          */
-        abstract class Printable extends Object implements IPrintable
+        abstract class Drawable extends Object implements IDrawable
         {
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public function Print() : string
+            public function Draw() : string
             {
                 ob_start();
-                $this->PrintInternal();
+                $this->DrawInternal();
                 return ob_get_clean();
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return void
              */
-            protected abstract function PrintInternal();
+            protected abstract function DrawInternal();
         }
     }
 ?>

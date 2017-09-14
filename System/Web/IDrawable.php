@@ -6,17 +6,17 @@
     namespace System\Web;
     {
         /**
-         * Provides the functionality to print an object.
+         * Provides the functionality to draw an object.
          */
-        interface IPrintable
+        interface IDrawable
         {
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printed object.
+             * The content of the drawn object.
              */
-            function Print() : string;
+            function Draw() : string;
         }
     }
 ?>

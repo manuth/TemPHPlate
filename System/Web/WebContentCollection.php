@@ -20,18 +20,18 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return string
-             * The content of the printable object.
+             * The content of the drawable object.
              */
-            public function Print() : string
+            public function Draw() : string
             {
                 $result = '';
                 
                 foreach ($this as $webContent)
                 {
-                    $result .= $webContent->Print();
+                    $result .= $webContent->Draw();
                 }
 
                 return $result;

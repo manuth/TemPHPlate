@@ -23,9 +23,9 @@
                 }
                 $("#javaScript-test").html("<b>Test passed!</b>");
             });');
-        echo $jQuery->Print();
-        echo $bootstrapScript->Print();
-        echo $testScript->Print();
+        echo $jQuery->Draw();
+        echo $bootstrapScript->Draw();
+        echo $testScript->Draw();
         echo '
             <h2>Including scripts (jQuery, Bootstrap) using <code>ScriptFile</code></h2>
             <p id="jQuery-test"><b>Test not passed</b></p>

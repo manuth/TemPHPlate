@@ -47,13 +47,13 @@
             }
 
             /**
-             * Prints the object.
+             * Draws the object.
              *
              * @return void
              */
-            public function PrintInternal()
+            public function DrawInternal()
             {
-                
+                return $this->Content->DrawInternal();
             }
         }
     }

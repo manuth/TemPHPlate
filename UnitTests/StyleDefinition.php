@@ -50,8 +50,8 @@
             {
                 color: skyblue !important;
             }'));
-        echo $testScript->Print();
-        echo $styleCollection->Print();
+        echo $testScript->Draw();
+        echo $styleCollection->Draw();
         echo '
             <h2>Including Bootstrap using <code>StyleSheet</code></h2>
             <p>
