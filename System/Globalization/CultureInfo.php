@@ -47,7 +47,10 @@
             {
                 if (!setlocale(LC_ALL, $cultureInfo->Name))
                 {
-                    throw new CultureNotFoundException($this->Name);
+                    if (!setlocale(LC_ALL, preg_replace('/(\w*)-(\w*)/', '$1_$2.UTF8', $cultureInfo->Name)))
+                    {
+                        throw new CultureNotFoundException($cultureInfo->Name);
+                    }
                 }
             }
 
