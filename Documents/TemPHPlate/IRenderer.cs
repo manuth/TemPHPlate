@@ -5,8 +5,8 @@ using System.Text;
 
 namespace TemPHPlate
 {
-    public interface IPrintable
+    public interface IRenderer
     {
-        string Draw();
+        string Render(IRenderable item);
     }
 }

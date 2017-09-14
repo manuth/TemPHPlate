@@ -7,11 +7,11 @@ namespace TemPHPlate
 {
     public abstract class Printable : Object, IPrintable
     {
-        public virtual string Print()
+        public virtual string Draw()
         {
-            return PrintInternal();
+            return DrawInternal();
         }
 
-        protected abstract string PrintInternal();
+        protected abstract string DrawInternal();
     }
 }

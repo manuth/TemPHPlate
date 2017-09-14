@@ -45,5 +45,13 @@ namespace TemPHPlate
             {
             }
         }
+
+        public Website Site
+        {
+            get => default(int);
+            set
+            {
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace TemPHPlate
             }
         }
 
-        public override string Print()
+        public override string Draw()
         {
             throw new NotImplementedException();
         }

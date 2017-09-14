@@ -5,9 +5,7 @@ using System.Text;
 
 namespace TemPHPlate
 {
-    public interface IMenuPage
+    public interface IRenderable
     {
-        MenuBar MenuBar { get; set; }
-        bool SupportsMenuBar { get; set; }
     }
 }

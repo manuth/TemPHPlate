@@ -7,7 +7,7 @@ namespace TemPHPlate
 {
     public abstract class StyleDefinition : Object, IPrintable
     {
-        public abstract string Print();
+        public abstract string Draw();
 
         public static StyleSheet FromFile()
         {
