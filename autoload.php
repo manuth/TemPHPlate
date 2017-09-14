@@ -5,8 +5,6 @@
      */
     use System\IO\FileNotFoundException;
     {
-        DEFINED('TemPHPlate') or DIE('Restricted Access');
-
         /**
          * Requires class-files automatically.
          */
@@ -24,7 +22,7 @@
 
             if (file_exists($path))
             {
-                require $path;
+                require_once $path;
 
                 if (method_exists($class, 'Initialize'))
                 {
