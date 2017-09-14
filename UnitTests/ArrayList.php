@@ -89,7 +89,7 @@
                 return strncmp((string)$item, "fr", 2) == 0;
             })', null);
         RunTest('$array->Insert(0, new System\Globalization\CultureInfo("fr-CH"))');
-        RunTest('$array->Max()', 'fr-CH', false);
+        RunTest('$array->Max()->ToString()', 'fr-CH');
         RunTest('$array->RemoveAt(0)');
         RunTest('
             $array->Max(function ($item)
@@ -101,7 +101,7 @@
             {
                 return ord($item->Name[0]);
             })', 100);
-        RunTest('$array->Min()', 'de-CH', false);
+        RunTest('$array->Min()->ToString()', 'de-CH');
         RunTest('
             $array->SequenceEqual(
                 new System\Collections\ArrayList(

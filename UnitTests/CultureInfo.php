@@ -7,7 +7,7 @@
     {
         echo '
             <h2>Trying to change the current locale</h2>';
-        $germanCulture = new CultureInfo('de-CH');
+        $germanCulture = new CultureInfo('de-DE');
         $englishCulture = new CultureInfo('en-US');
 
         echo "
@@ -15,7 +15,7 @@
         
         RunTest('System\Globalization\CultureInfo::SetCurrentCulture($englishCulture)');
 
-        RunTest('setlocale(LC_ALL, 0)', $englishCulture->Name);
+        RunTest('setlocale(LC_ALL, 0)', $englishCulture->Name, preg_replace('/(\w*)-(\w*)/', '$1_$2.UTF8', $englishCulture->Name));
 
         echo "
             <h3>Changing the current locale to \"{$germanCulture->Name}\"</h3>";
@@ -24,6 +24,6 @@
 
         $locale = setlocale(LC_ALL, 0);
         
-        RunTest('setlocale(LC_ALL, 0)', $germanCulture->Name);
+        RunTest('setlocale(LC_ALL, 0)', $germanCulture->Name, preg_replace('/(\w*)-(\w*)/', '$1_$2.UTF8', $germanCulture->Name));
     }
 ?>

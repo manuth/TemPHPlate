@@ -47,23 +47,27 @@
                     </p>";
             }
 
-            function RunTest($expression, $exceptedValue = null, $strict = true)
+            function RunTest($expression, ...$expectedValues)
             {
-                if (func_num_args() == 1)
+                if (count($expectedValues) == 0)
                 {
                     TryRun($expression);
                 }
                 else
                 {
+                    $expectedDisplayValues = array();
                     $value = Run('return '.$expression);
                     
-                    if (!is_bool($exceptedValue) && !is_null($exceptedValue))
+                    for ($i = 0; $i < count($expectedValues); $i++)
                     {
-                        $displayExceptedValue = (string)$exceptedValue;
-                    }
-                    else
-                    {
-                        $displayExceptedValue = json_encode($exceptedValue);
+                        if (!is_bool($expectedValues[$i]) && !is_null($expectedValues[$i]))
+                        {
+                            $expectedDisplayValues[$i] = (string)$expectedValues[$i];
+                        }
+                        else
+                        {
+                            $expectedDisplayValues[$i] = json_encode($expectedValues[$i]);
+                        }
                     }
 
                     if (!is_bool($value) && !is_null($value))
@@ -75,10 +79,23 @@
                         $displayValue = json_encode($value);
                     }
 
+                    $passed = function($value) use ($expectedValues)
+                    {
+                        foreach ($expectedValues as $expectedValue)
+                        {
+                            if ($value === $expectedValue)
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    };
+
                     echo "
                         <p>
-                            Checking <code>{$expression}</code>: {$displayValue} (excepting '{$displayExceptedValue}')<br />
-                            <b>".(($strict ? $value === $exceptedValue : $value == $exceptedValue) ? 'Test passed!' : 'Test not passed.')."</b>
+                            Checking <code>{$expression}</code>: {$displayValue} (excepting '".join("' or '", $expectedDisplayValues)."')<br />
+                            <b>".($passed($value) ? 'Test passed!' : 'Test not passed.')."</b>
                         </p>";
                 }
             }
