@@ -71,7 +71,44 @@
                     {
                         $method->setAccessible(true);
                     }
+                    
                     $method->invoke($this, $value);
+                }
+            }
+
+            /**
+             * Provides the functionality to overload methods.
+             * @ignore
+             */
+            public final function __call($name, $args)
+            {
+                $callerClass = $this->GetCallerClass();
+                $type = _Type::GetByName(get_class($this));
+                $argumentTypes = array();
+                
+                foreach ($args as $arg)
+                {
+                    switch (gettype($arg))
+                    {
+                        case 'object' :
+                            $argumentTypes[] = _Type::GetByName(get_class($arg));
+                            break;
+                        default :
+                            $argumentTypes[] = _Type::GetByName(gettype($arg));
+                            break;
+                    }
+                }
+
+                $method = _Type::GetByName(get_class($this))->GetMethod($name, $argumentTypes);
+
+                if ($this->IsAccessible($callerClass, $method))
+                {
+                    if ($method->isPrivate())
+                    {
+                        $method->setAccessible(true);
+                    }
+
+                    $method->invokeArgs($this, $args);
                 }
             }
 
@@ -278,22 +315,22 @@
              */
             private function InvokeConstructor(string $callerClass, _Type $targetType, array $args)
             {
-                $typeList = array();
+                $argumentTypes = array();
                 
                 foreach ($args as $arg)
                 {
                     switch (gettype($arg))
                     {
                         case 'object' :
-                            $typeList[] = _Type::GetByName(get_class($arg));
+                            $argumentTypes[] = _Type::GetByName(get_class($arg));
                             break;
                         default :
-                            $typeList[] = _Type::GetByName(gettype($arg));
+                            $argumentTypes[] = _Type::GetByName(gettype($arg));
                             break;
                     }
                 }
 
-                $constructor = $targetType->GetConstructor($typeList);
+                $constructor = $targetType->GetConstructor($argumentTypes);
 
                 if (
                     $constructor != null ||

@@ -200,6 +200,103 @@
             {
                 return $this->GetTypeInternal();
             }
+            
+            /**
+             * Returns all the methods of the current _Type.
+             *
+             * @return \ReflectionMethod[]
+             * An array of \ReflectionMethod objects representing all the methods defined for the current _Type.
+             */
+            public function GetMethods() : array
+            {
+                if ($this->phpType instanceof \ReflectionClass)
+                {
+                    return $this->phpType->getMethods();
+                }
+                else
+                {
+                    return array();
+                }
+            }
+
+            /**
+             * Searches for the specified method whose parameters match the specified argument types.
+             *
+             * @param string $name
+             * The string containing the name of the method to get.
+             * 
+             * @param array $types
+             * An array of Type objects representing the number, order, and type of the parameters for the method to get.
+             * 
+             * @return \ReflectionMethod
+             * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
+             */            
+            public function GetMethod(string $name, ?array $types = null) : ?\ReflectionMethod
+            {
+                $result = array();
+                $methods = $this->GetMethodsByName($name);
+
+                if ($types !== null)
+                {
+                    if (in_array(null, $types, true))
+                    {
+                        throw new ArgumentNullException('types');
+                    }
+                    else
+                    {
+                        foreach ($methods as $method)
+                        {
+                            if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
+                            {
+                                if (
+                                    (function () use ($method, $types)
+                                    {
+                                        $parameters = $method->getParameters();
+                                        for ($i = 0; $i < count($types); $i++)
+                                        {
+                                            if ($parameters[$i]->hasType())
+                                            {
+                                                if ($types[$i]->getFullName() == 'NULL')
+                                                {
+                                                    if (!$parameters[$i]->allowsNull())
+                                                    {
+                                                        return false;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $type = self::GetByName((string)$parameters[$i]->getType());
+    
+                                                    if (!$type->IsAssignableFrom($types[$i]))
+                                                    {
+                                                        return false;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        return true;
+                                    })())
+                                {
+                                    $result[] = $method;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    $result = $methods;
+                }
+
+                if (count($result) == 1)
+                {
+                    return $result[0];
+                }
+                else
+                {
+                    return null;
+                }
+            }
 
             /**
              * Searches for an instance constructor whose parameters match the types in the specified array.
@@ -212,62 +309,7 @@
              */
             public function GetConstructor(array $types) : ?\ReflectionMethod
             {
-                $matchingConstructors = array();
-                $constructors = $this->GetConstructors();
-                
-                if (in_array(null, $types, true))
-                {
-                    throw new ArgumentNullException('types');
-                }
-                else
-                {
-                    foreach ($constructors as $constructor)
-                    {
-                        if (count($types) >= $constructor->getNumberOfRequiredParameters() && count($types) <= $constructor->getNumberOfParameters())
-                        {
-                            if (
-                                (function () use ($constructor, $types)
-                                {
-                                    $parameters = $constructor->getParameters();
-                                    for ($i = 0; $i < count($types); $i++)
-                                    {
-                                        if ($parameters[$i]->hasType())
-                                        {
-                                            if ($types[$i]->getFullName() == 'NULL')
-                                            {
-                                                if (!$parameters[$i]->allowsNull())
-                                                {
-                                                    return false;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                $type = self::GetByName((string)$parameters[$i]->getType());
-
-                                                if (!$type->IsAssignableFrom($types[$i]))
-                                                {
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    return true;
-                                })())
-                            {
-                                $matchingConstructors[] = $constructor;
-                            }
-                        }
-                    }
-
-                    if (count($matchingConstructors) == 1)
-                    {
-                        return $matchingConstructors[0];
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
+                return $this->GetMethod($this->getName(), $types);
             }
 
             /**
@@ -278,36 +320,9 @@
              */
             public function GetConstructors() : array
             {
-                $result = array();
-
                 if ($this->getIsClass())
                 {
-                    foreach ($this->phpType->getMethods() as $method)
-                    {
-                        if ($method->class === $this->phpType->name)
-                        {
-                            if (preg_match("/^{$this->phpType->getShortName()}[0-9]*$/", $method->name))
-                            {
-                                $result[] = $method;
-                            }
-                        }
-                    }
-                }
-
-                return $result;
-            }
-
-            /**
-             * Returns all the public methods of the current _Type.
-             *
-             * @return \ReflectionMethod[]
-             * An array of \ReflectionMethod objects representing all the public methods defined for the current _Type.
-             */
-            public function GetMethods() : array
-            {
-                if ($this->phpType instanceof \ReflectionClass)
-                {
-                    return $this->phpType->getMethods();
+                    return $this->GetMethodsByName($this->getName());
                 }
                 else
                 {
@@ -332,13 +347,20 @@
                     {
                         $type = new _Type();
 
+                        // pre-processing type-name...
+                        switch ($typeName)
+                        {
+                            case 'integer':
+                                $typeName = 'int';
+                        }
+
                         switch ($typeName)
                         {
                             case 'array':
                             case 'bool':
                             case 'callable':
                             case 'float':
-                            case 'integer':
+                            case 'int':
                             case 'iterable':
                             case 'NULL':
                             case 'string':
@@ -421,6 +443,33 @@
                 {
                     return false;
                 }
+            }
+
+            /**
+             * Returns all overloads of the method with the specified name.
+             *
+             * @param string $name
+             * The name of the method whose overloads are to be returned.
+             * 
+             * @return \ReflectionMethod[]
+             * The overloads of the method.
+             */
+            private function GetMethodsByName($name)
+            {
+                $result = array();
+
+                foreach ($this->phpType->getMethods() as $method)
+                {
+                    if ($method->class === $this->phpType->name)
+                    {
+                        if (preg_match("/^{$name}[0-9]*$/", $method->name))
+                        {
+                            $result[] = $method;
+                        }
+                    }
+                }
+
+                return $result;
             }
         }
     }
