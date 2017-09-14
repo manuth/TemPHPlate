@@ -16,7 +16,10 @@
 
             if (!file_exists(($path = GetPath($class))))
             {
-                $path = GetPath($class, TemPHPlateNamespace);
+                if (!file_exists(($path = GetPath($class, 'ManuTh\\TemPHPlate'))))
+                {
+                    $path = GetPath($class, TemPHPlateNamespace);
+                }
             }
 
             if (file_exists($path))
@@ -47,22 +50,24 @@
          */
         function GetPath($class, $namespace = '', $basePath = __DIR__)
         {
-            $namespace .= '\\';
             $lastSeparator = strrpos($class, '\\');
             $subNamespace = substr($class, 0, $lastSeparator + 1);
             $class = substr($class, strlen($subNamespace));
+            
+            if (strlen($namespace) > 0 && $namespace[strlen($namespace) - 1] != '\\')
+            {
+                $namespace .= '\\';
+            }
 
             if (substr_compare($subNamespace, $namespace, 0, strlen($namespace)) === 0)
             {
                 $subNamespace = substr($subNamespace, strlen($namespace));
+                $result = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, __DIR__.DIRECTORY_SEPARATOR.$subNamespace.$class).'.php';
+                return $result;
             }
-        
-            $result = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, __DIR__.DIRECTORY_SEPARATOR.$subNamespace.$class).'.php';
-            
-            return $result;
         }
     }
 
-    /* Files located at special directories */
-    require('Properties'.DIRECTORY_SEPARATOR.'Settings.php');
+    // /* Files located at special directories */
+    // require('Properties'.DIRECTORY_SEPARATOR.'Settings.php');
 ?>
