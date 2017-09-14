@@ -65,6 +65,40 @@
             {
                 $this->Template = $template;
             }
+            
+            /**
+             * Returns all StyleDefinitions of the content.
+             *
+             * @return StyleCollection
+             */
+            protected function FetchStyles() : StyleCollection
+            {
+                $collection = new StyleCollection();
+
+                for ($content = $this; $content != null; $content = $content->Template)
+                {
+                    $collection->AddRange($content->StyleDefinitions);
+                }
+
+                return $collection;
+            }
+                        
+            /**
+             * Returns all ScriptDefinitions of the content.
+             *
+             * @return ScriptCollection
+             */
+            protected function FetchScripts() : ScriptCollection
+            {
+                $collection = new ScriptCollection();
+
+                for ($content = $this; $content != null; $content = $content->Template)
+                {
+                    $collection->AddRange($content->ScriptDefinitions);
+                }
+
+                return $collection;
+            }
 
             /**
              * Draws the object.
@@ -74,43 +108,39 @@
              */
             public final function Draw() : string
             {
+                $content;
                 $formatter;
 
                 if ($this->Template === null)
                 {
-                    $styleDefinitions = new StyleCollection();
-                    $scriptDefinitions = new ScriptCollection();
+                    $content = parent::Draw();
 
-                    for ($template = $this; $template != null; $template = $template->Template)
-                    {
-                        $styleDefinitions->AddRange($template->StyleDefinitions);
-                        $scriptDefinitions->AddRange($template->ScriptDefinitions);
-                    }
-
-                    $formatter = function ($content) use ($styleDefinitions, $scriptDefinitions)
+                    $formatter = function ($content)
                     {
                         return "
                         <html lang=\"{$this->Locale}\">
                             <head>
                                 <title>{$this->Title}</title>
-                                {$styleDefinitions->Draw()}
+                                {$this->FetchStyles()->Draw()}
                             </head>
                             <body>
                                 {$content}
-                                {$scriptDefinitions->Draw()}
+                                {$this->FetchScripts()->Draw()}
                             </body>
                         </html>";
                     };
                 }
                 else
                 {
+                    $content = $this->Template->Draw();
+
                     $formatter = function ($content)
                     {
                         return $content;
                     };
                 }
-                
-                return $formatter(parent::Draw());
+
+                return $formatter($content);
             }
         }
     }
