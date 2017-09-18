@@ -4,6 +4,9 @@
      * @license Apache-2.0
      */
     namespace System\Web;
+    use System\Web\Forms\Rendering\Renderer;
+    use System\Web\Forms\Rendering\IRenderer;
+    use System\Web\Forms\Rendering\IRenderable;
     {
         /**
          * Represents a template.
@@ -11,7 +14,7 @@
          * @property WebContent $Content
          * Gets or sets the content of the template.
          * 
-         * @property-read WebContent $Page
+         * @property-read Page $Page
          * Gets or sets the page of the template.
          */
         class Template extends WebContent
@@ -32,7 +35,19 @@
             public function Template1(WebContent $content)
             {
                 $this->Content = $content;
+
+                if ($this->Page instanceof Page)
+                {
+                    $this->Page->Renderer = $this->Renderer;
+                }
             }
+            
+            /**
+             * The renderer of the page.
+             *
+             * @var IRenderer
+             */
+            public $Renderer;
 
 
             /**
@@ -67,6 +82,24 @@
                     return $this->Content;
                 }
             }
+
+            /**
+             * Initializes the object.
+             */
+            protected function __Initialize()
+            {
+                $this->Renderer = new Renderer();
+            }
+            
+            /**
+             * Draws the object.
+             *
+             * @return void
+             */
+            public function DrawInternal()
+            {
+                return $this->Content->DrawInternal();
+            }
             
             /**
              * Returns all StyleDefinitions of the content.
@@ -86,16 +119,6 @@
             protected function FetchScripts() : ScriptCollection
             {
                 return $this->Page->FetchScripts();
-            }
-
-            /**
-             * Draws the object.
-             *
-             * @return void
-             */
-            public function DrawInternal()
-            {
-                return $this->Content->DrawInternal();
             }
         }
     }

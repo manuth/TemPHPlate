@@ -6,6 +6,9 @@
     namespace System\Web;
     use ManuTh\TemPHPlate\Properties\Settings;
     use System\Web\Forms\MenuBar;
+    use System\Web\Forms\Rendering\Renderer;
+    use System\Web\Forms\Rendering\IRenderer;
+    use System\Web\Forms\Rendering\IRenderable;
     {
         /**
          * Represents a page.
@@ -13,7 +16,7 @@
          * @property MenuBar $MenuBar
          * Gets or sets the menu-bar of the page.
          */
-        class Page extends WebContent
+        class Page extends WebContent implements IRenderer
         {
             /**
              * The menu-bar of the page.
@@ -24,8 +27,16 @@
 
             public function Page()
             {
+                $this->Renderer = new Renderer();
                 $this->MenuBar = Settings::$MenuBar;
             }
+
+            /**
+             * The renderer of the page.
+             *
+             * @var IRenderer
+             */
+            public $Renderer;
 
             /**
              * @ignore
@@ -43,6 +54,20 @@
             protected function setMenuBar(MenuBar $value)
             {
                 $this->menuBar = $value;
+            }
+
+            /**
+             * Renders a renderable item.
+             *
+             * @param IRenderable $item
+             * The item to render.
+             * 
+             * @return string
+             * A string that represents the rendered item.
+             */
+            public function Render(IRenderable $item) : string
+            {
+                return $this->Renderer->Render($item);
             }
 
             /**
