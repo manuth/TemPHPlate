@@ -4,9 +4,13 @@
      * @license Apache-2.0
      */
     namespace System\Web\Forms\Rendering;
+    use System\EventHandler;
     {
         /**
          * Provides the functionality to render renderable items.
+         * 
+         * @property-read EventHandler $Paint
+         * Occurs when an item is drawn.
          */
         interface IRenderer
         {

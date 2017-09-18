@@ -4,22 +4,20 @@
      * @license Apache-2.0
      */
     namespace System;
+    use System\Collections\ArrayList;
     {
         /**
-         * Represents an event
-         *
-         * @package manuth.TemPHPlate
-         * @subpackage Core
+         * Represents the method that will handle an event that has no event data.
          */
-        class Event extends \ArrayObject
+        class EventHandler extends ArrayList
         {
             /**
-             * Executes the callbacks objects of the event
+             * Executes the callbacks objects of the event.
              *
              * @param object $sender
-             * The source of the event
+             * The source of the event.
              * @param object $e
-             * An object that contains no event data
+             * An object that contains no event data.
              */
             public function Invoke($sender, EventArgs $e)
             {

@@ -9,7 +9,7 @@
          * Represents a renderable item.
          * 
          * @property $Text
-         * Gets or sets the text associated with this control.¨
+         * Gets or sets the text associated with this control.
          * 
          * @property $Enabled
          * Gets or sets a value indicating whether the control can respond to user interaction.
