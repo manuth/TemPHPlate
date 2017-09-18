@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     namespace ManuTh\TemPHPlate\Properties;
+    use System\Web\Forms\MenuBar;
     {
         /**
          * Provides settings for the Project
@@ -33,6 +34,7 @@
              * @var MenuBar
              */
             public static $MenuBar;
+            public static $FallbackPage = 'Page';
 
             /**
              * Initializes the settings.
@@ -41,7 +43,15 @@
              */
             public static function Initialize()
             {
-                self::$MenuBar = MenuBar::FromJSON('Properties'.DIRECTORY_SEPARATOR.'MenuBar.json');
+                $menuBarPath = implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', 'Properties', 'MenuBar.json'));
+                if (file_exists($menuBarPath))
+                {
+                    self::$MenuBar = MenuBar::FromJSON(json_decode(file_get_contents($menuBarPath))->menuBar);
+                }
+                else
+                {
+                    self::$MenuBar = new MenuBar();
+                }
             }
         }
     }
