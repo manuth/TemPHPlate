@@ -5,6 +5,7 @@
      */
     namespace System\Web;
     use System\Globalization\CultureInfo;
+    use System\Collections\ArrayList;
     {
         /**
          * Represents content of a website.
@@ -73,13 +74,15 @@
              */
             protected function FetchStyles() : StyleCollection
             {
-                $collection = new StyleCollection();
+                $styles = new ArrayList();
 
                 for ($content = $this; $content != null; $content = $content->Template)
                 {
-                    $collection->AddRange($content->StyleDefinitions);
+                    $styles->AddRange($content->StyleDefinitions);
                 }
 
+                $collection = new StyleCollection();
+                $collection->AddRange($styles->Distinct());
                 return $collection;
             }
                         
@@ -90,13 +93,15 @@
              */
             protected function FetchScripts() : ScriptCollection
             {
-                $collection = new ScriptCollection();
+                $scripts = new ArrayList();
 
                 for ($content = $this; $content != null; $content = $content->Template)
                 {
-                    $collection->AddRange($content->ScriptDefinitions);
+                    $scripts->AddRange($content->ScriptDefinitions);
                 }
 
+                $collection = new ScriptCollection();
+                $collection->AddRange($scripts->Distinct());
                 return $collection;
             }
 
