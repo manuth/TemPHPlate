@@ -106,7 +106,7 @@
              */
             public function offsetSet($index, $value)
             {
-                if ($this->offsetExists($index))
+                if ($this->offsetExists($index) || $index == $this->Count)
                 {
                     $this->InnerList[$index] = $value;
                 }
