@@ -108,7 +108,7 @@
                         $method->setAccessible(true);
                     }
 
-                    $method->invokeArgs($this, $args);
+                    return $method->invokeArgs($this, $args);
                 }
             }
 
