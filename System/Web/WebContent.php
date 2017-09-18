@@ -78,7 +78,7 @@
 
                 for ($content = $this; $content != null; $content = $content->Template)
                 {
-                    $styles->AddRange($content->StyleDefinitions);
+                    $styles->InsertRange(0, $content->StyleDefinitions);
                 }
 
                 $collection = new StyleCollection();
