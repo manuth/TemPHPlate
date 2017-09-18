@@ -24,7 +24,7 @@
 
             public function Page()
             {
-                //$this->MenuBar = Settings::$MenuBar;
+                $this->MenuBar = Settings::$MenuBar;
             }
 
             /**

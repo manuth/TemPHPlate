@@ -115,7 +115,7 @@
                 {
                     $content = parent::Draw();
 
-                    $formatter = function ($content)
+                    $formatter = function (string $content)
                     {
                         return "
                         <html lang=\"{$this->Locale}\">
