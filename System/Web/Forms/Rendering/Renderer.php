@@ -5,6 +5,7 @@
      */
     namespace System\Web\Forms\Rendering;
     use System\Object;
+    use System\Web\Forms\Control;
     use System\Web\Forms\MenuBar;
     use System\Web\Forms\MenuItem;
     use System\Web\Forms\MenuItemGroup;
@@ -36,6 +37,20 @@
             {
                 return $this->RenderComponent($item);
             }
+
+            /**
+             * Renders a Control.
+             *
+             * @param Control $control
+             * The Control that is to be rendered.
+             * 
+             * @return string
+             * A string that represents the rendered control.
+             */
+            protected function RenderComponent0(Control $control) : string
+            {
+                return $control->Text;
+            }
             
             /**
              * Renders a MenuBar.
@@ -46,7 +61,7 @@
              * @return string
              * A string that represents the rendered item.
              */
-            protected function RenderComponent0(MenuBar $menuBar) : string
+            protected function RenderComponent1(MenuBar $menuBar) : string
             {
                 $result =
                     "<ul>
@@ -70,7 +85,7 @@
              * @return string
              * A string that represents the rendered item.
              */
-            protected function RenderComponent1(MenuItemGroup $menuItem) : string
+            protected function RenderComponent2(MenuItemGroup $menuItem) : string
             {
                 $result =
                     "<li>
@@ -96,7 +111,7 @@
              * @return string
              * A string that represents the rendered item.
              */
-            protected function RenderComponent2(MenuItem $menuItem)
+            protected function RenderComponent3(MenuItem $menuItem)
             {
                 return "
                     <li>{$menuItem->Text}</li>";
@@ -111,7 +126,7 @@
              * @return string
              * A string that represents the rendered item.
              */
-            protected function RenderComponent3(LinkedMenuItem $menuItem)
+            protected function RenderComponent4(LinkedMenuItem $menuItem)
             {
                 return '
                     <li><a href="'.htmlspecialchars($menuItem->URL).'"'.($menuItem->NewTab ? ' target="_blank"' : '').'>'.htmlspecialchars($menuItem->Text).'</a></li>';
@@ -126,7 +141,7 @@
              * @return string
              * A string that represents the rendered item.
              */
-            protected function RenderComponent4(MenuItemSeparator $menuItem)
+            protected function RenderComponent5(MenuItemSeparator $menuItem)
             {
                 return '
                     <li><hr /></li>';
