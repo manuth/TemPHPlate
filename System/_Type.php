@@ -307,11 +307,12 @@
                         }
                     }
                 }
-                else
+                
+                if (count($result) == 0)
                 {
                     $result[] = array(null);
                 }
-                
+
                 krsort($result);
                 $result = current($result);
                 krsort($result);
@@ -350,7 +351,7 @@
             {
                 if ($this->getIsClass())
                 {
-                    return $this->GetMethodsByName($this->getName());
+                    return $this->GetMethodsByName($this->getName(), true);
                 }
                 else
                 {
@@ -479,16 +480,19 @@
              * @param string $name
              * The name of the method whose overloads are to be returned.
              * 
+             * @param bool $strictClass
+             * A value that indicates whether to excluded derivered methods.
+             * 
              * @return \ReflectionMethod[]
              * The overloads of the method.
              */
-            private function GetMethodsByName($name)
+            private function GetMethodsByName(string $name, bool $strictClass = false)
             {
                 $result = array();
 
                 foreach ($this->phpType->getMethods() as $method)
                 {
-                    if ($method->class === $this->phpType->name)
+                    if (!$strictClass || $method->class === $this->phpType->name)
                     {
                         if (preg_match("/^{$name}[0-9]*$/", $method->name))
                         {
