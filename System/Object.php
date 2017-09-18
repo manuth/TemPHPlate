@@ -16,6 +16,7 @@
              */
             public function Object()
             {
+                $this->__Initialize();
             }
 
             /**
@@ -63,6 +64,13 @@
             public function GetType() : ?Type
             {
                 return $this->GetTypeInternal();
+            }
+            
+            /**
+             * Initializes the object.
+             */
+            protected function __Initialize()
+            {
             }
             
             use ObjectBase
