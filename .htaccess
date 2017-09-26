@@ -1,15 +1,28 @@
 RewriteEngine On
+    # Remove trainling index-file
+    RewriteCond %{REQUEST_URI} ^(.*)index\.\w*$
+        RewriteRule ^ %1  [R=301,L]
+    
+    # Redirect to the file or folder if it exists or a page is provided
     RewriteCond %{QUERY_STRING} ^.*Page=([^&]*)$  [OR]
     RewriteCond %{REQUEST_FILENAME} -f  [OR]
     RewriteCond %{REQUEST_FILENAME} -d
         RewriteRule ^ -  [L]
-    
+
+    # Remove trailing slash
     RewriteCond %{REQUEST_URI} ^(.*)/$
     RewriteCond %{REQUEST_URI} ^(.*?)/?$
         RewriteRule ^ %1  [R=301,L]
-    RewriteRule ^(.*?)/?$ $1  [E=Page:$1]
-    RewriteCond Pages/%{ENV:Page}.php -F  [OR]
-    RewriteCond Pages/%{ENV:Page}.md -F   [OR]
-    RewriteCond Pages/%{ENV:Page} -F
-        RewriteRule ^ index.php?Page=%{ENV:Page}  [QSA,L]
-    RewriteRule ^ -  [R=404]
+        
+    RewriteCond %{IS_SUBREQ} ^true$
+        RewriteRule ^ -  [F,L]
+
+    RewriteCond %{IS_SUBREQ} ^false$
+        RewriteRule ^(.*)$ -  [E=PagePath:$1]
+
+
+    RewriteCond %{IS_SUBREQ} ^false$
+    RewriteCond Pages/%{ENV:PagePath}.php -F  [OR]
+    RewriteCond %{ENV:PagePath}.md -F  [OR]
+    RewriteCond %{ENV:PagePath} -F
+        RewriteRule ^ ?Page=%{ENV:PagePath}  [QSA,L]
