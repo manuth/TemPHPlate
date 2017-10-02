@@ -143,6 +143,31 @@
             {
                 return $this->type->getNamespace();
             }
+            
+            /**
+             * Gets the Type with the specified name, performing a case-sensitive search.
+             *
+             * @param string $typeName
+             * The fully qualified name of the type to get.
+             * 
+             * @return Type
+             * The type with the specified name, if found; otherwise, **null**.
+             */
+            public static function GetByName(string $typeName) : ?self
+            {
+                $innerType = _Type::GetByName($typeName);
+                
+                if ($innerType !== null)
+                {
+                    $type = new self();
+                    $type->type = $innerType;
+                    return $type;
+                }
+                else
+                {
+                    return null;
+                }
+            }
 
             /**
              * Searches for an instance constructor whose parameters match the types in the specified array.
