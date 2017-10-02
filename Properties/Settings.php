@@ -29,11 +29,17 @@
             );
 
             /**
-             * The default menu-bar of the project.
+             * Gets or sets default menu-bar of the project.
              *
              * @var MenuBar
              */
             public static $MenuBar;
+
+            /**
+             * Gets or sets default page to load when the page isn't found.
+             *
+             * @var string
+             */
             public static $FallbackPage = 'Page';
 
             /**
