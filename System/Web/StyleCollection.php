@@ -10,7 +10,7 @@
         /**
          * Represents a collection of style-definitions.
          */
-        class StyleCollection extends WebContentCollection
+        class StyleCollection extends DrawableCollection
         {
             /**
              * Initializes a new instance of the StyleCollection class.

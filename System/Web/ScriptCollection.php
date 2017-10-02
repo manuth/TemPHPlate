@@ -10,10 +10,10 @@
         /**
          * Represents a collection of script-definitions.
          */
-        class ScriptCollection extends WebContentCollection
+        class ScriptCollection extends DrawableCollection
         {
             /**
-             * Initializes a new instance of the StyleCollection class.
+             * Initializes a new instance of the ScriptCollection class.
              */
             public function ScriptCollection()
             {
