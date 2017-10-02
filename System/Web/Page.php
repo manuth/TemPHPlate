@@ -27,8 +27,6 @@
 
             public function Page()
             {
-                $this->Renderer = new Renderer();
-                $this->MenuBar = Settings::$MenuBar;
             }
 
             /**
@@ -83,6 +81,7 @@
             protected function __Initialize()
             {
                 parent::__Initialize();
+                $this->Renderer = new Renderer();
                 $this->MenuBar = Settings::$MenuBar;
             }
         }
