@@ -175,6 +175,17 @@
             }
             
             /**
+             * Determines the head of the content.
+             *
+             * @return string
+             * The head of the content.
+             */
+            protected function FetchHead() : string
+            {
+                return $this->Page->FetchHead();
+            }
+            
+            /**
              * Returns all StyleDefinitions of the content.
              *
              * @return StyleCollection
