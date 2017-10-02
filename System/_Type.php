@@ -154,38 +154,177 @@
                     return null;
                 }
             }
-
+            
             /**
-             * Returns a string which represents the object.
+             * Gets the _Type with the specified name, performing a case-sensitive search.
              *
-             * @return string
-             * A string that represents the current object.
+             * @param string $typeName
+             * The fully qualified name of the type to get.
+             * 
+             * @return _Type
+             * The type with the specified name, if found; otherwise, **null**.
              */
-            public function ToString() : string
+            public static function GetByName(string $typeName) : ?self
             {
-                return $this->ToStringInternal();
+                if ($typeName !== null)
+                {
+                    try
+                    {
+                        $type = new _Type();
+
+                        // pre-processing type-name...
+                        switch ($typeName)
+                        {
+                            case 'integer':
+                                $typeName = 'int';
+                        }
+
+                        switch ($typeName)
+                        {
+                            case 'array':
+                            case 'bool':
+                            case 'callable':
+                            case 'float':
+                            case 'int':
+                            case 'iterable':
+                            case 'NULL':
+                            case 'string':
+                                $type->phpType = $typeName;
+                                break;
+                            default:
+                                $phpType = new \ReflectionClass($typeName);
+                                $type->phpType = $phpType;
+                                break;
+                        }
+                        return $type;
+                    }
+                    catch (\ReflectionException $exception)
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new ArgumentNullException('typeName');
+                }
+            }
+            
+            /**
+             * Returns all overloads of the method with the specified name.
+             *
+             * @param string $name
+             * The name of the method whose overloads are to be returned.
+             * 
+             * @param bool $strictClass
+             * A value that indicates whether to excluded derivered methods.
+             * 
+             * @return \ReflectionMethod[]
+             * The overloads of the method.
+             */
+            private function GetMethodsByName(string $name, bool $strictClass = false)
+            {
+                $result = array();
+
+                foreach ($this->phpType->getMethods() as $method)
+                {
+                    if (!$strictClass || $method->class === $this->phpType->name)
+                    {
+                        if (preg_match("/^{$name}[0-9]*$/", $method->name))
+                        {
+                            $result[] = $method;
+                        }
+                    }
+                }
+
+                return $result;
             }
 
             /**
-             * Serves as the default hash function.
+             * Searches for an instance constructor whose parameters match the types in the specified array.
              *
-             * @return int
-             * A hash code for the current object.
+             * @param _Type[] $types
+             * An array of Type objects representing the number, order, and type of the parameters for the desired constructor.
+             * 
+             * @return \ReflectionMethod
+             * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
              */
-            public function GetHashCode() : int
+            public function GetConstructor(array $types) : ?\ReflectionMethod
             {
-                return $this->GetHashCodeInternal();
+                return $this->GetMethod($this->getName(), $types);
             }
 
             /**
-             * Gets the Type of the current instance.
+             * Returns all the constructors defined for the current _Type.
              *
-             * @return Type
-             * The exact runtime type of the current instance.
+             * @return \ReflectionMethod[]
+             * An array of ConstructorInfo objects representing all the instance constructors defined for the current _Type.
              */
-            public function GetType() : ?Type
+            public function GetConstructors() : array
             {
-                return $this->GetTypeInternal();
+                if ($this->getIsClass())
+                {
+                    return $this->GetMethodsByName($this->getName(), true);
+                }
+                else
+                {
+                    return array();
+                }
+            }
+
+            /**
+             * Searches for the specified interface, specifying whether to do a case-insensitive search for the interface name.
+             *
+             * @param string $name
+             * The string containing the name of the interface to get. For generic interfaces, this is the mangled name
+             * 
+             * @param bool $ignoreCase
+             * **true** to ignore the case of that part of _name_ that specifies the simple interface name (the part that specifies the namespace must be correctly cased).
+             * 
+             * -or-
+             * 
+             * **false** to perform a case-sensitive search for all parts of _name_.
+             * 
+             * @return self
+             * An object representing the interface with the specified name, implemented or inherited by the current `_Type`, if found; otherwise, **null**.
+             */
+            public function GetInterface(string $name, bool $ignoreCase = false) : ?self
+            {
+                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($name)
+                {
+                    return
+                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getName()) > 0) ||
+                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getFullName()));
+                });
+
+                if (count($interfaces == 1))
+                {
+                    return current($interfaces);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            /**
+             * Gets all the interfaces implemented or inherited by the current `_Type`.
+             *
+             * @return self[]
+             * An array of Type objects representing all the interfaces implemented or inherited by the current `_Type`.
+             */
+            public function GetInterfaces() : array
+            {
+                if ($this->phpType instanceof \ReflectionClass)
+                {
+                    return array_map(function ($interfaceName)
+                    {
+                        return self::GetByName($interfaceName);
+                    }, $this->phpType->getInterfaceNames());
+                }
+                else
+                {
+                    return array();
+                }
             }
             
             /**
@@ -315,88 +454,34 @@
             }
 
             /**
-             * Searches for an instance constructor whose parameters match the types in the specified array.
+             * Returns all the properties of the current `_Type`.
              *
-             * @param _Type[] $types
-             * An array of Type objects representing the number, order, and type of the parameters for the desired constructor.
-             * 
-             * @return \ReflectionMethod
-             * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
+             * @return \ReflectionProperty[]
+             * An array of `\ReflectionProperty` objects representing all public properties of the current `_Type`.
              */
-            public function GetConstructor(array $types) : ?\ReflectionMethod
+            public function GetProperties() : array
             {
-                return $this->GetMethod($this->getName(), $types);
+                return $this->phpType->getProperties();
             }
 
             /**
-             * Returns all the constructors defined for the current _Type.
-             *
-             * @return \ReflectionMethod[]
-             * An array of ConstructorInfo objects representing all the instance constructors defined for the current _Type.
-             */
-            public function GetConstructors() : array
-            {
-                if ($this->getIsClass())
-                {
-                    return $this->GetMethodsByName($this->getName(), true);
-                }
-                else
-                {
-                    return array();
-                }
-            }
-
-            /**
-             * Gets the _Type with the specified name, performing a case-sensitive search.
-             *
-             * @param string $typeName
-             * The fully qualified name of the type to get.
+             * Searches for the property with the specified name.
              * 
-             * @return _Type
-             * The type with the specified name, if found; otherwise, **null**.
+             * @param string $name
+             * The string containing the name of the property to get.
+             * 
+             * @return \ReflectionProperty
+             * An object representing the property with the specified name, if found; otherwise, **null**.
              */
-            public static function GetByName(string $typeName) : ?self
+            public function GetProperty(string $name) : \ReflectionProperty
             {
-                if ($typeName !== null)
+                if ($this->phpType->hasProperty($name))
                 {
-                    try
-                    {
-                        $type = new _Type();
-
-                        // pre-processing type-name...
-                        switch ($typeName)
-                        {
-                            case 'integer':
-                                $typeName = 'int';
-                        }
-
-                        switch ($typeName)
-                        {
-                            case 'array':
-                            case 'bool':
-                            case 'callable':
-                            case 'float':
-                            case 'int':
-                            case 'iterable':
-                            case 'NULL':
-                            case 'string':
-                                $type->phpType = $typeName;
-                                break;
-                            default:
-                                $phpType = new \ReflectionClass($typeName);
-                                $type->phpType = $phpType;
-                                break;
-                        }
-                        return $type;
-                    }
-                    catch (\ReflectionException $exception)
-                    {
-                        return null;
-                    }
+                    return $this->phpType->getProperty($name);
                 }
                 else
                 {
-                    throw new ArgumentNullException('typeName');
+                    return null;
                 }
             }
 
@@ -413,7 +498,7 @@
              * - The current instance is an interface that _c_ implements.
              * - _c_ is a generic type parameter, and the current instance represents one of the constraints of _c_.
              */
-            public function IsAssignableFrom(self $c)
+            public function IsAssignableFrom(self $c) : bool
             {
                 if ($this->getFullName() == 'iterable')
                 {
@@ -460,35 +545,38 @@
                     return false;
                 }
             }
+            
+            /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             * A string that represents the current object.
+             */
+            public function ToString() : string
+            {
+                return $this->ToStringInternal();
+            }
 
             /**
-             * Returns all overloads of the method with the specified name.
+             * Serves as the default hash function.
              *
-             * @param string $name
-             * The name of the method whose overloads are to be returned.
-             * 
-             * @param bool $strictClass
-             * A value that indicates whether to excluded derivered methods.
-             * 
-             * @return \ReflectionMethod[]
-             * The overloads of the method.
+             * @return int
+             * A hash code for the current object.
              */
-            private function GetMethodsByName(string $name, bool $strictClass = false)
+            public function GetHashCode() : int
             {
-                $result = array();
+                return $this->GetHashCodeInternal();
+            }
 
-                foreach ($this->phpType->getMethods() as $method)
-                {
-                    if (!$strictClass || $method->class === $this->phpType->name)
-                    {
-                        if (preg_match("/^{$name}[0-9]*$/", $method->name))
-                        {
-                            $result[] = $method;
-                        }
-                    }
-                }
-
-                return $result;
+            /**
+             * Gets the Type of the current instance.
+             *
+             * @return Type
+             * The exact runtime type of the current instance.
+             */
+            public function GetType() : ?Type
+            {
+                return $this->GetTypeInternal();
             }
         }
     }
