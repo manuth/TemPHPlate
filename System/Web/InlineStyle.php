@@ -44,8 +44,7 @@
             public function Draw() : string
             {
                 return '
-                    <style>
-                        '.$this->Code.'
+                    <style>'.$this->Code.'
                     </style>';
             }
         }

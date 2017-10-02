@@ -44,8 +44,7 @@
             public function Draw() : string
             {
                 return '
-                    <script type="text/javascript">
-                        '.$this->Code.'
+                    <script type="text/javascript">'.$this->Code.'
                     </script>';
             }
         }
