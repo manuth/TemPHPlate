@@ -32,7 +32,7 @@
             }
 
             /**
-             * The renderer of the page.
+             * Gets or sets the renderer of the page.
              *
              * @var IRenderer
              */

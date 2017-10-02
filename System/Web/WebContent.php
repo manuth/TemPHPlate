@@ -13,11 +13,11 @@
         abstract class WebContent extends Drawable
         {
             /**
-             * Gets or sets the title of the content.
-             *
+             * Gets or sets the title of the page.
+             * 
              * @var string
              */
-            public $Title = '';
+            public $Title;
 
             /**
              * Gets or sets the locale of the content.
@@ -68,9 +68,10 @@
             }
             
             /**
-             * Returns all StyleDefinitions of the content.
+             * Determines all StyleDefinitions of the content.
              *
              * @return StyleCollection
+             * The `StyleDefinition`s of the content.
              */
             protected function FetchStyles() : StyleCollection
             {
