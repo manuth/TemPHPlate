@@ -69,7 +69,7 @@
             /**
              * Initializes the object.
              */
-            protected function __Initialize()
+            protected function __InitializeStatic()
             {
             }
             

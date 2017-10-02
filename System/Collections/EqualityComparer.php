@@ -53,7 +53,7 @@
              *
              * @return void
              */
-            public static function Initialize()
+            public static function __InitializeStatic()
             {
                 self::$Default = new EqualityComparer();
             }

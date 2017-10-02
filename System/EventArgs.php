@@ -20,7 +20,7 @@
             /**
              * @ignore
              */
-            public static function Initialize()
+            public static function __InitializeStatic()
             {
                 self::$Empty = new EventArgs();
             }

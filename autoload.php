@@ -24,9 +24,9 @@
             {
                 require_once $path;
 
-                if (method_exists($class, 'Initialize'))
+                if (method_exists($class, '__InitializeStatic'))
                 {
-                    $class::Initialize();
+                    $class::__InitializeStatic();
                 }
             }
         });
