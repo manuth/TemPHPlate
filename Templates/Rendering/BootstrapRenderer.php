@@ -28,7 +28,7 @@
              */
             protected function RenderComponent1(MenuBar $menuBar) : string
             {
-                $text = htmlspecialchars($menuBar->Text);
+                $text = htmlspecialchars($menuBar->Text ?? ' ');
                 $name = htmlspecialchars($menuBar->Name);
                 $result = '
                     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
