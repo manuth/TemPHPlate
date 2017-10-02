@@ -40,18 +40,16 @@
 
             /**
              * @ignore
-             * @return MenuBar
              */
-            protected function getMenuBar()
+            public function getMenuBar()
             {
                 return $this->menuBar;
             }
 
             /**
              * @ignore
-             * @param MenuBar $value
              */
-            protected function setMenuBar(MenuBar $value)
+            public function setMenuBar(MenuBar $value)
             {
                 $this->menuBar = $value;
             }
@@ -77,6 +75,15 @@
              */
             protected function DrawInternal()
             {
+            }
+
+            /**
+             * Initializes the object.
+             */
+            protected function __Initialize()
+            {
+                parent::__Initialize();
+                $this->MenuBar = Settings::$MenuBar;
             }
         }
     }
