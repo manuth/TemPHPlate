@@ -27,6 +27,13 @@
             public $Locale;
 
             /**
+             * Gets or sets the icon of the content.
+             *
+             * @var string
+             */
+            public $Icon;
+
+            /**
              * Gets or sets the style-definitions of the content.
              *
              * @var StyleCollection
@@ -65,6 +72,43 @@
             public function WebContent1(Template $template)
             {
                 $this->Template = $template;
+            }
+
+            /**
+             * @ignore
+             */
+            protected function __Initialize()
+            {
+                parent::__Initialize();
+                $this->Locale = new CultureInfo('inv');
+            }
+
+            /**
+             * Gets the head of the content.
+             *
+             * @return string
+             */
+            public function getHead() : string
+            {
+                return '';
+            }
+            
+            /**
+             * Determines the head of the content.
+             *
+             * @return string
+             * The head of the content.
+             */
+            protected function FetchHead() : string
+            {
+                $result = '';
+
+                for ($content = $this; $content != null; $content = $content->Template)
+                {
+                    $result = $content->Head.$result;
+                }
+
+                return $result;
             }
             
             /**
@@ -124,8 +168,10 @@
                     $formatter = function (string $content)
                     {
                         return "
+                        <!DOCTYPE html>
                         <html lang=\"{$this->Locale}\">
                             <head>
+                                {$this->FetchHead()}
                                 <title>{$this->Title}</title>
                                 {$this->FetchStyles()->Draw()}
                             </head>
