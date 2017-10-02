@@ -21,14 +21,14 @@
              *
              * @var string
              */
-            public $Name = '';
+            public $Name;
             
             /**
              * Gets or sets the Text of the control.
              *
              * @var string
              */
-            public $Text = '';
+            public $Text;
 
             /**
              * Gets or sets a value indicating whether the control can respond to user interaction.
