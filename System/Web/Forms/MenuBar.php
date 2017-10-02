@@ -73,7 +73,7 @@
 
                             if (strpos($item->URL, '://') === false)
                             {
-                                $menuItem->URL = str_replace(DIRECTORY_SEPARATOR, '/', Path::MakeRelativePath($item->URL));
+                                $menuItem->URL = Path::MakeRelativeWebPath($item->URL);
                             }
                             else
                             {
@@ -119,7 +119,7 @@
                 }
                 else
                 {
-                    $menuBar->URL = str_replace(DIRECTORY_SEPARATOR, '/', Path::MakeRelativePath(Environment::$RequestDirectory, Environment::$DocumentRoot));
+                    $menuBar->URL = Path::MakeRelativeWebPath(Environment::$DocumentRoot);
                 }
                 $menuBar->Style = $jsonObject->Style;
                 $menuBar->Items->AddRange($loadItems($jsonObject->Items));

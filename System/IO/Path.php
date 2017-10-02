@@ -146,6 +146,26 @@ use System\Environment;
             }
             return self::Normalize($result);
         }
+
+        /**
+         * Determines the difference between two paths.
+         *
+         * @param string $from
+         * The path to compare the destination-path to.
+         * 
+         * @param string $to
+         * The path to compare the source-path to.
+         * 
+         * @return string
+         * The relative path.
+         */
+        public static function MakeRelativeWebPath()
+        {
+            return str_replace(
+                DIRECTORY_SEPARATOR,
+                '/',
+                call_user_func_array(array(__CLASS__, 'MakeRelativePath'), func_get_args()));
+        }
     }
 }
 ?>
