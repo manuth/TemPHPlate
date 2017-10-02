@@ -4,8 +4,9 @@
      * @license Apache-2.0
      */
     namespace System\Web;
-    use System\Globalization\CultureInfo;
+    use System\IO\Path;
     use System\Collections\ArrayList;
+    use System\Globalization\CultureInfo;
     {
         /**
          * Represents content of a website.
@@ -97,7 +98,8 @@
              */
             public function getHead() : string
             {
-                return '';
+                return '
+                    <meta charset="utf-8" />';
             }
             
             /**
@@ -174,19 +176,30 @@
 
                     $formatter = function (string $content)
                     {
-                        return "
-                        <!DOCTYPE html>
-                        <html lang=\"{$this->Locale}\">
-                            <head>
-                                {$this->FetchHead()}
-                                <title>{$this->Title}</title>
-                                {$this->FetchStyles()->Draw()}
-                            </head>
-                            <body>
-                                {$content}
-                                {$this->FetchScripts()->Draw()}
-                            </body>
-                        </html>";
+                        return '
+                            <!DOCTYPE html>
+                            <html'.($this->Locale !== null ? ' lang="'.htmlspecialchars($this->Locale).'"' : '').'>
+                                <head>'.$this->FetchHead().(
+                                    $this->Title !== null ? '
+                                    <title>'.htmlspecialchars($this->Title).'</title>' : ''
+                                ).(
+                                    $this->Icon !== null ? '
+                                    <link rel="icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->Icon)).'" />'
+                                    :
+                                    ''
+                                ).(
+                                    $this->AppleTouchIcon !== null ? '
+                                    <link rel="apple-touch-icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->AppleTouchIcon)).'" />'
+                                    :
+                                    ''
+                                ).'
+                                    '.$this->FetchStyles()->Draw().'
+                                </head>
+                                <body>
+                                    '.$content.'
+                                    '.$this->FetchScripts()->Draw().'
+                                </body>
+                            </html>';
                     };
                 }
                 else

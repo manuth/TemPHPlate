@@ -12,7 +12,7 @@
         class Settings
         {
             /**
-             * The locales to use to execute php
+             * Gets or sets the locales to use to execute php
              * 
              * @var string[]
              */
@@ -41,6 +41,20 @@
              * @var string
              */
             public static $FallbackPage = 'Page';
+
+            /**
+             * Gets or sets the default icon.
+             *
+             * @var string
+             */
+            public static $Icon = '/favicon.ico';
+
+            /**
+             * Gets or sets the default apple-touch-icon.
+             *
+             * @var string
+             */
+            public static $AppleTouchIcon = null;
 
             /**
              * @ignore

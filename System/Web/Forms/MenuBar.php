@@ -117,14 +117,19 @@
                 {
                     $menuBar->URL = $jsonObject->URL;
                 }
-                else
-                {
-                    $menuBar->URL = Path::MakeRelativeWebPath(Environment::$DocumentRoot);
-                }
+
                 $menuBar->Style = $jsonObject->Style;
                 $menuBar->Items->AddRange($loadItems($jsonObject->Items));
 
                 return $menuBar;
+            }
+            
+            /**
+             * @ignore
+             */
+            public function __Initialize()
+            {
+                $this->URL = Path::MakeRelativeWebPath(Environment::$RequestDirectory, Environment::$DocumentRoot);
             }
         }
     }

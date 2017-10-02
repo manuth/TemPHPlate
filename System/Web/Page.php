@@ -85,6 +85,8 @@
             {
                 parent::__Initialize();
                 $this->Renderer = new Renderer();
+                $this->Icon = Settings::$Icon;
+                $this->AppleTouchIcon = Settings::$AppleTouchIcon;
                 $this->MenuBar = Settings::$MenuBar;
             }
         }
