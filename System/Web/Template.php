@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     namespace System\Web;
+    use System\Globalization\CultureInfo;
     use System\Web\Forms\Rendering\Renderer;
     use System\Web\Forms\Rendering\IRenderer;
     use System\Web\Forms\Rendering\IRenderable;
@@ -49,7 +50,6 @@
              */
             public $Renderer;
 
-
             /**
              * @ignore
              */
@@ -64,8 +64,6 @@
             protected function setContent(WebContent $content)
             {
                 $this->content = $content;
-                $this->Title = &$content->Title;
-                $this->Locale = &$content->Locale;
             }
 
             /**
@@ -88,6 +86,7 @@
              */
             protected function __Initialize()
             {
+                parent::__Initialize();
                 $this->Renderer = new Renderer();
             }
             
