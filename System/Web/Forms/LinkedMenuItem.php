@@ -4,9 +4,14 @@
      * @license Apache-2.0
      */
     namespace System\Web\Forms;
+    use System\Environment;
+    use System\IO\Path;
     {
         /**
          * Represents a menu-item that provides a link to another page.
+         * 
+         * @property-read bool $IsActive
+         * Gets a value indicating whether the menu-item is active.
          */
         class LinkedMenuItem extends MenuItem
         {
@@ -33,6 +38,14 @@
             {
                 $this->Base($id, $text);
                 $this->URL = $url;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getIsActive() : bool
+            {
+                return Environment::$RequestFile == Path::Normalize(Environment::$RequestDirectory.DIRECTORY_SEPARATOR.$this->URL);
             }
 
             /**
