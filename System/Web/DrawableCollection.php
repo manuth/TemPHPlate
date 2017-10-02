@@ -10,12 +10,12 @@
         /**
          * Represents a collection of web-contents.
          */
-        class WebContentCollection extends ArrayList
+        class DrawableCollection extends ArrayList
         {
             /**
-             * Initializes a new instance of the WebContentCollection class.
+             * Initializes a new instance of the DrawableCollection class.
              */
-            public function WebContentCollection()
+            public function DrawableCollection()
             {
             }
 
