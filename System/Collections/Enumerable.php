@@ -69,7 +69,7 @@
              * @return bool
              * **true** if any elements in the source sequence pass the test in the specified predicate; otherwise, **false**.
              */
-            public function Any(callable $predicate = null) : bool
+            public function Any(?callable $predicate = null) : bool
             {
                 if ($predicate === null)
                 {
@@ -109,7 +109,7 @@
              * @return int
              * The number of elements in the input sequence.
              */
-            public function Count(callable $predicate = null) : int
+            public function Count(?callable $predicate = null) : int
             {
                 if ($predicate === null)
                 {
@@ -148,7 +148,7 @@
              * @return Enumerable
              * An Enumerable that contains distinct elements from the source sequence.
              */
-            public function Distinct(EqualityComparer $comparer = null) : self
+            public function Distinct(?EqualityComparer $comparer = null) : self
             {
                 return new EnumerableIterator(
                     function() use ($comparer)
@@ -174,7 +174,7 @@
              * @return mixed
              * The first element in the sequence that passes the test in the specified predicate function.
              */
-            public function First(callable $predicate = null)
+            public function First(?callable $predicate = null)
             {
                 if ($predicate === null)
                 {
@@ -205,7 +205,7 @@
              * @return mixed
              * **null** if no element passes the test specified by predicate; otherwise, the first element in source that passes the test specified by predicate.
              */
-            public function FirstOrDefault(callable $predicate = null)
+            public function FirstOrDefault(?callable $predicate = null)
             {
                 try
                 {
@@ -226,7 +226,7 @@
              * @return mixed
              * The last element in the sequence that passes the test in the specified predicate function.
              */
-            public function Last(callable $predicate = null)
+            public function Last(?callable $predicate = null)
             {
                 if ($predicate === null)
                 {
@@ -257,7 +257,7 @@
              * @return mixed
              * **null** if the sequence is empty or if no elements pass the test in the predicate function; otherwise, the last element that passes the test in the predicate function.
              */
-            public function LastOrDefault(callable $predicate = null)
+            public function LastOrDefault(?callable $predicate = null)
             {
                 try
                 {
@@ -278,7 +278,7 @@
              * @return mixed
              * The maximum value in the sequence.
              */
-            public function Max(callable $selector = null)
+            public function Max(?callable $selector = null)
             {
                 if ($selector === null)
                 {
@@ -313,7 +313,7 @@
              * @return mixed
              * The minimum value in the sequence.
              */
-            public function Min(callable $selector = null)
+            public function Min(?callable $selector = null)
             {
                 if ($selector === null)
                 {
@@ -351,7 +351,7 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            public function OrderBy(callable $keySelector, Comparer $comparer = null) : self
+            public function OrderBy(callable $keySelector, ?Comparer $comparer = null) : self
             {
                 return $this->OrderByInternal($keySelector, $comparer, false);
             }
@@ -368,7 +368,7 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted in descending order according to a key.
              */
-            public function OrderByDescending(callable $keySelector, Comparer $comparer = null) : self
+            public function OrderByDescending(callable $keySelector, ?Comparer $comparer = null) : self
             {
                 return $this->OrderByInternal($keySelector, $comparer, true);
             }
@@ -617,7 +617,7 @@
              * @return Dictionary
              * A Dictionary that contains values selected from the input sequence.
              */
-            public function ToDictionary(callable $keySelector, callable $elementSelector = null, EqualityComparer $comparer = null) : Dictionary
+            public function ToDictionary(callable $keySelector, ?callable $elementSelector = null, ?EqualityComparer $comparer = null) : Dictionary
             {
                 if ($elementSelector === null)
                 {
@@ -717,7 +717,7 @@
              * @return Enumerable
              * An Enumerable whose elements are sorted according to a key.
              */
-            private function OrderByInternal(callable $keySelector, Comparer $comparer = null, $descending) : self
+            private function OrderByInternal(callable $keySelector, ?Comparer $comparer = null, $descending) : self
             {
                 if ($keySelector !== null)
                 {

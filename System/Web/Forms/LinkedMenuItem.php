@@ -34,7 +34,7 @@
              * @param string $url
              * The url to the page the menu-item refers to.
              */
-            public function LinkedMenuItem0(string $id, string $text, string $url)
+            public function LinkedMenuItem0(?string $id, ?string $text, ?string $url)
             {
                 $this->Base($id, $text);
                 $this->URL = $url;
@@ -53,7 +53,7 @@
              *
              * @var string
              */
-            public $URL = '';
+            public $URL;
 
             /**
              * Gets or sets a value indicating whether to load the page in a new browser-instance.

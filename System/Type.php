@@ -43,9 +43,9 @@
             /**
              * The ReflectionClass of the type.
              *
-             * @var \ReflectionClass|\ReflectionType
+             * @var _Type
              */
-            private $phpType;
+            private $type;
 
             /**
              * Initializes a new instance of the Type class.
@@ -58,20 +58,9 @@
              * @ignore
              * @return Type
              */
-            public function getBaseType() : self
+            public function getBaseType() : ?self
             {
-                if (!$this->IsValueType)
-                {
-                    $type = new Type();
-                    $parentType = $this->phpType->getParentClass();
-
-                    if ($parentType)
-                    {
-                        $type->phpType = $parentType;
-                        return $type;
-                    }
-                }
-                return null;
+                return $this->type->getBaseType();
             }
 
             /**
@@ -80,14 +69,7 @@
              */
             public function getFullName() : string
             {
-                if ($this->IsValueType)
-                {
-                    return (string)$this->phpType;
-                }
-                else
-                {
-                    return $this->phpType->getName();
-                }
+                return $this->type->getFullName();
             }
 
             /**
@@ -96,7 +78,7 @@
              */
             public function getIsAbstract() : bool
             {
-                return !$this->IsValueType && $this->phpType->isAbstract();
+                return $this->type->getIsAbstract();
             }
 
             /**
@@ -105,7 +87,7 @@
              */
             public function getIsClass() : bool
             {
-                return !$this->IsValueType && (!$this->phpType->isInterface() && !$this->phpType->isTrait());
+                return $this->type->getIsClass();
             }
 
             /**
@@ -114,7 +96,7 @@
              */
             public function getIsEnum() : bool
             {
-                return !$this->IsValueType && $this->phpType->isSubclassOf('System\Enum');
+                return $this->type->getIsEnum();
             }
 
             /**
@@ -123,7 +105,7 @@
              */
             public function getIsInterface() : bool
             {
-                return !$this->IsValueType && $this->phpType->isInterface();
+                return $this->type->getIsInterface();
             }
 
             /**
@@ -132,7 +114,7 @@
              */
             public function getIsSealed() : bool
             {
-                return !$this->IsValueType && $this->phpType->isFinal();
+                return $this->type->getIsSealed();
             }
 
             /**
@@ -141,7 +123,7 @@
              */
             public function getIsValueType() : bool
             {
-                return !($this->phpType instanceof \ReflectionClass);
+                return $this->type->getIsValueType();
             }
 
             /**
@@ -150,14 +132,7 @@
              */
             public function getName() : string
             {
-                if ($this->IsValueType)
-                {
-                    return (string)$this->phpType;
-                }
-                else
-                {
-                    return $this->phpType->getShortName();
-                }
+                return $this->type->getName();
             }
 
             /**
@@ -166,14 +141,7 @@
              */
             public function getNamespace() : string
             {
-                if ($this->IsValueType)
-                {
-                    return null;
-                }
-                else
-                {
-                    return $this->phpType->getNamespaceName();
-                }
+                return $this->type->getNamespace();
             }
 
             /**
@@ -187,46 +155,7 @@
              */
             public function GetConstructor(array $types) : ?\ReflectionMethod
             {
-                $matchingConstructors = array();
-                $constructors = $this->GetConstructors();
-                
-                if (in_array(null, $types, true))
-                {
-                    throw new ArgumentNullException('types');
-                }
-                else
-                {
-                    foreach ($constructors as $constructor)
-                    {
-                        if (count($types) >= $constructor->getNumberOfRequiredParameters() && count($types) <= $constructor->getNumberOfParameters())
-                        {
-                            if (
-                                (function () use ($constructor, $types)
-                                {
-                                    $parameters = $constructor->getParameters();
-                                    for ($i = 0; $i < count($types); $i++)
-                                    {
-                                        if (!$types[$i]->IsValueType && class_exists($parameters[$i]->getType()->getName()))
-                                        {
-                                            if (!$types[$i]->phpType->isSubclassOf($parameters[$i]->getType()->getName()))
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if ($types[$i]->FullName != $parameters[$i]->getType()->getName())
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                })())
-                            {}
-                        }
-                    }
-                }
-                return null;
+                return $this->type->GetConstructor($types);
             }
 
             /**
@@ -237,23 +166,7 @@
              */
             public function GetConstructors() : array
             {
-                $result = array();
-
-                if (!$this->IsValueType)
-                {
-                    foreach ($this->phpType->getMethods() as $method)
-                    {
-                        if ($method->class === $this->phpType->name)
-                        {
-                            if (preg_match("/^{$this->phpType->getShortName()}[0-9]*$/", $method->name))
-                            {
-                                $result[] = $method;
-                            }
-                        }
-                    }
-                }
-
-                return $result;
+                return $this->type->GetConstructors();
             }
 
             /**
@@ -264,59 +177,7 @@
              */
             public function GetMethods() : array
             {
-                if ($this->IsValueType)
-                {
-                    return array();
-                }
-                else
-                {
-                    return $this->phpType->getMethods();
-                }
-            }
-
-            /**
-             * Gets the Type with the specified name, performing a case-sensitive search.
-             *
-             * @param string $typeName
-             * The fully qualified name of the type to get.
-             * 
-             * @return Type
-             * The type with the specified name, if found; otherwise, **null**.
-             */
-            public static function GetByName(string $typeName = null) : ?Type
-            {
-                if ($typeName !== null)
-                {
-                    try
-                    {
-                        $type = new Type();
-
-                        switch ($typeName)
-                        {
-                            case 'array':
-                            case 'callable':
-                            case 'bool':
-                            case 'float':
-                            case 'int':
-                            case 'string':
-                                $type->phpType = $typeName;
-                                break;
-                            default:
-                                $phpType = new \ReflectionClass($typeName);
-                                $type->phpType = $phpType;
-                                break;
-                        }
-                        return $type;
-                    }
-                    catch (\ReflectionException $exception)
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    throw new ArgumentNullException('typeName');
-                }
+                return $this->type->GetMethods();
             }
 
             /**
@@ -330,18 +191,7 @@
              */
             public function IsSubclassOf(Type $c) : bool
             {
-                if (!$this->IsValueType)
-                {
-                    if ($this->FullName)
-                    {
-
-                    }
-                    return $this->phpType->isSubclassOf($c->FullName);
-                }
-                else
-                {
-                    return false;
-                }
+                return $this->type->IsSubclassOf($c->type);
             }
         }
     }

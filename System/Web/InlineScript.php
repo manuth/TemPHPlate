@@ -30,7 +30,7 @@
              * @param string $code
              * The JavaScript-code.
              */
-            public function InlineScript1(string $code)
+            public function InlineScript1(?string $code)
             {
                 $this->Code = $code;
             }
@@ -43,9 +43,16 @@
              */
             public function Draw() : string
             {
-                return '
-                    <script type="text/javascript">'.$this->Code.'
-                    </script>';
+                if ($this->Code !== null)
+                {
+                    return '
+                        <script type="text/javascript">'.$this->Code.'
+                        </script>';
+                }
+                else
+                {
+                    return '';
+                }
             }
         }
     }

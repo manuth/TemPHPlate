@@ -48,7 +48,6 @@
             public function Dictionary()
             {
                 $this->comparer = EqualityComparer::$Default;
-
                 $this->InnerList = new ArrayList();
             }
 
@@ -93,7 +92,7 @@
              * @param EqualityComparer $comparer
              * The EqualityComparer implementation to use when comparing keys, or null to use the default EqualityComparer.
              */
-            public function Dictionary2(Dictionary $dictionary, EqualityComparer $comparer)
+            public function Dictionary2(Dictionary $dictionary, ?EqualityComparer $comparer)
             {
                 $this->This();
 

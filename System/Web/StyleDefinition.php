@@ -20,7 +20,7 @@
              * @return InlineStyle
              * The style-definition that contains the code.
              */
-            public static function FromCode(string $code) : InlineStyle
+            public static function FromCode(?string $code) : InlineStyle
             {
                 return new InlineStyle($code);
             }
@@ -34,7 +34,7 @@
              * @return StyleSheet
              * The style-definition that contains the file.
              */
-            public static function FromFile(string $fileName) : StyleSheet
+            public static function FromFile(?string $fileName) : StyleSheet
             {
                 return new StyleSheet($fileName);
             }

@@ -25,6 +25,9 @@
              */
             private $menuBar;
 
+            /**
+             * Initializes a new instance of the `Page` class.
+             */
             public function Page()
             {
             }
@@ -76,7 +79,7 @@
             }
 
             /**
-             * Initializes the object.
+             * @ignore
              */
             protected function __Initialize()
             {

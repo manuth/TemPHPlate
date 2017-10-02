@@ -12,17 +12,6 @@
         interface  IObject
         {
             /**
-             * Casts the object to another type.
-             *
-             * @param string $class
-             * The type to convert the object to.
-             * 
-             * @return mixed
-             * The casted object.
-             */
-            function Cast(string $class);
-
-            /**
              * Returns a string which represents the object.
              *
              * @return string

@@ -26,11 +26,12 @@
 
             /**
              * Gets the type from which the current _Type directly inherits.
+             * 
              * @return _Type
              */
             public function getBaseType() : ?self
             {
-                if (($this->phpType instanceof \ReflectionClass) && $this->phpType->getParentClass())
+                if (($this->phpType instanceof \ReflectionClass) && !$this->getIsInterface() && $this->phpType->getParentClass())
                 {
                     $type = new _Type();
                     $parentType = $this->phpType->getParentClass();
@@ -152,20 +153,6 @@
                 {
                     return null;
                 }
-            }
-
-            /**
-             * s the object to another type.
-             *
-             * @param string $class
-             * The type to convert the object to.
-             * 
-             * @return mixed
-             * The ed object.
-             */
-            public function Cast(string $class)
-            {
-                return $this->CastInternal($class);
             }
 
             /**
@@ -368,7 +355,7 @@
              * @return _Type
              * The type with the specified name, if found; otherwise, **null**.
              */
-            public static function GetByName(?string $typeName) : ?self
+            public static function GetByName(string $typeName) : ?self
             {
                 if ($typeName !== null)
                 {

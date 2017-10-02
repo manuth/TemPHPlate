@@ -17,7 +17,7 @@
              * @param string $invalidCultureName
              * The Culture Name that cannot be found.
              */
-            public function CultureNotFoundException1(string $invalidCultureName)
+            public function CultureNotFoundException1(?string $invalidCultureName)
             {
                 $this->This($invalidCultureName, '', null);
             }
@@ -34,7 +34,7 @@
              * @param \Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function CultureNotFoundException3(string $invalidCultureName, string $message, ?\Exception $innerException)
+            public function CultureNotFoundException3(?string $invalidCultureName, ?string $message, ?\Exception $innerException)
             {
                 $this->Base($invalidCultureName, $message, $innerException);
             }

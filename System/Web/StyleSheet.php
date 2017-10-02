@@ -30,7 +30,7 @@
              * @param string $fileName
              * The path to the Cascading StyleSheet-file.
              */
-            public function StyleSheet1(string $fileName)
+            public function StyleSheet1(?string $fileName)
             {
                 $this->FileName = $fileName;
             }
@@ -43,8 +43,15 @@
              */
             public function Draw() : string
             {
-                return '
-                    <link href="'.htmlspecialchars($this->FileName).'" rel="stylesheet" />';
+                if ($this->FileName !== null)
+                {
+                    return '
+                        <link href="'.htmlspecialchars($this->FileName).'" rel="stylesheet" />';
+                }
+                else
+                {
+                    return '';
+                }
             }
         }
     }

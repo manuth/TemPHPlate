@@ -43,8 +43,15 @@
              */
             public function Draw() : string
             {
-                return '
-                    <script src="'.htmlspecialchars($this->FileName).'"></script>';
+                if ($this->FileName != null)
+                {
+                    return '
+                        <script src="'.htmlspecialchars($this->FileName).'"></script>';
+                }
+                else
+                {
+                    return '';
+                }
             }
         }
     }

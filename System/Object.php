@@ -20,20 +20,6 @@
             }
 
             /**
-             * Casts the object to another type.
-             *
-             * @param string $class
-             * The type to convert the object to.
-             * 
-             * @return mixed
-             * The casted object.
-             */
-            public function Cast(string $class)
-            {
-                return $this->CastInternal($cast);
-            }
-
-            /**
              * Returns a string which represents the object.
              *
              * @return string
@@ -67,7 +53,7 @@
             }
             
             /**
-             * Initializes the object.
+             * @ignore
              */
             protected function __Initialize()
             {

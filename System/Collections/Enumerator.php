@@ -20,14 +20,14 @@
             /**
              * The function to iterate.
              *
-             * @var Closure
+             * @var \Closure
              */
             private $function;
 
             /**
              * The iterator.
              *
-             * @var Iterator
+             * @var \Iterator
              */
             private $innerIterator;
 

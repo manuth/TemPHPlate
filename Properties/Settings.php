@@ -43,9 +43,7 @@
             public static $FallbackPage = 'Page';
 
             /**
-             * Initializes the settings.
-             *
-             * @return void
+             * @ignore
              */
             public static function __InitializeStatic()
             {

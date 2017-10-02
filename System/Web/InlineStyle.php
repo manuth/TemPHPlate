@@ -30,7 +30,7 @@
              * @param string $code
              * The CSS-code.
              */
-            public function InlineStyle1(string $code)
+            public function InlineStyle1(?string $code)
             {
                 $this->Code = $code;
             }
@@ -43,9 +43,16 @@
              */
             public function Draw() : string
             {
-                return '
-                    <style>'.$this->Code.'
-                    </style>';
+                if ($this->Code !== null)
+                {
+                    return '
+                        <style>'.$this->Code.'
+                        </style>';
+                }
+                else
+                {
+                    return '';
+                }
             }
         }
     }

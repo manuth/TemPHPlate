@@ -189,7 +189,7 @@
              * @return ArrayList
              * An ArrayList of the target type containing the converted elements from the current ArrayList.
              */
-            public function ConvertAll(callable $converter) : ArrayList
+            public function ConvertAll(callable $converter) : self
             {
                 return $this->Select($converter)->ToList();
             }
@@ -211,7 +211,7 @@
              * 
              * @return void
              */
-            public function CopyTo($array, int $arrayIndex = 0, int $index = 0, int $count = null)
+            public function CopyTo($array, int $arrayIndex = 0, int $index = 0, ?int $count = null)
             {
                 if ($count === null)
                 {

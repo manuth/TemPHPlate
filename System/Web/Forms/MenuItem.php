@@ -27,7 +27,7 @@
              * @param string $text
              * The text of the menu-item.
              */
-            public function MenuItem0(string $name, string $text)
+            public function MenuItem0(?string $name, ?string $text)
             {
                 $this->Name = $id;
                 $this->Text = $text;

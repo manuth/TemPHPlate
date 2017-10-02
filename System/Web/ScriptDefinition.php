@@ -20,7 +20,7 @@
              * @return InlineScript
              * The script-definition that contains the code.
              */
-            public static function FromCode(string $code) : InlineScript
+            public static function FromCode(?string $code) : InlineScript
             {
                 return new InlineScript($code);
             }
@@ -34,7 +34,7 @@
              * @return ScriptFile
              * The script-definition that contains the file.
              */
-            public static function FromFile(string $fileName) : ScriptFile
+            public static function FromFile(?string $fileName) : ScriptFile
             {
                 return new ScriptFile($fileName);
             }

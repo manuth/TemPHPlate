@@ -31,7 +31,7 @@
              * @param string $message
              * The message of the exception.
              */
-            public function Exception1(string $message)
+            public function Exception1(?string $message)
             {
                 $this->This($message, null);
             }
@@ -45,23 +45,9 @@
              * @param \Exception $innerException
              * The exception that is the cause of the current exception. If the innerException parameter is not null, the current exception is raised in a catch block that handles the inner exception.
              */
-            public function Exception2(string $message, ?\Exception $innerException)
+            public function Exception2(?string $message, ?\Exception $innerException)
             {
                 parent::__construct($message, 0, $innerException);
-            }
-
-            /**
-             * Casts the object to another type.
-             *
-             * @param string $class
-             * The type to convert the object to.
-             * 
-             * @return mixed 
-             * The casted object.
-             */
-            public function Cast(string $class)
-            {
-                return $this->CastInternal($cast);
             }
 
             /**
