@@ -82,12 +82,86 @@
             }
 
             /**
+             * @ignore
+             */
+            public function getTitle() : string
+            {
+                return $this->Page->Title;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function setTitle(string $value)
+            {
+                $this->Page->Title = $value;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function getLocale() : CultureInfo
+            {
+                return $this->Page->Locale;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function setLocale(CultureInfo $value)
+            {
+                $this->Page->Locale = $value;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getIcon() : string
+            {
+                return $this->Page->Icon;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function setIcon(string $value)
+            {
+                $this->Page->Icon = $value;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function getAppleTouchIcon() : string
+            {
+                return $this->Page->AppleTouchIcon;
+            }
+
+            
+            /**
+             * @ignore
+             */
+            public function setAppleTouchIcon(string $value)
+            {
+                $this->Page->AppleTouchIcon = $value;
+            }
+
+            /**
              * Initializes the object.
              */
             protected function __Initialize()
             {
                 parent::__Initialize();
                 $this->Renderer = new Renderer();
+                unset($this->Title);
+                unset($this->Locale);
+                unset($this->Icon);
+                unset($this->AppleTouchIcon);
             }
             
             /**
