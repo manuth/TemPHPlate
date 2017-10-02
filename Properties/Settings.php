@@ -46,7 +46,7 @@
                 $menuBarPath = implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', 'Properties', 'MenuBar.json'));
                 if (file_exists($menuBarPath))
                 {
-                    self::$MenuBar = MenuBar::FromJSON(json_decode(file_get_contents($menuBarPath))->menuBar);
+                    self::$MenuBar = MenuBar::FromJSON(json_decode(file_get_contents($menuBarPath)));
                 }
                 else
                 {

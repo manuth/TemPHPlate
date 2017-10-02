@@ -5,6 +5,8 @@
      */
     namespace System\Web\Forms;
     use System\Collections\ArrayList;
+    use System\Environment;
+    use System\IO\Path;
     {
         /**
          * Represents a menu-bar.
@@ -17,6 +19,13 @@
             public function MenuBar()
             {
             }
+
+            /**
+             * Gets or sets the URL of the menu-bar.
+             *
+             * @var string
+             */
+            public $URL;
             
             /**
              * Gets or sets the style of the menu-bar.
@@ -54,41 +63,67 @@
                 {
                     $menuItem;
 
-                    switch ($item->type)
+                    switch ($item->Type)
                     {
-                        case 'menuItemGroup':
-                            $menuItem = new MenuItemGroup();
-                            $menuItem->Items->AddRange($loadItems($item->items));
+                        case 'MenuItem':
+                            $menuItem = new MenuItem();
                             break;
-                        case 'menuItem':
+                        case 'LinkedMenuItem':
                             $menuItem = new LinkedMenuItem();
-                            $menuItem->URL = $item->url;
-                            
-                            if (property_exists($item, 'newTab'))
+
+                            if (strpos($item->URL, '://') === false)
                             {
-                                $menuItem->NewTab = $item->newTab;
+                                $menuItem->URL = str_replace(DIRECTORY_SEPARATOR, '/', Path::MakeRelativePath($item->URL));
+                            }
+                            else
+                            {
+                                $menuItem->URL = $item->URL;
+                            }
+                            if (property_exists($item, 'NewTab'))
+                            {
+                                $menuItem->NewTab = $item->NewTab;
                             }
                             break;
-                        case 'menuItemSeparator':
-                            $menuItem = new MenuItemSeparator();
-                            $item->name = '';
+                        case 'MenuItemGroup':
+                            $menuItem = new MenuItemGroup();
+                            $menuItem->Items->AddRange($loadItems($item->Items));
                             break;
-                        case 'menuItemText':
-                            $menuItem = new MenuItem();
+                        case 'MenuItemSeparator':
+                            $menuItem = new MenuItemSeparator();
+                            $item->Text = '';
                             break;
                     }
 
-                    $menuItem->Name = $item->id;
-                    $menuItem->Text = $item->name;
+                    $menuItem->Name = $item->Name;
+                    $menuItem->Text = $item->Text;
+
+                    if (property_exists($item, 'Enabled'))
+                    {
+                        $menuItem->Enabled = $item->Enabled;
+                    }
+                    
+                    if (property_exists($item, 'Visible'))
+                    {
+                        $menuItem->Visible = $item->Visible;
+                    }
 
                     return $menuItem;
                 };
 
-                $menuBar->Text = $jsonObject->text;
-                $menuBar->Items->AddRange($loadItems($jsonObject->items));
-                $menuBar->Style = $jsonObject->style;
+                $menuBar->Name = $jsonObject->Name;
+                $menuBar->Text = $jsonObject->Text;
 
-                
+                if (property_exists($jsonObject, 'URL'))
+                {
+                    $menuBar->URL = $jsonObject->URL;
+                }
+                else
+                {
+                    $menuBar->URL = str_replace(DIRECTORY_SEPARATOR, '/', Path::MakeRelativePath(Environment::$RequestDirectory, Environment::$DocumentRoot));
+                }
+                $menuBar->Style = $jsonObject->Style;
+                $menuBar->Items->AddRange($loadItems($jsonObject->Items));
+
                 return $menuBar;
             }
         }
