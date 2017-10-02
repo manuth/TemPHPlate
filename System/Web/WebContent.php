@@ -34,6 +34,13 @@
             public $Icon;
 
             /**
+             * Gets or sets the iOS-icon of the content.
+             *
+             * @var string
+             */
+            public $AppleTouchIcon;
+
+            /**
              * Gets or sets the style-definitions of the content.
              *
              * @var StyleCollection
