@@ -32,7 +32,7 @@
         }
 
         
-        if (array_key_exists('Page', $_GET) && LoadPage($_GET['Page']) != null)
+        if (array_key_exists('Page', $_GET) && LoadPage(str_replace('/', '\\', $_GET['Page'])) != null)
         {
             $page = LoadPage(str_replace('/', '\\', $_GET['Page']));
         }
