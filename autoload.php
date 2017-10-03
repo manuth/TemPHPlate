@@ -28,7 +28,15 @@
 
                 if (method_exists($class, '__InitializeStatic'))
                 {
-                    $class::__InitializeStatic();
+                    if ((new ReflectionMethod($class, '__InitializeStatic'))->isStatic())
+                    {
+                        $class::__InitializeStatic();
+                    }
+                    else
+                    {
+                        $object = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+                        $object->__InitializeStatic();
+                    }
                 }
             }
         });
