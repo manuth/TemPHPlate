@@ -5,7 +5,7 @@
      */
     use System\IO\FileNotFoundException;
     {
-        require('vendor\autoload.php');
+        require('vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 
         /**
          * Requires class-files automatically.
