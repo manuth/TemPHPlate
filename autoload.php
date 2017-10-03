@@ -5,6 +5,8 @@
      */
     use System\IO\FileNotFoundException;
     {
+        require('vendor\autoload.php');
+
         /**
          * Requires class-files automatically.
          */
