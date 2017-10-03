@@ -80,13 +80,15 @@
                     'php3',
                     'php4',
                     'php5',
-                    'php.inc',
-                    'inc',
+                    'inc.php',
                     'markdown',
                     'mkdown',
                     'mkdn',
                     'mkd',
                     'md',
+                    'html',
+                    'htm',
+                    'xhtml',
                     'txt'));
             
             $files = $fileExtensions->ConvertAll(
