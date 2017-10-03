@@ -61,10 +61,10 @@
              * @return YAMLDocument
              * The deserialized `YAMLDocument`.
              */
-            public function Parse(string $value, bool $parseMarkdown = false)
+            public function Parse(string $value, bool $parseMarkdown = false) : YAMLDocument
             {
                 $document = $this->parser->parse($value, $parseMarkdown);
-                return new YAMLDocument($document->getYAML(), $document->getContent());
+                return new YAMLDocument($document->getYAML() ?? array(), $document->getContent());
             }
 
             /**
