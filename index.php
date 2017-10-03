@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     DEFINE('TemPHPlate', null);
+    DEFINE('DefaultNamespace', 'ManuTh\\TemPHPlate');
 
     foreach (json_decode(file_get_contents(join(DIRECTORY_SEPARATOR, array(__DIR__, 'Properties', 'Config.json')), true)) as $key => $value)
     {
@@ -12,8 +13,11 @@
 
     require('autoload.php');
     use System\{
+        Environment,
         Exception,
-        Globalization\CultureInfo
+        Globalization\CultureInfo,
+        Collections\ArrayList,
+        Web\DocumentPage
     };
     use ManuTh\TemPHPlate\Properties\Settings;
     {
@@ -57,7 +61,7 @@
         function LoadPage(string $pageName)
         {
             $namespaces = array(
-                'ManuTh\\TemPHPlate\\Pages',
+                DefaultNamespace.'\\Pages',
                 TemPHPlateNamespace.'\\Pages');
 
             foreach ($namespaces as $namespace)
@@ -70,9 +74,36 @@
                 }
             }
             
-            if (file_exists(($markdownFile = join(DIRECTORY_SEPARATOR, array(__DIR__, str_replace('\\', DIRECTORY_SEPARATOR, $pageName).'.md')))))
+            $fileExtensions = new ArrayList(
+                array(
+                    'php',
+                    'php3',
+                    'php4',
+                    'php5',
+                    'php.inc',
+                    'inc',
+                    'markdown',
+                    'mkdown',
+                    'mkdn',
+                    'mkd',
+                    'md',
+                    'txt'));
+            
+            $files = $fileExtensions->ConvertAll(
+                function ($extension) use ($pageName)
+                {
+                    return join(DIRECTORY_SEPARATOR, array(__DIR__, 'Pages', str_replace('\\', DIRECTORY_SEPARATOR, $pageName).'.'.$extension));
+                });
+            
+            $file = $files->FirstOrDefault(
+                function ($file)
+                {
+                    return file_exists($file);
+                });
+            
+            if ($file !== null)
             {
-                return new MarkdownPage($markdownFile);
+                return new DocumentPage($file);
             }
             else
             {

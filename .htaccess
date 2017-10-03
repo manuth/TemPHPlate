@@ -23,6 +23,15 @@ RewriteEngine On
 
     RewriteCond %{IS_SUBREQ} ^false$
     RewriteCond Pages/%{ENV:PagePath}.php -F  [OR]
-    RewriteCond %{ENV:PagePath}.md -F  [OR]
-    RewriteCond %{ENV:PagePath} -F
+    RewriteCond Pages/%{ENV:PagePath}.php3 -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.php4 -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.php5 -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.php.inc -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.inc -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.markdown -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.mkdown -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.mkdn -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.mkd -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.md -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.txt -F  [OR]
         RewriteRule ^ ?Page=%{ENV:PagePath}  [QSA,L]
