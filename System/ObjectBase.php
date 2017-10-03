@@ -12,13 +12,6 @@
         trait ObjectBase
         {
             /**
-             * The data of the object.
-             *
-             * @var array
-             */
-            private $data = array();
-
-            /**
              * Returns the type of the current constructor-level.
              *
              * @var _Type
@@ -273,7 +266,7 @@
                 }
                 else if ($method->isProtected())
                 {
-                    return _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this)));
+                    return !empty($class) && _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this)));
                 }
                 else
                 {
@@ -304,7 +297,7 @@
                     {
                         if ($throwErrors)
                         {
-                            trigger_error('Undefined property: '.__CLASS__.'::$'.$propertyName, E_USER_NOTICE);
+                            trigger_error('Undefined property: '.__CLASS__.'::$'.$propertyName, E_USER_ERROR);
                         }
 
                         return false;
@@ -313,7 +306,7 @@
                     {
                         if ($throwErrors)
                         {
-                            trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName);
+                            trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
                         }
 
                         return false;
@@ -421,7 +414,7 @@
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            trigger_error('Call to '.($constructor->isPrivate() ? 'private ' : $constructor->isProtected() ? 'protected ' : '').$constructor->class.'::'.$constructor->name.' from invalid context.', E_USER_ERROR);
                         }
 
                         $constructor->invokeArgs($this, $args);
