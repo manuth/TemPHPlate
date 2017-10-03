@@ -4,6 +4,7 @@
      * @license Apache
      */
     namespace System\YAML;
+    use System\Object;
     use Mni\FrontYAML\Document;
     {
         /**

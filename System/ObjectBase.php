@@ -43,15 +43,19 @@
             {
                 $callerClass = $this->GetCallerClass();
                 $functionName = 'get'.$property;
-                $method = $this->GetProperty($callerClass, $functionName);
 
-                if ($this->IsAccessible($callerClass, $method))
+                $method = $this->GetProperty($callerClass, $functionName, true);
+
+                if ($method !== null)
                 {
-                    if (!$method->isPublic())
+                    if ($this->IsAccessible($callerClass, $method))
                     {
-                        $method->setAccessible(true);
+                        if (!$method->isPublic())
+                        {
+                            $method->setAccessible(true);
+                        }
+                        return $method->Invoke($this);
                     }
-                    return $method->Invoke($this);
                 }
             }
 
@@ -63,16 +67,20 @@
             {
                 $callerClass = $this->GetCallerClass();
                 $functionName = 'set'.$property;
-                $method = $this->GetProperty($callerClass, $functionName);
 
-                if ($this->IsAccessible($callerClass, $method))
+                $method = $this->GetProperty($callerClass, $functionName, true);
+
+                if ($method !== null)
                 {
-                    if (!$method->isPublic())
+                    if ($this->IsAccessible($callerClass, $method))
                     {
-                        $method->setAccessible(true);
+                        if (!$method->isPublic())
+                        {
+                            $method->setAccessible(true);
+                        }
+                        
+                        $method->invoke($this, $value);
                     }
-                    
-                    $method->invoke($this, $value);
                 }
             }
 
@@ -101,14 +109,21 @@
 
                 $method = _Type::GetByName(get_class($this))->GetMethod($name, $argumentTypes);
 
-                if ($this->IsAccessible($callerClass, $method))
+                if ($method !== null)
                 {
-                    if (!$method->isPublic())
+                    if ($this->IsAccessible($callerClass, $method))
                     {
-                        $method->setAccessible(true);
+                        if (!$method->isPublic())
+                        {
+                            $method->setAccessible(true);
+                        }
+    
+                        return $method->invokeArgs($this, $args);
                     }
-
-                    return $method->invokeArgs($this, $args);
+                }
+                else
+                {
+                    trigger_error('Call to undefined method'.__CLASS__.'::'.$name.'()', E_USER_ERROR);
                 }
             }
 
@@ -275,28 +290,67 @@
              * @param string $methodName
              * The name of the method to access the property.
              * 
+             * @param bool $throwErrors
+             * Indicates whether to throw errors.
+             * 
              * @return \ReflectionMethod
              * A \ReflectionMethod that represents the method that is to be called.
              */
-            private function GetProperty(string $class, string $methodName) : \ReflectionMethod
+            private function GetProperty(string $class, string $methodName, $throwErrors = false) : ?\ReflectionMethod
             {
-                if ($class)
+                $verify = function (string $propertyName, ?\ReflectionMethod $method, string $callerClass, bool $throwErrors) : bool
                 {
-                    if (_Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))))
+                    if ($method === null)
                     {
-                        if (method_exists($class, $methodName))
+                        if ($throwErrors)
                         {
-                            $method = new \ReflectionMethod($class, $methodName);
-    
-                            if ($method->getDeclaringClass() == new \ReflectionClass($class) && $method->isPrivate())
-                            {
-                                return $method;
-                            }
+                            trigger_error('Undefined property: '.__CLASS__.'::$'.$propertyName, E_USER_NOTICE);
                         }
+
+                        return false;
                     }
+                    else if (!$this->IsAccessible($callerClass, $method))
+                    {
+                        if ($throwErrors)
+                        {
+                            trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName);
+                        }
+
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                };
+                $result;
+
+                if (
+                    $class &&
+                    _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))) &&
+                    method_exists($class, $methodName) &&
+                    ($method = new \ReflectionMethod($class, $methodName))->getDeclaringClass() == new \ReflectionClass($class) &&
+                    $method->isPrivate())
+                {
+                    $result = $method;
                 }
-                
-                return new \ReflectionMethod($this, $methodName);
+                else if (method_exists($this, $methodName))
+                {
+                    $result = new \ReflectionMethod($this, $methodName);
+                }
+                else
+                {
+                    $result = null;
+                }
+
+                if ($verify(preg_replace('/^(?:get|set)(.*)$/', '$1', $methodName), $result, $class, $throwErrors))
+                {
+                    return $result;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             /**

@@ -16,7 +16,7 @@
          * @property MenuBar $MenuBar
          * Gets or sets the menu-bar of the page.
          */
-        class Page extends WebContent implements IRenderer
+        abstract class Page extends WebContent implements IRenderer
         {
             /**
              * The menu-bar of the page.
@@ -67,15 +67,6 @@
             public function Render(IRenderable $item) : string
             {
                 return $this->Renderer->Render($item);
-            }
-
-            /**
-             * Draws the object.
-             *
-             * @return void
-             */
-            protected function DrawInternal()
-            {
             }
 
             /**
