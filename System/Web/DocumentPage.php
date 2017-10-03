@@ -174,6 +174,11 @@
                     }
                 }
 
+                if ($this->DocumentType == DocumentType::$Other)
+                {
+                    $content = htmlspecialchars($content);
+                }
+
                 echo $content;
             }
         }
