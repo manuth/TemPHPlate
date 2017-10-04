@@ -117,5 +117,8 @@
         $time = microtime(true);
         include 'Pages.php';
         var_dump(microtime(true) - $time);
+        $time = microtime(true);
+        include 'Enum.php';
+        var_dump(microtime(true) - $time);
     }
 ?>
