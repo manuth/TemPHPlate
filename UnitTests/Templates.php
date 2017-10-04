@@ -18,10 +18,8 @@
             <p>Generating following structure:</p>
             <div class="alert alert-info">
                 <b>$template2</b><br />
-                Locale: \'en-US\'
                 <div class="alert alert-info">
                     <b>$template1</b><br />
-                    Locale: \'en-GB\'
                     <div class="alert alert-info">
                         <b>$page</b><br />
                         Locale: \'de-CH\'
@@ -33,18 +31,16 @@
         $page = new Page();
         $page->Locale = new CultureInfo('de-CH');
         $template1 = new Template($page);
-        $template1->Locale = new CultureInfo('en-GB');
         $template2 = new Template($template1);
-        $template2->Locale = new CultureInfo('en-US');
         
         echo "
             <h3>Checking values of <code>\$template1</code>...</h3>";
-        RunTest('$template1->Locale->ToString()', 'en-GB');
+        RunTest('$template1->Locale->ToString()', 'de-CH');
         RunTest('$template1->Page->Locale', $page->Locale);
         RunTest('$template1->Content->Locale', $page->Locale);
         echo "
             <h3>Checking values of <code>\$template2</code>...</h3>";
-        RunTest('$template2->Locale->ToString()', 'en-US');
+        RunTest('$template2->Locale->ToString()', 'de-CH');
         RunTest('$template2->Page->Locale', $page->Locale);
         RunTest('$template2->Content->Locale', $template1->Locale);
         echo "

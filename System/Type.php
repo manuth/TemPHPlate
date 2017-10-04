@@ -63,7 +63,7 @@
              */
             public function getBaseType() : ?self
             {
-                return $this->type->getBaseType();
+                return self::FromType($this->type->getBaseType());
             }
 
             /**
@@ -151,7 +151,7 @@
              * @ignore
              * @return string
              */
-            public function getNamespace() : string
+            public function getNamespace() : ?string
             {
                 return $this->type->getNamespace();
             }
@@ -165,10 +165,18 @@
              * @return self
              * The `Type` object.
              */
-            private static function FromType(_Type $type) : ?self
+            private static function FromType(?_Type $type) : ?self
             {
-                $result = new self();
-                $result->type = $type;
+                if ($type !== null)
+                {
+                    $result = new self();
+                    $result->type = $type;
+                }
+                else
+                {
+                    $result = null;
+                }
+
                 return $result;
             }
             
@@ -197,7 +205,13 @@
              */
             public function GetConstructor(array $types) : ?\ReflectionMethod
             {
-                return $this->type->GetConstructor($types);
+                return $this->type->GetConstructor(
+                    array_map(
+                        function (self $type)
+                        {
+                            return $type->type;
+                        },
+                        $types));
             }
 
             /**
@@ -252,6 +266,30 @@
             public function GetMethods() : array
             {
                 return $this->type->GetMethods();
+            }
+            
+            /**
+             * Searches for the specified method whose parameters match the specified argument types.
+             *
+             * @param string $name
+             * The string containing the name of the method to get.
+             * 
+             * @param array $types
+             * An array of Type objects representing the number, order, and type of the parameters for the method to get.
+             * 
+             * @return \ReflectionMethod
+             * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
+             */
+            public function GetMethod(string $name, ?array $types = null) : ?\ReflectionMethod
+            {
+                return $this->type->GetMethod(
+                    $name,
+                    array_map(
+                        function (self $type)
+                        {
+                            return $type->type;
+                        },
+                        $types));
             }
             
             /**

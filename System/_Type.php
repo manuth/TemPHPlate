@@ -84,7 +84,7 @@
              */
             public function getIsClass() : bool
             {
-                return ($this->phpType instanceof \ReflectionClass) && (!$this->phpType->isInterface() && !$this->phpType->isTrait());
+                return ($this->phpType instanceof \ReflectionClass) && (!$this->phpType->isInterface() && !$this->phpType->isTrait()) && !$this->getIsEnum();
             }
 
             /**
@@ -143,7 +143,7 @@
              * Gets the namespace of the _Type.
              * @return string
              */
-            public function getNamespace() : string
+            public function getNamespace() : ?string
             {
                 if ($this->phpType instanceof \ReflectionClass)
                 {
@@ -289,14 +289,15 @@
              */
             public function GetInterface(string $name, bool $ignoreCase = false) : ?self
             {
-                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($name)
+                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($name, $ignoreCase)
                 {
                     return
                         (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getName()) > 0) ||
-                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getFullName()));
+                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getFullName())) ||
+                        self::GetByName($name) == $interface;
                 });
 
-                if (count($interfaces == 1))
+                if (count($interfaces) == 1)
                 {
                     return current($interfaces);
                 }
@@ -356,7 +357,7 @@
              * 
              * @return \ReflectionMethod
              * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
-             */            
+             */
             public function GetMethod(string $name, ?array $types = null) : ?\ReflectionMethod
             {
                 $result = array();
@@ -534,7 +535,7 @@
              */
             public function IsSubclassOf(self $c) : bool
             {
-                if ($this->getIsClass() && $c->getIsClass())
+                if ((!$this->getIsInterface() && !$this->getIsValueType()) && (!$c->getIsInterface() || !$this->getIsValueType()))
                 {
                     return $this->phpType->isSubclassOf($c->getFullName());
                 }
