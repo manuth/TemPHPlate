@@ -10,6 +10,7 @@
         KeyValuePair
     };
     use System\Environment;
+    use System\Globalization\CultureInfo;
     use System\IO\Path;
     use System\YAML\YAMLDocument;
     use System\YAML\YAMLParser;
@@ -17,6 +18,9 @@
     {
         /**
          * Represents a webpage that wraps a file.
+         * 
+         * @property-read string $FileName
+         * Gets the fully qualified path to the document that is wrapped by this page.
          * 
          * @property-read DocumentType $DocumentType
          * Gets the type of the document that is wrapped by this page.
@@ -44,6 +48,13 @@
             private $document;
 
             /**
+             * The fully qualified path to the document that is wrapped by this page.
+             *
+             * @var string
+             */
+            private $fileName;
+
+            /**
              * The type of the document that is wrapped by this page.
              *
              * @var DocumentType
@@ -58,23 +69,53 @@
              */
             public function DocumentPage(string $fileName)
             {
+                $this->FileName = $fileName;
                 $this->documentType = self::DetectDocumentType($fileName);
                 $this->document = YAMLParser::$Default->Parse(file_get_contents($fileName));
 
-                if (array_key_exists('Template', $this->Data))
+                foreach ($this->Data as $key => $value)
                 {
-                    $templateClasses = new ArrayList(array(
-                        DefaultNamespace.'\\Templates\\'.$this->Data['Template'],
-                        TemPHPlateNamespace.'\\Templates\\'.$this->Data['Template']));
-                    
-                    $templateClass = $templateClasses->First(
-                        function ($class)
-                        {
-                            return class_exists($class);
-                        });
-                    
-                    $this->Template = new $templateClass($this);
+                    switch ($key)
+                    {
+                        case 'Title':
+                        case 'Icon':
+                        case 'AppleTouchIcon':
+                            $this->$key = $value;
+                            break;
+                        case 'Locale':
+                            $this->Locale = new \System\Globalization\CultureInfo($value);
+                            break;
+                        case 'Template':
+                            $templateClasses = new ArrayList(array(
+                                DefaultNamespace.'\\Templates\\'.$this->Data['Template'],
+                                TemPHPlateNamespace.'\\Templates\\'.$this->Data['Template']));
+                            
+                            $templateClass = $templateClasses->First(
+                                function ($class)
+                                {
+                                    return class_exists($class);
+                                });
+                            
+                            $this->Template = new $templateClass($this);
+                            break;
+                    }
                 }
+            }
+
+            /**
+             * @ignore
+             */
+            public function getFileName()
+            {
+                return $this->fileName;
+            }
+
+            /**
+             * @ignore
+             */
+            protected function setFileName(string $value)
+            {
+                $this->fileName = $value;
             }
 
             /**
@@ -162,7 +203,13 @@
 
                 if ($this->DocumentType == DocumentType::$PHP)
                 {
-                    $content = eval('?>'.$content);
+                    ob_start();
+                    $dir = getcwd();
+                    chdir(dirname($this->FileName));
+                    include $this->FileName;
+                    chdir($dir);
+                    $this->document = YAMLParser::$Default->Parse(ob_get_clean());
+                    $content = $this->document->Content;
                 }
                 else
                 {
