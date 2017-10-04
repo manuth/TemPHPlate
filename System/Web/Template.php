@@ -18,7 +18,7 @@
          * @property-read Page $Page
          * Gets or sets the page of the template.
          */
-        class Template extends WebContent
+        class Template extends Page
         {
             /**
              * The content of the template.
@@ -36,19 +36,8 @@
             public function Template1(WebContent $content)
             {
                 $this->Content = $content;
-
-                if ($this->Page instanceof Page)
-                {
-                    $this->Page->Renderer = $this->Renderer;
-                }
+                $this->Page->Renderer = $this->Renderer;
             }
-            
-            /**
-             * The renderer of the page.
-             *
-             * @var IRenderer
-             */
-            public $Renderer;
 
             /**
              * @ignore
@@ -86,7 +75,7 @@
              */
             public function getTitle() : ?string
             {
-                return $this->Page->Title;
+                return $this->Content->Title;
             }
 
             
@@ -95,7 +84,7 @@
              */
             public function setTitle(?string $value)
             {
-                $this->Page->Title = $value;
+                $this->Content->Title = $value;
             }
 
             
@@ -104,7 +93,7 @@
              */
             public function getLocale() : ?CultureInfo
             {
-                return $this->Page->Locale;
+                return $this->Content->Locale;
             }
 
             
@@ -113,7 +102,7 @@
              */
             public function setLocale(?CultureInfo $value)
             {
-                $this->Page->Locale = $value;
+                $this->Content->Locale = $value;
             }
 
             /**
@@ -121,7 +110,7 @@
              */
             public function getIcon() : ?string
             {
-                return $this->Page->Icon;
+                return $this->Content->Icon;
             }
 
             
@@ -130,7 +119,7 @@
              */
             public function setIcon(?string $value)
             {
-                $this->Page->Icon = $value;
+                $this->Content->Icon = $value;
             }
 
             
@@ -139,7 +128,7 @@
              */
             public function getAppleTouchIcon() : ?string
             {
-                return $this->Page->AppleTouchIcon;
+                return $this->Content->AppleTouchIcon;
             }
 
             
@@ -148,7 +137,7 @@
              */
             public function setAppleTouchIcon(?string $value)
             {
-                $this->Page->AppleTouchIcon = $value;
+                $this->Content->AppleTouchIcon = $value;
             }
 
             /**
@@ -162,6 +151,20 @@
                 unset($this->Locale);
                 unset($this->Icon);
                 unset($this->AppleTouchIcon);
+            }
+            
+            /**
+             * Renders a renderable item.
+             *
+             * @param IRenderable $item
+             * The item to render.
+             * 
+             * @return string
+             * A string that represents the rendered item.
+             */
+            public function Render(IRenderable $item) : string
+            {
+                return $this->Content->Render($item);
             }
             
             /**
@@ -182,7 +185,7 @@
              */
             protected function FetchHead() : string
             {
-                return $this->Page->FetchHead();
+                return $this->Content->FetchHead();
             }
             
             /**
@@ -192,7 +195,7 @@
              */
             protected function FetchStyles() : StyleCollection
             {
-                return $this->Page->FetchStyles();
+                return $this->Content->FetchStyles();
             }
             
             /**
@@ -202,7 +205,7 @@
              */
             protected function FetchScripts() : ScriptCollection
             {
-                return $this->Page->FetchScripts();
+                return $this->Content->FetchScripts();
             }
         }
     }

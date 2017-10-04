@@ -116,7 +116,7 @@
                 }
                 else
                 {
-                    trigger_error('Call to undefined method'.__CLASS__.'::'.$name.'()', E_USER_ERROR);
+                    trigger_error('Call to undefined method '.get_class($this).'::'.$name.'()', E_USER_ERROR);
                 }
             }
 
@@ -297,7 +297,7 @@
                     {
                         if ($throwErrors)
                         {
-                            trigger_error('Undefined property: '.__CLASS__.'::$'.$propertyName, E_USER_ERROR);
+                            trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
                         }
 
                         return false;

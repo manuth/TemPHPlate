@@ -69,7 +69,7 @@
              */
             function DrawInternal()
             {
-                echo $this->Page->Render($this->Page->MenuBar);
+                echo $this->Render($this->Page->MenuBar);
                 echo '
                     <div class="container">';
                 parent::DrawInternal();
