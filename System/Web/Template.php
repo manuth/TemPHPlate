@@ -43,7 +43,7 @@
             /**
              * @ignore
              */
-            protected function getContent() : WebContent
+            public function getContent() : WebContent
             {
                 return $this->content;
             }
@@ -51,7 +51,7 @@
             /**
              * @ignore
              */
-            protected function setContent(WebContent $content)
+            public function setContent(WebContent $content)
             {
                 $this->content = $content;
             }

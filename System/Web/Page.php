@@ -20,7 +20,7 @@
          * @property-read bool $SupportsMenuBar
          * Gets a value indicating whether the page supports menu-bars.
          */
-        abstract class Page extends WebContent implements IRenderer
+        class Page extends WebContent implements IRenderer
         {
             /**
              * The menu-bar of the page.
@@ -65,6 +65,15 @@
             public function getSupportsMenuBar()
             {
                 return true;
+            }
+            
+            /**
+             * Draws the object.
+             *
+             * @return void
+             */
+            protected function DrawInternal()
+            {
             }
 
             /**

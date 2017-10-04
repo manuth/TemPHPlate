@@ -11,7 +11,10 @@
     };
     {
         $page = new Page();
-        $page->StyleDefinitions->Add(new StyleSheet('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'));
+        $page->StyleDefinitions->Add(new StyleSheet('./markdown.css'));
+        $page->StyleDefinitions->Add(new StyleSheet('./tomorrow.css'));
+        $page->Title = "This is a test.";
+
         echo $page->Draw();
     }
 ?>

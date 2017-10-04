@@ -43,8 +43,8 @@
                 }
             });');
         $styleCollection = new StyleCollection();
-        $styleCollection->Add(new StyleSheet('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'));
-        $styleCollection->Add(StyleDefinition::FromFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css'));
+        $styleCollection->Add(new StyleSheet('./markdown.css'));
+        $styleCollection->Add(StyleDefinition::FromFile('./tomorrow.css'));
         $styleCollection->Add(StyleDefinition::FromCode('
             #styleTest
             {

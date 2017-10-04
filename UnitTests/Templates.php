@@ -28,6 +28,8 @@
                     </div>
                 </div>
             </div>';
+        
+        global $page, $template1, $template2;
         $page = new Page();
         $page->Locale = new CultureInfo('de-CH');
         $template1 = new Template($page);

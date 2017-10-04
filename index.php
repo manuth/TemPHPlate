@@ -21,7 +21,6 @@
     };
     use ManuTh\TemPHPlate\Properties\Settings;
     {
-        // $mainTime = microtime(true);
         for ($i = 0; $i < count(Settings::$Locales); $i++)
         {
             $cultureInfo = new CultureInfo(Settings::$Locales[$i]);
@@ -46,8 +45,6 @@
         }
 
         echo $page->Draw();
-        // include 'UnitTests/index.php';
-        // var_dump(microtime(true) - $mainTime);
         
         /**
          * Loads a page.
