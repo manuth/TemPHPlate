@@ -7,6 +7,9 @@
     {
         /**
          * Provides the base class for enumerations.
+         * 
+         * @property-read mixed $Value
+         * Gets the enum-value.
          */
         class Enum extends Object
         {
@@ -22,6 +25,14 @@
              */
             public function Enum()
             {
+            }
+
+            /**
+             * @ignore
+             */
+            public function getValue()
+            {
+                return $this->value;
             }
 
             /**
