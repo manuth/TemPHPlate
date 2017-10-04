@@ -31,7 +31,7 @@
         {
             echo "
                 <p>
-                    Calling <code>{$expression}</code>... <b>";
+                    Calling <code>".htmlspecialchars($expression)."</code>... <b>";
             try
             {
                 Run($expression);
@@ -78,7 +78,7 @@
                     $displayValue = json_encode($value);
                 }
 
-                $passed = function($value) use ($expectedValues)
+                $passed = function($value, $expectedValues)
                 {
                     foreach ($expectedValues as $expectedValue)
                     {
@@ -93,8 +93,8 @@
 
                 echo "
                     <p>
-                        Checking <code>{$expression}</code>: {$displayValue} (excepting '".join("' or '", $expectedDisplayValues)."')<br />
-                        <b>".($passed($value) ? 'Test passed!' : 'Test not passed.')."</b>
+                        Checking <code>".htmlspecialchars($expression)."</code>: {$displayValue} (excepting '".join("' or '", $expectedDisplayValues)."')<br />
+                        <b>".($passed($value, $expectedValues) ? 'Test passed!' : 'Test not passed.')."</b>
                     </p>";
             }
         }
