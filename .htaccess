@@ -18,7 +18,7 @@ RewriteEngine On
         RewriteRule ^ -  [F,L]
 
     RewriteCond %{IS_SUBREQ} ^false$
-        RewriteRule ^(.*)$ -  [E=PagePath:$1]
+        RewriteRule ^(.*)$ %1  [E=PagePath:$1]
 
 
     RewriteCond %{IS_SUBREQ} ^false$
@@ -37,4 +37,6 @@ RewriteEngine On
     RewriteCond Pages/%{ENV:PagePath}.htm -F  [OR]
     RewriteCond Pages/%{ENV:PagePath}.xhtml -F  [OR]
     RewriteCond Pages/%{ENV:PagePath}.txt -F  [OR]
+    RewriteCond Pages/%{ENV:PagePath}.php -F
         RewriteRule ^ ?Page=%{ENV:PagePath}  [QSA,L]
+    RewriteRule ^ -  [R=404,L]
