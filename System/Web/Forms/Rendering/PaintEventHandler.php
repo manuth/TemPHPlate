@@ -11,21 +11,6 @@
          */
         class PaintEventHandler extends EventHandler
         {
-            /**
-             * Executes the callbacks objects of the event
-             *
-             * @param object $sender
-             * The source of the event
-             * @param object $e
-             * A PaintEventArgs that contains the event data.
-             */
-            public function Invoke($sender, PaintEventArgs $e)
-            {
-                foreach ($this as $callback)
-                {
-                    $callback->Invoke($sender, $e);
-                }
-            }
         }
     }
 ?>

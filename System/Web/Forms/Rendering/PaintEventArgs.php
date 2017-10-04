@@ -8,6 +8,9 @@
     {
         /**
          * Provides data for the `Paint` event.
+         * 
+         * @property-read IRenderable $Item
+         * Gets the item that will be drawn.
          */
         class PaintEventArgs extends CancelEventArgs
         {

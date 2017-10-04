@@ -19,11 +19,11 @@
              * @param object $e
              * An object that contains no event data.
              */
-            public function Invoke($sender, EventArgs $e)
+            public function __invoke($sender, $e)
             {
                 foreach ($this as $callback)
                 {
-                    $callback->Invoke($sender, $e);
+                    $callback($sender, $e);
                 }
             }
         }

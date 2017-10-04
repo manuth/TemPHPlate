@@ -5,11 +5,12 @@
      */
     namespace System\Web\Forms\Rendering;
     use System\EventHandler;
+    use System\Web\Forms\Control;
     {
         /**
          * Provides the functionality to render renderable items.
          * 
-         * @property-read EventHandler $Paint
+         * @property-read PaintEventHandler $Paint
          * Occurs when an item is drawn.
          */
         interface IRenderer
@@ -17,13 +18,13 @@
             /**
              * Renders a renderable item.
              *
-             * @param IRenderable $item
+             * @param Control $item
              * The item to render.
              * 
              * @return string
              * A string that represents the rendered item.
              */
-            function Render(IRenderable $item) : string;
+            function Render(Control $item) : string;
         }
     }
 ?>

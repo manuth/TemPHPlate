@@ -175,8 +175,8 @@
 
                     $formatter = function (string $content)
                     {
-                        return '
-                            <!DOCTYPE html>
+                        return
+                        '<!DOCTYPE html>
                             <html'.($this->Locale !== null ? ' lang="'.htmlspecialchars($this->Locale).'"' : '').'>
                                 <head>'.$this->FetchHead().(
                                     $this->Title !== null ? '

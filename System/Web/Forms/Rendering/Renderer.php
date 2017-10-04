@@ -18,6 +18,13 @@
         class Renderer extends Object implements IRenderer
         {
             /**
+             * The paint-eventhandler.
+             *
+             * @var PaintEventHandler
+             */
+            private $paint;
+
+            /**
              * Initializes a new instance of the `Renderer` class.
              */
             public function Renderer()
@@ -25,17 +32,51 @@
             }
 
             /**
+             * @ignore
+             */
+            public function getPaint()
+            {
+                return $this->paint;
+            }
+
+            /**
+             * @ignore
+             */
+            private function setPaint($value)
+            {
+                $this->paint = $value;
+            }
+
+            /**
              * Renders a renderable item.
              *
-             * @param IRenderable $item
+             * @param Control $item
              * The item that is to be rendered.
              * 
              * @return string
              * A string that represents the rendered item.
              */
-            public function Render(IRenderable $item) : string
+            public function Render(Control $item) : string
             {
-                return $this->RenderComponent($item);
+                $eventArgs = new PaintEventArgs($item);
+                ($this->Paint)($this, $eventArgs);
+
+                if (!$eventArgs->Cancel && $item->Visible)
+                {
+                    return $this->RenderComponent($item);
+                }
+                else
+                {
+                    return '';
+                }
+            }
+            
+            /**
+             * @ignore
+             */
+            public function __Initialize() : array
+            {
+                return array('Paint' => new PaintEventHandler());
             }
 
             /**

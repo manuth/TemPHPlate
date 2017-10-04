@@ -8,7 +8,7 @@
         /**
          * Represents the base class for classes that contain event data, and provides a value to use for events that do not include event data.
          */
-        class EventArgs extends Base
+        class EventArgs extends Object
         {
             /**
              * Returns an empty instance of the EventArgs class.

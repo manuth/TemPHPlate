@@ -5,6 +5,7 @@
      */
     namespace System\Web;
     use System\Globalization\CultureInfo;
+    use System\Web\Forms\Control;
     use System\Web\Forms\MenuBar;
     use System\Web\Forms\Rendering\Renderer;
     use System\Web\Forms\Rendering\IRenderer;
@@ -37,6 +38,7 @@
             public function Template1(WebContent $content)
             {
                 $this->Content = $content;
+                $this->Page->Renderer->Paint->CopyTo($this->Renderer->Paint);
                 $this->Page->Renderer = $this->Renderer;
             }
 
@@ -180,13 +182,13 @@
             /**
              * Renders a renderable item.
              *
-             * @param IRenderable $item
+             * @param Control $item
              * The item to render.
              * 
              * @return string
              * A string that represents the rendered item.
              */
-            public function Render(IRenderable $item) : string
+            public function Render(Control $item) : string
             {
                 return $this->Content->Render($item);
             }
