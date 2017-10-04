@@ -176,7 +176,7 @@
 
                 if ($this->DocumentType == DocumentType::$Other)
                 {
-                    $content = htmlspecialchars($content);
+                    $content = nl2br(htmlspecialchars($content));
                 }
 
                 echo $content;
