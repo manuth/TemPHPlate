@@ -85,10 +85,9 @@
             /**
              * @ignore
              */
-            protected function __Initialize()
+            private function __Initialize() : array
             {
-                parent::__Initialize();
-                $this->Locale = new CultureInfo('inv');
+                return array('Locale' => new CultureInfo('inv'));
             }
 
             /**

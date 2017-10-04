@@ -5,6 +5,7 @@
      */
     namespace System\Web;
     use System\Globalization\CultureInfo;
+    use System\Web\Forms\MenuBar;
     use System\Web\Forms\Rendering\Renderer;
     use System\Web\Forms\Rendering\IRenderer;
     use System\Web\Forms\Rendering\IRenderable;
@@ -12,7 +13,7 @@
         /**
          * Represents a template.
          * 
-         * @property WebContent $Content
+         * @property Page $Content
          * Gets or sets the content of the template.
          * 
          * @property-read Page $Page
@@ -139,18 +140,41 @@
             {
                 $this->Content->AppleTouchIcon = $value;
             }
+            
+            /**
+             * @ignore
+             */
+            public function getMenuBar()
+            {
+                return $this->Content->MenuBar;
+            }
 
             /**
-             * Initializes the object.
+             * @ignore
              */
-            protected function __Initialize()
+            public function setMenuBar(MenuBar $value)
             {
-                parent::__Initialize();
-                $this->Renderer = new Renderer();
+                $this->Content->MenuBar = $value;
+            }
+            
+            /**
+             * @ignore
+             */
+            public function getSupportsMenuBar()
+            {
+                return $this->Content->SupportsMenuBar;
+            }
+
+            /**
+             * @ignore
+             */
+            private function __Initialize() : array
+            {
                 unset($this->Title);
                 unset($this->Locale);
                 unset($this->Icon);
                 unset($this->AppleTouchIcon);
+                return array('Renderer' => new Renderer());
             }
             
             /**

@@ -28,14 +28,16 @@
 
                 if (method_exists($class, '__InitializeStatic'))
                 {
-                    if ((new ReflectionMethod($class, '__InitializeStatic'))->isStatic())
+                    $method = new ReflectionMethod($class, '__InitializeStatic');
+                    if ($method->isStatic())
                     {
-                        $class::__InitializeStatic();
+                        $method->setAccessible(true);
+                        $method->invoke(null);
                     }
                     else
                     {
                         $object = (new ReflectionClass($class))->newInstanceWithoutConstructor();
-                        $object->__InitializeStatic();
+                        $method->invoke($object);
                     }
                 }
             }

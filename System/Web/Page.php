@@ -5,6 +5,7 @@
      */
     namespace System\Web;
     use ManuTh\TemPHPlate\Properties\Settings;
+    use System\Globalization\CultureInfo;
     use System\Web\Forms\MenuBar;
     use System\Web\Forms\Rendering\Renderer;
     use System\Web\Forms\Rendering\IRenderer;
@@ -15,6 +16,9 @@
          * 
          * @property MenuBar $MenuBar
          * Gets or sets the menu-bar of the page.
+         * 
+         * @property-read bool $SupportsMenuBar
+         * Gets a value indicating whether the page supports menu-bars.
          */
         abstract class Page extends WebContent implements IRenderer
         {
@@ -56,6 +60,14 @@
             }
 
             /**
+             * @ignore
+             */
+            public function getSupportsMenuBar()
+            {
+                return true;
+            }
+
+            /**
              * Renders a renderable item.
              *
              * @param IRenderable $item
@@ -66,19 +78,23 @@
              */
             public function Render(IRenderable $item) : string
             {
-                return $this->Renderer->Render($item);
+                if (!($item instanceof MenuBar) || $this->SupportsMenuBar)
+                {
+                    return $this->Renderer->Render($item);
+                }
             }
 
             /**
              * @ignore
              */
-            protected function __Initialize()
+            private function __Initialize() : array
             {
-                parent::__Initialize();
-                $this->Renderer = new Renderer();
-                $this->Icon = Settings::$Icon;
-                $this->AppleTouchIcon = Settings::$AppleTouchIcon;
-                $this->MenuBar = Settings::$MenuBar;
+                return array(
+                    'Renderer' => new Renderer(),
+                    'Locale' => CultureInfo::GetCurrentCulture(),
+                    'Icon' => Settings::$Icon,
+                    'AppleTouchIcon' => Settings::$AppleTouchIcon,
+                    'MenuBar' => Settings::$MenuBar);
             }
         }
     }

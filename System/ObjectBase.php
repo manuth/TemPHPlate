@@ -23,6 +23,7 @@
              */
             public function __construct()
             {
+                $this->Initialize();
                 $callerClass = $this->GetCallerClass();
                 $this->constructorLevelType = _Type::GetByName(get_class($this));
                 $this->InvokeConstructor($callerClass, $this->constructorLevelType, func_get_args());
@@ -125,7 +126,7 @@
              *
              * @return string
              */
-            public final function __toString() : string
+            public function __toString()
             {
                 return $this->ToString();
             }
@@ -157,9 +158,69 @@
              * @return Type
              * The exact runtime type of the current instance.
              */
-            public function GetType() : ?Type
+            public function GetType() : ?_Type
             {
-                return Type::GetByName(get_class($this));
+                return _Type::GetByName(get_class($this));
+            }
+
+            /**
+             * Initializes the object.
+             *
+             * @return void
+             */
+            private function Initialize()
+            {
+                $types = array();
+
+                for ($type = _Type::GetByName(get_class($this)); $type != null; $type = $type->getBaseType())
+                {
+                    array_splice($types, 0, 0, array($type));
+                }
+
+                foreach ($types as $type)
+                {
+                    $class = new \ReflectionClass($type->getFullName());
+                    
+                    if (($method = $type->GetMethod('__Initialize')) && $method->getDeclaringClass() == $class)
+                    {
+                        $method->setAccessible(true);
+                        $values = $method->invoke($this);
+
+                        foreach ($values as $propertyName => $value)
+                        {
+                            $property = $type->GetProperty($propertyName);
+
+                            if ($property != null && (!$property->isPrivate() || $property->getDeclaringClass() == $class))
+                            {
+                                $property->setAccessible(true);
+                                $property->setValue($this, $value);
+                            }
+                            else
+                            {
+                                $method = $type->GetMethod('set'.$propertyName);
+
+                                if ($method != null && (!$method->isPrivate() || $method->getDeclaringClass() == $class))
+                                {
+                                    $method->setAccessible(true);
+                                    $method->invoke($this, $value);
+                                }
+                                else
+                                {
+                                    // Trigger a php-error
+                                    $class->newInstanceWithoutConstructor()->$propertyName = $value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /**
+             * @ignore
+             */
+            private function __Initialize() : array
+            {
+                return array();
             }
 
             /**

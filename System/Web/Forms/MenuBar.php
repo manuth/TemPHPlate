@@ -127,9 +127,9 @@
             /**
              * @ignore
              */
-            public function __Initialize()
+            public function __Initialize() : array
             {
-                $this->URL = Path::MakeRelativeWebPath(Environment::$RequestDirectory, Environment::$DocumentRoot);
+                return array('URL' => Path::MakeRelativeWebPath(Environment::$RequestDirectory, Environment::$DocumentRoot));
             }
         }
     }

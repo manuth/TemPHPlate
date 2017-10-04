@@ -54,12 +54,11 @@
             }
             
             /**
-             * Initializes the object.
+             * @ignore
              */
-            protected function __Initialize()
+            private function __Initialize()
             {
-                parent::__Initialize();
-                $this->Renderer = new Rendering\BootstrapRenderer();
+                return array('Renderer' => new Rendering\BootstrapRenderer());
             }
 
             /**

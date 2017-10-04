@@ -16,7 +16,6 @@
              */
             public function Object()
             {
-                $this->__Initialize();
             }
 
             /**
@@ -49,14 +48,29 @@
              */
             public function GetType() : ?Type
             {
-                return $this->GetTypeInternal();
+                return Type::GetByName(get_class($this));
+            }
+            
+            /**
+             * Determines whether the specified object is equal to the current object.
+             *
+             * @param mixed $obj
+             * The object to compare with the current object.
+             * 
+             * @return bool
+             * **true** if the specified object is equal to the current object; otherwise, **false**.
+             */
+            public function Equals($obj) : bool
+            {
+                return $this->EqualsInternal($obj);
             }
             
             /**
              * @ignore
              */
-            protected function __Initialize()
+            private function __Initialize() : array
             {
+                return $this->__InitializeInternal();
             }
             
             use ObjectBase
@@ -64,6 +78,8 @@
                 ToString as private ToStringInternal;
                 GetHashCode as private GetHashCodeInternal;
                 GetType as private GetTypeInternal;
+                Equals as private EqualsInternal;
+                __Initialize as private __InitializeInternal;
             }
         }
     }

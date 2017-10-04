@@ -9,6 +9,7 @@
         Dictionary,
         KeyValuePair
     };
+    use System\Environment;
     use System\IO\Path;
     use System\YAML\YAMLDocument;
     use System\YAML\YAMLParser;

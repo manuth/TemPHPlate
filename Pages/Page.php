@@ -29,10 +29,9 @@
             /**
              * @ignore
              */
-            public function __Initialize()
+            public function __Initialize() : array
             {
-                parent::__Initialize();
-                $this->Template = new BootstrapTemplate($this);
+                return array('Template' => new BootstrapTemplate($this));
             }
         }
     }
