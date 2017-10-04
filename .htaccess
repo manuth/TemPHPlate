@@ -39,4 +39,6 @@ RewriteEngine On
     RewriteCond Pages/%{ENV:PagePath}.txt -F  [OR]
     RewriteCond Pages/%{ENV:PagePath}.php -F
         RewriteRule ^ ?Page=%{ENV:PagePath}  [QSA,L]
+    RewriteCond Pages/%{ENV:PagePath} -F
+        RewriteRule ^ Pages/%{ENV:PagePath}  [QSA,L]
     RewriteRule ^ -  [R=404,L]
