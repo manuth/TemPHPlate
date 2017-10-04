@@ -361,76 +361,73 @@
             {
                 $result = array();
                 $methods = $this->GetMethodsByName($name);
-
-                if (count($methods) > 0)
+                
+                $getSpecificity = function (_Type $type) : int
                 {
-                    $getSpecificity = function (_Type $type) : int
+                    $result = 0;
+
+                    while ($type->getBaseType() != null)
                     {
-                        $result = 0;
+                        $result++;
+                        $type = $type->getBaseType();
+                    }
 
-                        while ($type->getBaseType() != null)
-                        {
-                            $result++;
-                            $type = $type->getBaseType();
-                        }
+                    return $result;
+                };
 
-                        return $result;
-                    };
-
-                    if ($types !== null)
+                if (count($methods) > 0 && $types !== null)
+                {
+                    if (in_array(null, $types, true))
                     {
-                        if (in_array(null, $types, true))
-                        {
-                            throw new ArgumentNullException('types');
-                        }
-                        else
-                        {
-                            $highestSpecificity = 0;
-
-                            foreach ($methods as $method)
-                            {
-                                if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
-                                {
-                                    $specificity = 0;
-                                    $parameters = $method->getParameters();
-
-                                    for ($i = 0; $i < count($types); $i++)
-                                    {
-                                        if ($parameters[$i]->hasType())
-                                        {
-                                            if (strtoupper($types[$i]->getFullName()) == 'NULL')
-                                            {
-                                                if (!$parameters[$i]->allowsNull())
-                                                {
-                                                    continue 2;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                $type = self::GetByName((string)$parameters[$i]->getType());
-                                                $specificity += $getSpecificity($type);
-
-                                                if (!$type->IsAssignableFrom($types[$i]))
-                                                {
-                                                    continue 2;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    $result[$specificity][$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
-                                }
-                            }
-                        }
+                        throw new ArgumentNullException('types');
                     }
                     else
                     {
-                        $result[] = array();
+                        $highestSpecificity = 0;
 
                         foreach ($methods as $method)
                         {
-                            current($result)[$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
+                            if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
+                            {
+                                $specificity = 0;
+                                $parameters = $method->getParameters();
+
+                                for ($i = 0; $i < count($types); $i++)
+                                {
+                                    if ($parameters[$i]->hasType())
+                                    {
+                                        if (strtoupper($types[$i]->getFullName()) == 'NULL')
+                                        {
+                                            if (!$parameters[$i]->allowsNull())
+                                            {
+                                                continue 2;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $type = self::GetByName((string)$parameters[$i]->getType());
+                                            $specificity += $getSpecificity($type);
+
+                                            if (!$type->IsAssignableFrom($types[$i]))
+                                            {
+                                                continue 2;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $result[$specificity][$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
+                            }
                         }
+                    }
+                }
+                else
+                {
+                    $result[] = array();
+
+                    foreach ($methods as $method)
+                    {
+                        $result[0][$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
                     }
                 }
                 
@@ -440,10 +437,11 @@
                 }
 
                 krsort($result);
+                $backup = $result;
                 $result = current($result);
                 krsort($result);
 
-                if (count(current($result)) == 1)
+                if (count($result) > 0 && count(current($result)) == 1)
                 {
                     return current(current($result));
                 }
@@ -473,7 +471,7 @@
              * @return \ReflectionProperty
              * An object representing the property with the specified name, if found; otherwise, **null**.
              */
-            public function GetProperty(string $name) : \ReflectionProperty
+            public function GetProperty(string $name) : ?\ReflectionProperty
             {
                 if ($this->phpType->hasProperty($name))
                 {
@@ -554,7 +552,7 @@
              */
             public function ToString() : string
             {
-                return $this->ToStringInternal();
+                return $this->getFullName();
             }
 
             /**
