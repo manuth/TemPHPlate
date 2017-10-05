@@ -5,7 +5,7 @@ Provides a template-engine for PHP-websites
 ![Preview]  
 _TemPHPlate - PHP made easy!_
 
-# Getting Started
+## Getting Started
 Please have a look at the [Wiki](https://github.com/manuth/TemPHPlate/wiki) in order to get started.
 
 ## Features
