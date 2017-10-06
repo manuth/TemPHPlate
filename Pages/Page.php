@@ -31,8 +31,14 @@
             {
                 echo '
                     <div class="container">
-                        <h1>Hello</h1>
-                        World
+                        <h1>TemPHPlate</h1>
+                        <p>
+                            <img src="./meme.jpg" />
+                        </p>
+                        <p>
+                            Next you may wanna edit your menu-bar.<br />
+                            Open up <code>/Properties/MenuBar.json</code> for doing so.
+                        </p>
                     </div>';
             }
         }
