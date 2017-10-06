@@ -33,12 +33,12 @@
             /**
              * The regular expression for searching for variables.
              */
-            private const variableExpression = '/{{\\s*([^}]*?)\\s*}}/';
+            private const variableExpression = '/{{[\\s]*([\\s\\S]*?)[\\s]*}}/';
 
             /**
              * The regular expression for searching for functions.
              */
-            private const functionExpression = '/{%\\s*([^}]*?)\\s*%}/';
+            private const functionExpression = '/{%[\\s]*([\\s\\S]*?)[\\s]*%}/';
             
             /**
              * The document that is wrapped by this page.
