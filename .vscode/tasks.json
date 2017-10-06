@@ -3,5 +3,19 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
+        {
+            "taskName": "Build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "7z",
+            "args": [
+                "a",
+                "-x@.7zignore",
+                "-up0",
+                "bin/TemPHPlate.zip"
+            ]
+        }
     ]
 }

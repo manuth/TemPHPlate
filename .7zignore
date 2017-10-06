@@ -1,0 +1,11 @@
+.git
+.vs/
+.vscode/
+bin/
+Documents/
+Pages/*/**.*
+UnitTests/
+.7zignore
+.gitignore
+composer.json
+composer.lock
