@@ -4,6 +4,8 @@
 bin/
 Documents/
 Pages/*/**.*
+Pages/*/
+Pages/Test.inc.php
 UnitTests/
 .7zignore
 .gitignore
