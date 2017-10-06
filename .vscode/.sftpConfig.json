@@ -15,6 +15,12 @@
         "autoDelete": true
     },
     "ignore": [
+        ".7zignore",
+        ".gitignore",
+        "composer.json",
+        "composer.lock",
+        "LICENSE",
+        "README.md",
         "**/.vscode/**",
         "**/.git/**",
         "**/.DS_Store",
