@@ -73,10 +73,6 @@
             
             $fileExtensions = new ArrayList(
                 array(
-                    'php',
-                    'php3',
-                    'php4',
-                    'php5',
                     'inc.php',
                     'markdown',
                     'mkdown',
