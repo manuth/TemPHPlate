@@ -1,0 +1,5 @@
+---
+Template: BootstrapTemplate
+---
+<h1>This is plain text...</h1>
+Plain Text-files don't support markup.
