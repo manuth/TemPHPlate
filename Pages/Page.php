@@ -20,18 +20,6 @@
             public function Page()
             {
                 $this->Template = new BootstrapTemplate($this);
-                $this->Renderer->Paint->Add(\Closure::fromCallable(array($this, 'OnItemPaint')));
-            }
-
-            private function OnItemPaint($sender, PaintEventArgs $e)
-            {
-                if ($e->Item instanceof MenuItem)
-                {
-                    if ($e->Item->Name == 'home')
-                    {
-                        $e->Cancel = true;
-                    }
-                }
             }
 
             /**
