@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json.nuth.ch/TemPHPlate/menubar",
+    "Type": "MenuBar",
+    "Name": "menuBar",
+    "Text": "My Website",
+    "Style": "dark",
+    "Items": [
+        {
+            "Type": "LinkedMenuItem",
+            "Name": "home",
+            "Text": "Home",
+            "URL": "."
+        }
+    ]
+}
