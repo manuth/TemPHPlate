@@ -28,10 +28,25 @@
              */
             protected function RenderComponent1(MenuBar $menuBar) : string
             {
+                $classes;
                 $text = htmlspecialchars($menuBar->Text ?? ' ');
                 $name = htmlspecialchars($menuBar->Name);
+
+                if ($menuBar->Style == 'dark')
+                {
+                    $classes = ' navbar-dark bg-dark';
+                }
+                else if ($menuBar->Style == 'default')
+                {
+                    $classes = ' navbar-light bg-light';
+                }
+                else
+                {
+                    $classes = '';
+                }
+
                 $result = '
-                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+                    <nav class="navbar navbar-expand-lg'.$classes.' fixed-top">
                         <div class="container">
                             <a class="navbar-brand" href="'.htmlspecialchars($menuBar->URL).'">'.$text.'</a>
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#'.$name.'" aria-controls="'.$name.'" aria-expanded="false" aria-label="Toggle navigation">
