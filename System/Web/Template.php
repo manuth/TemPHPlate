@@ -63,14 +63,7 @@
              */
             public function getPage() : Page
             {
-                if ($this->Content instanceof Template)
-                {
-                    return $this->Content->Page;
-                }
-                else
-                {
-                    return $this->Content;
-                }
+                return $this->Content;
             }
 
             /**
