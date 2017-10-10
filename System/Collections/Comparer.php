@@ -5,6 +5,7 @@
      */
     namespace System\Collections;
     use System\Object;
+    use System\IComparable;
     {
         /**
          * Defines a method that a type implements to compare two objects.
@@ -33,7 +34,7 @@
                 $this->This(
                     function($x, $y)
                     {
-                        if ($x instanceof IComparble && $y instanceof IComparable)
+                        if ($x instanceof IComparable && $y instanceof IComparable)
                         {
                             return $x->CompareTo($y);
                         }
