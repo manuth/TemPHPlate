@@ -22,5 +22,10 @@ namespace TemPHPlate
             {
             }
         }
+
+        protected override string DrawInternal()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace TemPHPlate
     {
         public string FileName
         {
-            get => default(int);
+            get => default(string);
             set
             {
             }

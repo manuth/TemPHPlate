@@ -9,7 +9,7 @@ namespace TemPHPlate
     {
         public string ScriptBody
         {
-            get => default(int);
+            get => default(string);
             set
             {
             }

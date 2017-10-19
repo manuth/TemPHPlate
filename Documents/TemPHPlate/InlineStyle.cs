@@ -9,7 +9,7 @@ namespace TemPHPlate
     {
         public string Style
         {
-            get => default(int);
+            get => default(string);
             set
             {
             }

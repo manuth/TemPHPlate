@@ -13,7 +13,7 @@ namespace TemPHPlate
 
         public Renderer Renderer
         {
-            get => default(int);
+            get => default(Renderer);
             set
             {
             }
