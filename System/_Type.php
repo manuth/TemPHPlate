@@ -177,6 +177,10 @@
                         {
                             case 'integer':
                                 $typeName = 'int';
+                                break;
+                            case '':
+                                $typeName = 'mixed';
+                                break;
                         }
 
                         switch ($typeName)
@@ -224,17 +228,15 @@
             private function GetMethodsByName(string $name, bool $strictClass = false)
             {
                 $result = array();
+                $expression = "/^{$name}[0-9]*$/";
 
+                /**
+                 * @var \ReflectionMethod $method
+                 */
                 foreach ($this->phpType->getMethods() as $method)
-                {
                     if (!$strictClass || $method->class === $this->phpType->name)
-                    {
-                        if (preg_match("/^{$name}[0-9]*$/", $method->name))
-                        {
+                        if (preg_match($expression, $method->name))
                             $result[] = $method;
-                        }
-                    }
-                }
 
                 return $result;
             }
@@ -376,7 +378,7 @@
                     return $result;
                 };
 
-                if (count($methods) > 0 && $types !== null)
+                if ($types !== null && count($methods) > 0)
                 {
                     if (in_array(null, $types, true))
                     {
@@ -386,6 +388,9 @@
                     {
                         $highestSpecificity = 0;
 
+                        /**
+                         * @var \Reflectionmethod $method
+                         */
                         foreach ($methods as $method)
                         {
                             if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
@@ -417,34 +422,38 @@
                                     }
                                 }
 
-                                $result[$specificity][$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
+                                $result[$specificity][$getSpecificity(self::GetByName($method->class))][] = $method;
                             }
                         }
                     }
                 }
-                else
+                else if (count($methods) > 0)
                 {
                     $result[] = array();
 
                     foreach ($methods as $method)
                     {
-                        $result[0][$getSpecificity(self::GetByName($method->getDeclaringClass()->getName()))][] = $method;
+                        $result[0][$getSpecificity(self::GetByName($method->class))][] = $method;
                     }
                 }
-                
-                if (count($result) == 0)
-                {
-                    $result[] = array(null);
-                }
 
-                krsort($result);
-                $backup = $result;
-                $result = current($result);
-                krsort($result);
-
-                if (count($result) > 0 && count(current($result)) == 1)
+                if (count($result) > 0)
                 {
-                    return current(current($result));
+                    krsort($result);
+                    $backup = $result;
+                    $result = current($result);
+                    krsort($result);
+
+                    $result = current($result);
+
+                    if (count($result) == 1)
+                    {
+                        return current($result);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
                 else
                 {
@@ -499,7 +508,11 @@
              */
             public function IsAssignableFrom(self $c) : bool
             {
-                if ($this->getFullName() == 'iterable')
+                if ($this->getFullName() == $c->getFullName())
+                {
+                    return true;
+                }
+                else if ($this->getFullName() == 'iterable')
                 {
                     return $c->getIsArray() || self::GetByName('\Traversable')->IsAssignableFrom($c);
                 }
@@ -509,18 +522,11 @@
                 }
                 else if (($this->phpType instanceof \ReflectionClass) && ($c->phpType instanceof \ReflectionClass))
                 {
-                    if ($this->getFullName() == $c->getFullName())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return $c->phpType->isSubclassOf($this->getFullName());
-                    }
+                    return $c->phpType->isSubclassOf($this->getFullName());
                 }
                 else
                 {
-                    return $this->getFullName() == $c->getFullName();
+                    return false;
                 }
             }
 
