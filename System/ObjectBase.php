@@ -33,49 +33,21 @@
              * Provides the functionallity for get-property-accessors.
              * @ignore
              */
-            public function __get(string $property)
+            public function __get(string $propertyName)
             {
                 $callerClass = $this->GetCallerClass();
-                $functionName = 'get'.$property;
-
-                $method = $this->GetProperty($callerClass, $functionName, true);
-
-                if ($method !== null)
-                {
-                    if ($this->IsAccessible($callerClass, $method))
-                    {
-                        if (!$method->isPublic())
-                        {
-                            $method->setAccessible(true);
-                        }
-                        return $method->Invoke($this);
-                    }
-                }
+                $this->InvokeProperty($callerClass, 'get', $propertyName, $value);
+                return $value;
             }
 
             /**
              * Provides the functionality for set-property-accessors.
              * @ignore
              */
-            public function __set(string $property, $value)
+            public function __set(string $propertyName, $value)
             {
                 $callerClass = $this->GetCallerClass();
-                $functionName = 'set'.$property;
-
-                $method = $this->GetProperty($callerClass, $functionName, true);
-
-                if ($method !== null)
-                {
-                    if ($this->IsAccessible($callerClass, $method))
-                    {
-                        if (!$method->isPublic())
-                        {
-                            $method->setAccessible(true);
-                        }
-                        
-                        $method->invoke($this, $value);
-                    }
-                }
+                $this->InvokeProperty($callerClass, 'set', $propertyName, $value);
             }
 
             /**
@@ -350,7 +322,7 @@
              * @return \ReflectionMethod
              * A \ReflectionMethod that represents the method that is to be called.
              */
-            private function GetProperty(string $class, string $methodName, $throwErrors = false) : ?\ReflectionMethod
+            private function InvokeProperty(string $class, string $requestType, string $propertyName, &$value)
             {
                 $verify = function (string $propertyName, ?\ReflectionMethod $method, string $callerClass, bool $throwErrors) : bool
                 {
@@ -382,28 +354,36 @@
                 if (
                     $class &&
                     _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))) &&
-                    method_exists($class, $methodName) &&
-                    ($method = new \ReflectionMethod($class, $methodName))->getDeclaringClass() == new \ReflectionClass($class) &&
+                    method_exists($class, $requestType.$propertyName) &&
+                    ($method = new \ReflectionMethod($class, $requestType.$propertyName))->getDeclaringClass() == new \ReflectionClass($class) &&
                     $method->isPrivate())
                 {
                     $result = $method;
                 }
-                else if (method_exists($this, $methodName))
+                else if (method_exists($this, $requestType.$propertyName))
                 {
-                    $result = new \ReflectionMethod($this, $methodName);
+                    $result = new \ReflectionMethod($this, $requestType.$propertyName);
                 }
                 else
                 {
                     $result = null;
                 }
 
-                if ($verify(preg_replace('/^(?:get|set)(.*)$/', '$1', $methodName), $result, $class, $throwErrors))
+                if ($verify($propertyName, $result, $class, true))
                 {
-                    return $result;
-                }
-                else
-                {
-                    return null;
+                    if (!$result->isPublic())
+                    {
+                        $result->setAccessible(true);
+                    }
+
+                    if ($requestType == 'get')
+                    {
+                        $value = $result->invokeArgs($this, array());
+                    }
+                    else if ($requestType == 'set')
+                    {
+                        $result->invokeArgs($this, array($value));
+                    }
                 }
             }
 
