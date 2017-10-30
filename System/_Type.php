@@ -225,7 +225,7 @@
              * @return \ReflectionMethod[]
              * The overloads of the method.
              */
-            private function GetMethodsByName(string $name, bool $strictClass = false)
+            private function GetMethodOverloads(string $name, bool $strictClass = false)
             {
                 $result = array();
                 $expression = "/^{$name}[0-9]*$/";
@@ -265,7 +265,7 @@
             {
                 if ($this->getIsClass())
                 {
-                    return $this->GetMethodsByName($this->getName(), true);
+                    return $this->GetMethodOverloads($this->getName(), true);
                 }
                 else
                 {
@@ -362,31 +362,42 @@
              */
             public function GetMethod(string $name, ?array $types = null) : ?\ReflectionMethod
             {
-                $result = array();
-                $methods = $this->GetMethodsByName($name);
-                
-                $getSpecificity = function (_Type $type) : int
+                if ($types === null)
                 {
-                    $result = 0;
-
-                    while ($type->getBaseType() != null)
+                    if ($this->phpType->hasMethod($name))
                     {
-                        $result++;
-                        $type = $type->getBaseType();
+                        return $this->phpType->getMethod($name);
                     }
-
-                    return $result;
-                };
-
-                if ($types !== null && count($methods) > 0)
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
                 {
+                    
                     if (in_array(null, $types, true))
                     {
                         throw new ArgumentNullException('types');
                     }
                     else
                     {
+                        $result = array();
+                        $methods = $this->GetMethodOverloads($name);
                         $highestSpecificity = 0;
+                        $getSpecificity =
+                            function (_Type $type) : int
+                            {
+                                $result = 0;
+            
+                                while ($type->getBaseType() != null)
+                                {
+                                    $result++;
+                                    $type = $type->getBaseType();
+                                }
+            
+                                return $result;
+                            };
 
                         /**
                          * @var \Reflectionmethod $method
@@ -425,39 +436,30 @@
                                 $result[$specificity][$getSpecificity(self::GetByName($method->class))][] = $method;
                             }
                         }
+        
+                        if (count($result) > 0)
+                        {
+                            krsort($result);
+                            $backup = $result;
+                            $result = current($result);
+                            krsort($result);
+        
+                            $result = current($result);
+        
+                            if (count($result) == 1)
+                            {
+                                return current($result);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
-                }
-                else if (count($methods) > 0)
-                {
-                    $result[] = array();
-
-                    foreach ($methods as $method)
-                    {
-                        $result[0][$getSpecificity(self::GetByName($method->class))][] = $method;
-                    }
-                }
-
-                if (count($result) > 0)
-                {
-                    krsort($result);
-                    $backup = $result;
-                    $result = current($result);
-                    krsort($result);
-
-                    $result = current($result);
-
-                    if (count($result) == 1)
-                    {
-                        return current($result);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
-                }
-                else
-                {
-                    return null;
                 }
             }
 
