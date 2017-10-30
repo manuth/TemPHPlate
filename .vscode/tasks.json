@@ -15,6 +15,14 @@
                 "-x@.7zignore",
                 "-up0",
                 "bin/TemPHPlate.zip"
+            ],
+            "dependsOn": "Install"
+        },
+        {
+            "taskName": "Install",
+            "command": "composer.bat",
+            "args": [
+                "install"
             ]
         }
     ]
