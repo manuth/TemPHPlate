@@ -234,9 +234,15 @@
                  * @var \ReflectionMethod $method
                  */
                 foreach ($this->phpType->getMethods() as $method)
+                {
                     if (!$strictClass || $method->class === $this->phpType->name)
+                    {
                         if (preg_match($expression, $method->name))
+                        {
                             $result[] = $method;
+                        }
+                    }
+                }
 
                 return $result;
             }
@@ -291,11 +297,12 @@
              */
             public function GetInterface(string $name, bool $ignoreCase = false) : ?self
             {
-                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($name, $ignoreCase)
+                $expression = "/^$name$/".($ignoreCase ? 'i' : '');
+                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($expression, $name)
                 {
-                    return
-                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getName()) > 0) ||
-                        (preg_match("/^$name$/".($ignoreCase ? 'i' : ''), $interface->getFullName())) ||
+                    return 
+                        (preg_match($expression, $interface->getName()) > 0) ||
+                        (preg_match($expression, $interface->getFullName())) ||
                         self::GetByName($name) == $interface;
                 });
 
@@ -319,10 +326,12 @@
             {
                 if ($this->phpType instanceof \ReflectionClass)
                 {
-                    return array_map(function ($interfaceName)
-                    {
-                        return self::GetByName($interfaceName);
-                    }, $this->phpType->getInterfaceNames());
+                    return array_map(
+                        function ($interfaceName)
+                        {
+                            return self::GetByName($interfaceName);
+                        },
+                        $this->phpType->getInterfaceNames());
                 }
                 else
                 {
