@@ -3,13 +3,23 @@
      * @author Manuel Thalmann <m@nuth.ch>
      * @license Apache-2.0
      */
-    namespace System
+    namespace System;
+    use System\Reflection\_BindingFlags;
     {
         /**
          * Represents type declarations: class types, interface types, array types, value types and enumeration types.
          */
         class _Type
         {
+            /**
+             * The default bindingflags for searching type-members.
+             * @var int
+             */
+            private const defaultBindingAttrs =
+                _BindingFlags::Instance |
+                _BindingFlags::Static |
+                _BindingFlags::Public;
+
             /**
              * The ReflectionClass of the type.
              *
@@ -212,40 +222,6 @@
                     throw new ArgumentNullException('typeName');
                 }
             }
-            
-            /**
-             * Returns all overloads of the method with the specified name.
-             *
-             * @param string $name
-             * The name of the method whose overloads are to be returned.
-             * 
-             * @param bool $strictClass
-             * A value that indicates whether to excluded derivered methods.
-             * 
-             * @return \ReflectionMethod[]
-             * The overloads of the method.
-             */
-            private function GetMethodOverloads(string $name, bool $strictClass = false)
-            {
-                $result = array();
-                $expression = "/^{$name}[0-9]*$/";
-
-                /**
-                 * @var \ReflectionMethod $method
-                 */
-                foreach ($this->phpType->getMethods() as $method)
-                {
-                    if (!$strictClass || $method->class === $this->phpType->name)
-                    {
-                        if (preg_match($expression, $method->name))
-                        {
-                            $result[] = $method;
-                        }
-                    }
-                }
-
-                return $result;
-            }
 
             /**
              * Searches for an instance constructor whose parameters match the types in the specified array.
@@ -298,13 +274,15 @@
             public function GetInterface(string $name, bool $ignoreCase = false) : ?self
             {
                 $expression = "/^$name$/".($ignoreCase ? 'i' : '');
-                $interfaces = array_filter($this->GetInterfaces(), function (_Type $interface) use ($expression, $name)
-                {
-                    return 
-                        (preg_match($expression, $interface->getName()) > 0) ||
-                        (preg_match($expression, $interface->getFullName())) ||
-                        self::GetByName($name) == $interface;
-                });
+                $interfaces = array_filter(
+                    $this->GetInterfaces(),
+                    function (_Type $interface) use ($expression, $name)
+                    {
+                        return 
+                            (preg_match($expression, $interface->getName()) > 0) ||
+                            (preg_match($expression, $interface->getFullName())) ||
+                            self::GetByName($name) == $interface;
+                    });
 
                 if (count($interfaces) == 1)
                 {
@@ -369,11 +347,28 @@
              * @return \ReflectionMethod
              * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
              */
-            public function GetMethod(string $name, ?array $types = null) : ?\ReflectionMethod
+            public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null) : ?\ReflectionMethod
             {
+                $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
+
                 if ($types === null)
                 {
-                    if ($this->phpType->hasMethod($name))
+                    if (
+                        $this->phpType->hasMethod($name) &&
+                        ($method = $this->phpType->getMethod($name)) != null &&
+                        self::FilterMethod(
+                            $method,
+                            $bindingAttr,
+                            (($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ?
+                                function ($methodName)
+                                {
+                                    return true;
+                                }
+                            :
+                                function ($methodName) use ($name, $bindingAttr)
+                                {
+                                    return $name == $methodName;
+                                }))
                     {
                         return $this->phpType->getMethod($name);
                     }
@@ -593,6 +588,68 @@
             public function GetType() : ?Type
             {
                 return $this->GetTypeInternal();
+            }
+
+            /**
+             * Determines whether a method matches the specified bindingflags.
+             *
+             * @param \ReflectionMethod $method
+             * The method to check.
+             * 
+             * @param int $bindingAttr
+             * The bindingflags to check the method against.
+             * 
+             * @return bool
+             * A value indicating whether the method matches the specified bindingflags.
+             */
+            private static function FilterMethod(\ReflectionMethod $method, int $bindingAttr, callable $nameComparer) : bool
+            {
+                return
+                    (
+                        (
+                            ((($bindingAttr & _BindingFlags::Instance) == _BindingFlags::Instance) && !$method->isStatic()) ||
+                            ((($bindingAttr & _BindingFlags::Static) == _BindingFlags::Static) && $method->isStatic())
+                        ) &&
+                        (
+                            ((($bindingAttr & _BindingFlags::Public) == _BindingFlags::Public) && $method->isPublic()) ||
+                            ((($bindingAttr & _BindingFlags::NonPublic) == _BindingFlags::NonPublic) && !$method->isPublic())
+                        ) &&
+                        $nameComparer($method->getName())
+                    );
+            }
+            
+            /**
+             * Returns all overloads of the method with the specified name.
+             *
+             * @param string $name
+             * The name of the method whose overloads are to be returned.
+             * 
+             * @param bool $strictClass
+             * A value that indicates whether to excluded derivered methods.
+             * 
+             * @return \ReflectionMethod[]
+             * The overloads of the method.
+             */
+            private function GetMethodOverloads(string $name, bool $strictClass = false)
+            {
+                $result = array();
+                $expression = "/^{$name}[0-9]*$/";
+
+                /**
+                 * @var \ReflectionMethod $method
+                 */
+                foreach ($this->phpType->getMethods() as $method)
+                {
+                    if (!$strictClass || $method->class === $this->phpType->name)
+                    {
+                        if (preg_match($expression, $method->name))
+                        {
+                            $result[] = $method;
+                        }
+                    }
+                }
+
+                return $result;
             }
         }
     }
