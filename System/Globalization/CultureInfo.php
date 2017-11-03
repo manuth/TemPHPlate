@@ -166,14 +166,6 @@
             }
 
             /**
-             * @ignore
-             */
-            public static function __InitializeStatic()
-            {
-                self::$InvariantCulture = new self('inv');
-            }
-
-            /**
              * Returns a string which represents the object.
              *
              * @return string
@@ -181,6 +173,14 @@
             public function ToString() : string
             {
                 return $this->Name;
+            }
+            
+            /**
+             * @ignore
+             */
+            private static function __InitializeStatic()
+            {
+                self::$InvariantCulture = new self('inv');
             }
         }
     }

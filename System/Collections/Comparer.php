@@ -76,16 +76,6 @@
             }
 
             /**
-             * Initializes the static values inside the class.
-             *
-             * @return void
-             */
-            public static function __InitializeStatic()
-            {
-                self::$Default = new Comparer();
-            }
-
-            /**
              * Performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
              *
              * @param mixed $x
@@ -100,6 +90,16 @@
             public function Compare($x, $y) : int
             {
                 return ($this->comparer)($x, $y);
+            }
+            
+            /**
+             * Initializes the static values inside the class.
+             *
+             * @return void
+             */
+            private static function __InitializeStatic()
+            {
+                self::$Default = new Comparer();
             }
         }
     }

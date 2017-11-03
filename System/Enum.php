@@ -97,9 +97,39 @@
             }
 
             /**
+             * Returns a string which represents the object.
+             *
+             * @return string
+             * A string that represents the current object.
+             */
+            public function ToString() : string
+            {
+                $result = '';
+                $values = array();
+
+                foreach ((new \ReflectionClass($this))->getProperties() as $property)
+                {
+                    /**
+                     * @var \ReflectionProperty $property
+                     */
+                    if ($property->isStatic())
+                    {
+                        $value = $property->getValue();
+                        
+                        if ($this->HasFlag($value))
+                        {
+                            $values[] = $property->getName();
+                        }
+                    }
+                }
+
+                return join(', ', $values);
+            }
+            
+            /**
              * @ignore
              */
-            public function __InitializeStatic()
+            private function __InitializeStatic()
             {
                 $counter = 0;
                 $class = new \ReflectionClass($this);
@@ -131,36 +161,6 @@
                         $counter++;
                     }
                 }
-            }
-
-            /**
-             * Returns a string which represents the object.
-             *
-             * @return string
-             * A string that represents the current object.
-             */
-            public function ToString() : string
-            {
-                $result = '';
-                $values = array();
-
-                foreach ((new \ReflectionClass($this))->getProperties() as $property)
-                {
-                    /**
-                     * @var \ReflectionProperty $property
-                     */
-                    if ($property->isStatic())
-                    {
-                        $value = $property->getValue();
-                        
-                        if ($this->HasFlag($value))
-                        {
-                            $values[] = $property->getName();
-                        }
-                    }
-                }
-
-                return join(', ', $values);
             }
         }
     }

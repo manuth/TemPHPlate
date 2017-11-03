@@ -59,7 +59,7 @@
             /**
              * @ignore
              */
-            public static function __InitializeStatic()
+            private static function __InitializeStatic()
             {
                 $menuBarPath = implode(DIRECTORY_SEPARATOR, array(__DIR__, '..', 'Properties', 'MenuBar.json'));
                 if (file_exists($menuBarPath))

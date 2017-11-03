@@ -49,16 +49,6 @@
             }
 
             /**
-             * Initializes the static values inside the class.
-             *
-             * @return void
-             */
-            public static function __InitializeStatic()
-            {
-                self::$Default = new EqualityComparer();
-            }
-
-            /**
              * Determines whether the specified objects are equal.
              *
              * @param mixed $x
@@ -80,6 +70,16 @@
                 {
                     return parent::Equals($x);
                 }
+            }
+            
+            /**
+             * Initializes the static values inside the class.
+             *
+             * @return void
+             */
+            private static function __InitializeStatic()
+            {
+                self::$Default = new EqualityComparer();
             }
         }
     }

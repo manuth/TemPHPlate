@@ -29,7 +29,7 @@
             /**
              * @ignore
              */
-            public static function __InitializeStatic()
+            private static function __InitializeStatic()
             {
                 self::$DocumentRoot = Path::Normalize(dirname($_SERVER['PHP_SELF']));
                 self::$RequestFile = Path::Normalize(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));

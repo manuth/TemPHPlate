@@ -29,9 +29,14 @@
                 if (method_exists($class, '__InitializeStatic'))
                 {
                     $method = new ReflectionMethod($class, '__InitializeStatic');
-                    if ($method->isStatic())
+
+                    if (!$method->isPublic())
                     {
                         $method->setAccessible(true);
+                    }
+
+                    if ($method->isStatic())
+                    {
                         $method->invoke(null);
                     }
                     else
@@ -77,7 +82,4 @@
             }
         }
     }
-
-    // /* Files located at special directories */
-    // require('Properties'.DIRECTORY_SEPARATOR.'Settings.php');
 ?>
