@@ -4,7 +4,9 @@
      * @license Apache-2.0
      */
     namespace System;
+    use System\Reflection\_Binder;
     use System\Reflection\_BindingFlags;
+    use System\Reflection\AmbiguousMatchException;
     {
         /**
          * Represents type declarations: class types, interface types, array types, value types and enumeration types.
@@ -26,6 +28,13 @@
              * @var \ReflectionClass|string
              */
             private $phpType;
+
+            /**
+             * Gets a reference to the default binder, which implements internal rules for selecting the appropriate members to be called.
+             *
+             * @var _Binder
+             */
+            public static $DefaultBinder;
 
             /**
              * Initializes a new instance of the _Type class.
@@ -344,127 +353,75 @@
              * @param array $types
              * An array of Type objects representing the number, order, and type of the parameters for the method to get.
              * 
+             * @param _Binder $binder
+             * An object that defines a set of properties and enables binding, which can involve selection of an overloaded method, coercion of argument types, and invocation of a member through reflection.
+             * -or-
+             * A **null** reference, to use the `DefaultBinder`.
+             * 
              * @return \ReflectionMethod
              * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
              */
-            public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null) : ?\ReflectionMethod
+            public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null, _Binder $binder = null) : ?\ReflectionMethod
             {
                 $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
+                $binder = $binder ?? self::$DefaultBinder;
+                $methods;
+                $nameComparer;
 
                 if ($types === null)
                 {
-                    if (
-                        $this->phpType->hasMethod($name) &&
-                        ($method = $this->phpType->getMethod($name)) != null &&
-                        self::FilterMethod(
-                            $method,
-                            $bindingAttr,
-                            (($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ?
-                                function ($methodName)
-                                {
-                                    return true;
-                                }
-                            :
-                                function ($methodName) use ($name, $bindingAttr)
-                                {
-                                    return $name == $methodName;
-                                }))
+                    if ($this->phpType->hasMethod($name))
                     {
-                        return $this->phpType->getMethod($name);
+                        $methods = array($this->phpType->getMethod($name));
                     }
                     else
                     {
-                        return null;
+                        $methods = array();
                     }
+
+                    $nameComparer =
+                        (($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ?
+                            function ($methodName)
+                            {
+                                return true;
+                            }
+                        :
+                            function ($methodName) use ($name, $bindingAttr)
+                            {
+                                return $name == $methodName;
+                            };
                 }
                 else
                 {
-                    
-                    if (in_array(null, $types, true))
+                    $methods = $this->GetMethodOverloads($name);
+                    $expression = "/^{$name}\d*$/".((($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ? 'i' : '');
+                    $nameComparer =
+                        function ($methodName) use ($expression)
+                        {
+                            return preg_match($expression, $methodName) === 1;
+                        };
+                }
+
+                $match = array();
+                
+                if ($name == 'Enumerator')
+                {
+                    echo "";
+                }
+
+                foreach ($methods as $method)
+                {
+                    if (
+                        self::FilterMethod(
+                                $method,
+                                $bindingAttr,
+                                $nameComparer))
                     {
-                        throw new ArgumentNullException('types');
-                    }
-                    else
-                    {
-                        $result = array();
-                        $methods = $this->GetMethodOverloads($name);
-                        $highestSpecificity = 0;
-                        $getSpecificity =
-                            function (_Type $type) : int
-                            {
-                                $result = 0;
-            
-                                while ($type->getBaseType() != null)
-                                {
-                                    $result++;
-                                    $type = $type->getBaseType();
-                                }
-            
-                                return $result;
-                            };
-
-                        /**
-                         * @var \Reflectionmethod $method
-                         */
-                        foreach ($methods as $method)
-                        {
-                            if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
-                            {
-                                $specificity = 0;
-                                $parameters = $method->getParameters();
-
-                                for ($i = 0; $i < count($types); $i++)
-                                {
-                                    if ($parameters[$i]->hasType())
-                                    {
-                                        if (strtoupper($types[$i]->getFullName()) == 'NULL')
-                                        {
-                                            if (!$parameters[$i]->allowsNull())
-                                            {
-                                                continue 2;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            $type = self::GetByName((string)$parameters[$i]->getType());
-                                            $specificity += $getSpecificity($type);
-
-                                            if (!$type->IsAssignableFrom($types[$i]))
-                                            {
-                                                continue 2;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                $result[$specificity][$getSpecificity(self::GetByName($method->class))][] = $method;
-                            }
-                        }
-        
-                        if (count($result) > 0)
-                        {
-                            krsort($result);
-                            $backup = $result;
-                            $result = current($result);
-                            krsort($result);
-        
-                            $result = current($result);
-        
-                            if (count($result) == 1)
-                            {
-                                return current($result);
-                            }
-                            else
-                            {
-                                throw new NotImplementedException();
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
+                        $match[] = $method;
                     }
                 }
+
+                return $binder->SelectMethod($bindingAttr, $match, $types);
             }
 
             /**
@@ -590,6 +547,145 @@
                 return $this->GetTypeInternal();
             }
 
+            /**
+             * @ignore
+             */
+            private static function __InitializeStatic()
+            {
+                self::$DefaultBinder = 
+                    new class extends _Binder
+                    {
+                        /**
+                         * Selects a method from the given set of methods, based on the argument type.
+                         *
+                         * @param int $bindingAttr
+                         * A bitwise combination of `_BindingFlags` values.
+                         * 
+                         * @param array $match
+                         * The set of methods that are candidates for matching.
+                         * For example, when a `Binder` object is used by Type.GetMethod,
+                         * this parameter specifies the set of methods that reflection has determined to be possible matches,
+                         * typically because they have the correct member name. 
+                         * 
+                         * @param array $types
+                         * The parameter types used to locate a matching method.
+                         * 
+                         * @return \ReflectionMethod
+                         * The matching method, if found; otherwise, **null**.
+                         */
+                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?\ReflectionMethod
+                        {
+                            if ($types === null)
+                            {
+                                if (count($match) == 0)
+                                {
+                                    return null;
+                                }
+                                else if (count($match) > 1)
+                                {
+                                    throw new AmbiguousMatchException();
+                                }
+                                else if (count($match) == 1)
+                                {
+                                    return $match[0];
+                                }
+                                else
+                                {
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                if (in_array(null, $types, true))
+                                {
+                                    throw new ArgumentNullException('types');
+                                }
+                                else
+                                {
+                                    $result = array();
+                                    $highestSpecificity = 0;
+                                    $getSpecificity =
+                                        function (_Type $type) : int
+                                        {
+                                            $result = 0;
+
+                                            while (($type = $type->getBaseType()) != null)
+                                            {
+                                                $result++;
+                                            }
+
+                                            return $result;
+                                        };
+                                    
+                                    /**
+                                     * @var \ReflectionMethod $method
+                                     */
+                                    foreach ($match as $method)
+                                    {
+                                        if (count($types) >= $method->getNumberOfRequiredParameters() && count($types) <= $method->getNumberOfParameters())
+                                        {
+                                            $specificity = 0;
+                                            $parameters = $method->getParameters();
+
+                                            for ($i = count($types) - 1; $i >= 0; $i--)
+                                            {
+                                                if ($parameters[$i]->hasType())
+                                                {
+                                                    if (strtoupper($types[$i]->getFullName()) == 'NULL')
+                                                    {
+                                                        if (!$parameters[$i]->allowsNull())
+                                                        {
+                                                            continue 2;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        $type = _Type::GetByName((string)$parameters[$i]->getType());
+                                                        
+                                                        if (!$type->IsAssignableFrom($types[$i]))
+                                                        {
+                                                            continue 2;
+                                                        }
+                                                        else
+                                                        {
+                                                            $specificity += $getSpecificity($type);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            $result[$specificity][$getSpecificity(_Type::GetByName($method->class))][] = $method;
+                                        }
+                                    }
+                                    
+                                    if (count($result) > 0)
+                                    {
+                                        krsort($result);
+                                        $backup = $result;
+                                        $result = current($result);
+                                        krsort($result);
+                    
+                                        $result = current($result);
+                    
+                                        if (count($result) == 1)
+                                        {
+                                            return current($result);
+                                        }
+                                        else
+                                        {
+                                            throw new AmbigousMatchException();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return null;
+                                    }
+                                }
+                            }
+                        }
+                    };
+            }
+            
             /**
              * Determines whether a method matches the specified bindingflags.
              *
