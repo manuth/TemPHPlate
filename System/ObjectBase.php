@@ -462,6 +462,7 @@
                         else
                         {
                             trigger_error('Call to '.($constructor->isPrivate() ? 'private ' : $constructor->isProtected() ? 'protected ' : '').$constructor->class.'::'.$constructor->name.' from invalid context.', E_USER_ERROR);
+                            exit;
                         }
 
                         $constructor->invokeArgs($this, $args);
