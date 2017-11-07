@@ -241,9 +241,9 @@
              * @return \ReflectionMethod
              * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
              */
-            public function GetConstructor(array $types) : ?\ReflectionMethod
+            public function GetConstructor(array $types, $bindingAttr = null, $binder = null) : ?\ReflectionMethod
             {
-                return $this->GetMethod($this->getName(), $types);
+                return $this->GetMethod($this->getName(), $types, $bindingAttr, $binder);
             }
 
             /**
