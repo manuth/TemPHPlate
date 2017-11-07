@@ -5,6 +5,7 @@
      */
     namespace System;
     use System\Collections\ArrayList;
+    use System\_Type;
     {
         /**
          * Provides basic functionalities for objects.
@@ -26,7 +27,7 @@
                 $this->Initialize();
                 $callerClass = $this->GetCallerClass();
                 $this->constructorLevelType = _Type::GetByName(get_class($this));
-                $this->InvokeConstructor($callerClass, $this->constructorLevelType, func_get_args());
+                $this->InvokeConstructor($callerClass, func_get_args());
             }
 
             /**
@@ -217,7 +218,7 @@
                 $type = $this->constructorLevelType;
                 $this->constructorLevelType = $this->constructorLevelType->getBaseType();
                 $args = func_get_args();
-                $this->InvokeConstructor($type->getFullName(), $this->constructorLevelType, $args);
+                $this->InvokeConstructor($type->getFullName(), $args);
                 $this->constructorLevelType = $type;
             }
 
@@ -227,7 +228,7 @@
             protected function This()
             {
                 $args = func_get_args();
-                $this->InvokeConstructor($this->constructorLevelType->getFullName(), $this->constructorLevelType, $args);
+                $this->InvokeConstructor($this->constructorLevelType->getFullName(), $args);
             }
 
             /**
@@ -395,15 +396,12 @@
              * @param string $callerClass
              * The class that tries to invoke the constructor.
              * 
-             * @param _Type $targetType
-             * The _Type whose constructor is to be invoked.
-             * 
              * @param array $args
              * The arguments to use.
              * 
              * @return void
              */
-            private function InvokeConstructor(string $callerClass, _Type $targetType, array $args)
+            private function InvokeConstructor(string $callerClass, array $args)
             {
                 $argumentTypes = array();
                 
@@ -420,22 +418,22 @@
                     }
                 }
 
-                $constructor = $targetType->GetConstructor($argumentTypes);
+                $constructor = $this->constructorLevelType->GetConstructor($argumentTypes);
 
                 if (
                     $constructor != null ||
-                    $targetType->getBaseType() == null ||
+                    $this->constructorLevelType->getBaseType() == null ||
                     (
-                        $targetType->getBaseType()->GetConstructor(array()) != null ||
-                        count($targetType->getBaseType()->GetConstructors()) == 0))
+                        $this->constructorLevelType->getBaseType()->GetConstructor(array()) != null ||
+                        count($this->constructorLevelType->getBaseType()->GetConstructors()) == 0))
                 {
-                    if ($targetType->getBaseType() != null)
+                    if ($this->constructorLevelType->getBaseType() != null)
                     {
                         if ($constructor == null || !self::HasConstructorCall($constructor))
                         {
                             if (
-                                $targetType->getBaseType()->GetConstructor(array()) != null ||
-                                count($targetType->getBaseType()->GetConstructors()) == 0)
+                                $this->constructorLevelType->getBaseType()->GetConstructor(array()) != null ||
+                                count($this->constructorLevelType->getBaseType()->GetConstructors()) == 0)
                             {
                                 $this->Base();
                             }
