@@ -20,13 +20,20 @@
             private $constructorLevelType;
 
             /**
+             * The type of this object.
+             *
+             * @var _Type
+             */
+            private $type;
+
+            /**
              * Automatically calls the proper constructor.
              */
             public function __construct()
             {
+                $this->constructorLevelType = $this->type = _Type::GetByName(get_class($this));
                 $this->Initialize();
                 $callerClass = $this->GetCallerClass();
-                $this->constructorLevelType = _Type::GetByName(get_class($this));
                 $this->InvokeConstructor($callerClass, func_get_args());
             }
 
@@ -58,7 +65,6 @@
             public final function __call($name, $args)
             {
                 $callerClass = $this->GetCallerClass();
-                $type = _Type::GetByName(get_class($this));
                 $argumentTypes = array();
                 
                 foreach ($args as $arg)
@@ -74,7 +80,7 @@
                     }
                 }
 
-                $method = _Type::GetByName(get_class($this))->GetMethod($name, $argumentTypes);
+                $method = $this->type->GetMethod($name, $argumentTypes);
 
                 if ($method !== null)
                 {
@@ -133,7 +139,7 @@
              */
             public function GetType() : ?_Type
             {
-                return _Type::GetByName(get_class($this));
+                return $this->type;
             }
 
             /**
@@ -145,7 +151,7 @@
             {
                 $types = array();
 
-                for ($type = _Type::GetByName(get_class($this)); $type != null; $type = $type->getBaseType())
+                for ($type = $this->type; $type != null; $type = $type->getBaseType())
                 {
                     array_splice($types, 0, 0, array($type));
                 }
@@ -300,7 +306,7 @@
                 }
                 else if ($method->isProtected())
                 {
-                    return !empty($class) && _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this)));
+                    return !empty($class) && _Type::GetByName($class)->IsAssignableFrom($this->type);
                 }
                 else
                 {
@@ -356,7 +362,7 @@
 
                 if (
                     $class &&
-                    _Type::GetByName($class)->IsAssignableFrom(_Type::GetByName(get_class($this))) &&
+                    _Type::GetByName($class)->IsAssignableFrom($this->type) &&
                     method_exists($class, $requestType.$propertyName) &&
                     ($method = new \ReflectionMethod($class, $requestType.$propertyName))->getDeclaringClass() == new \ReflectionClass($class) &&
                     $method->isPrivate())
