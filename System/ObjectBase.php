@@ -331,6 +331,7 @@
                         if ($throwErrors)
                         {
                             trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
+                            exit;
                         }
 
                         return false;
@@ -340,6 +341,7 @@
                         if ($throwErrors)
                         {
                             trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
+                            exit;
                         }
 
                         return false;
