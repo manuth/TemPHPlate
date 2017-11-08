@@ -189,7 +189,7 @@
                     {
                         if (!$method->isPublic())
                         {
-                        $method->setAccessible(true);
+                            $method->setAccessible(true);
                         }
 
                         $values = $method->invoke($this);
@@ -464,7 +464,12 @@
                     null,
                     $argumentTypes);
 
-                if (
+                if (($constructor === null) && (count($argumentTypes) != 0))
+                {
+                    trigger_error('Call to undefined method '.$this->type->getFullName().'::'.$this->type->getName().'()', E_USER_ERROR);
+                    exit;
+                }
+                else if (
                     $constructor != null ||
                     $this->constructorLevelType->getBaseType() == null ||
                     (
