@@ -185,18 +185,20 @@
 
                 foreach ($types as $type)
                 {
-                    $class = new \ReflectionClass($type->getFullName());
-                    
-                    if (($method = $type->GetMethod('__Initialize')) && $method->getDeclaringClass() == $class)
+                    if (($method = $type->GetMethod('__Initialize')) && $method->class == $type->getFullName())
                     {
+                        if (!$method->isPublic())
+                        {
                         $method->setAccessible(true);
+                        }
+
                         $values = $method->invoke($this);
 
                         foreach ($values as $propertyName => $value)
                         {
                             $property = $type->GetProperty($propertyName);
 
-                            if ($property != null && (!$property->isPrivate() || $property->getDeclaringClass() == $class))
+                            if ($property != null && (!$property->isPrivate() || $property->class == $type->getFullName()))
                             {
                                 $property->setAccessible(true);
                                 $property->setValue($this, $value);
@@ -205,15 +207,15 @@
                             {
                                 $method = $type->GetMethod('set'.$propertyName);
 
-                                if ($method != null && (!$method->isPrivate() || $method->getDeclaringClass() == $class))
+                                if ($method != null && (!$method->isPrivate() || $method->class == $type->getFullName()))
                                 {
                                     $method->setAccessible(true);
                                     $method->invoke($this, $value);
                                 }
                                 else
                                 {
-                                    // TODO: Trigger a php-error
-                                    $class->newInstanceWithoutConstructor()->$propertyName = $value;
+                                    trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
+                                    exit;
                                 }
                             }
                         }
