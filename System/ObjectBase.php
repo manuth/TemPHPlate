@@ -123,6 +123,7 @@
                 else
                 {
                     trigger_error('Call to undefined method '.get_class($this).'::'.$name.'()', E_USER_ERROR);
+                    exit;
                 }
             }
 
