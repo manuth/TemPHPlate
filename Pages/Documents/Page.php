@@ -13,6 +13,16 @@
         class Page extends Web\Page
         {
             /**
+             * Initializes a new instance of the `Page` class.
+             *
+             * @return void
+             */
+            public function Page()
+            {
+                $this->Template = new BootstrapTemplate($this);
+            }
+
+            /**
              * Draws the object.
              *
              * @return void
@@ -24,14 +34,6 @@
                         <h1>Hello</h1>
                         World
                     </div>';
-            }
-
-            /**
-             * @ignore
-             */
-            public function __Initialize() : array
-            {
-                return array('Template' => new BootstrapTemplate($this));
             }
         }
     }

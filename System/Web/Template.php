@@ -159,14 +159,6 @@
             {
                 return $this->Content->SupportsMenuBar;
             }
-
-            /**
-             * @ignore
-             */
-            private function __Initialize() : array
-            {
-                return array('Renderer' => new Renderer());
-            }
             
             /**
              * Renders a renderable item.

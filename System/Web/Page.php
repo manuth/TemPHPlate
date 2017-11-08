@@ -20,6 +20,9 @@
          * 
          * @property-read bool $SupportsMenuBar
          * Gets a value indicating whether the page supports menu-bars.
+         * 
+         * @property Renderer $Renderer
+         * Gets or sets the renderer of the page.
          */
         class Page extends WebContent implements IRenderer
         {
@@ -31,18 +34,18 @@
             private $menuBar;
 
             /**
+             * Gets or sets the renderer of the page.
+             *
+             * @var IRenderer
+             */
+            private $renderer;
+
+            /**
              * Initializes a new instance of the `Page` class.
              */
             public function Page()
             {
             }
-
-            /**
-             * Gets or sets the renderer of the page.
-             *
-             * @var IRenderer
-             */
-            public $Renderer;
 
             /**
              * @ignore
@@ -66,6 +69,22 @@
             public function getSupportsMenuBar()
             {
                 return true;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getRenderer() : Renderer
+            {
+                return $this->renderer;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setRenderer(Renderer $value)
+            {
+                $this->renderer = $value;
             }
             
             /**
@@ -100,11 +119,8 @@
             private function __Initialize() : array
             {
                 return array(
-                    'Renderer' => new Renderer(),
-                    'Locale' => CultureInfo::GetCurrentCulture(),
-                    'Icon' => Settings::$Icon,
-                    'AppleTouchIcon' => Settings::$AppleTouchIcon,
-                    'MenuBar' => Settings::$MenuBar);
+                    'renderer' => new Renderer(),
+                    'menuBar' => Settings::$MenuBar);
             }
         }
     }

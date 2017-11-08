@@ -76,7 +76,7 @@
              */
             public function __Initialize() : array
             {
-                return array('Paint' => new PaintEventHandler());
+                return array('paint' => new PaintEventHandler());
             }
 
             /**

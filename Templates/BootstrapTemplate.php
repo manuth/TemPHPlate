@@ -23,6 +23,7 @@
             public function BootstrapTemplate(WebContent $content)
             {
                 $this->Base($content);
+                $this->Renderer = new Rendering\BootstrapRenderer();
                 $this->StyleDefinitions->AddRange(
                     array(
                         StyleDefinition::FromFile('https://getbootstrap.com/dist/css/bootstrap.min.css'),
@@ -51,14 +52,6 @@
             {
                 return '
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
-            }
-            
-            /**
-             * @ignore
-             */
-            private function __Initialize()
-            {
-                return array('Renderer' => new Rendering\BootstrapRenderer());
             }
 
             /**

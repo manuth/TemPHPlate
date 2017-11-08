@@ -4,6 +4,7 @@
      * @license Apache-2.0
      */
     namespace System\Web;
+    use ManuTh\TemPHPlate\Properties\Settings;
     use System\IO\Path;
     use System\Collections\ArrayList;
     use System\Globalization\CultureInfo;
@@ -287,7 +288,11 @@
              */
             private function __Initialize() : array
             {
-                return array('Locale' => new CultureInfo('inv'));
+                return array(
+                    'title' => "",
+                    'locale' => CultureInfo::GetCurrentCulture(),
+                    'icon' => Settings::$Icon,
+                    'appleTouchIcon' => Settings::$AppleTouchIcon,);
             }
         }
     }
