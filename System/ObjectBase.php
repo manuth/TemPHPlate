@@ -5,7 +5,10 @@
      */
     namespace System;
     use System\Collections\ArrayList;
+    use System\Reflection\_Binder;
     use System\_Type;
+    use System\Reflection\AmbiguousMatchException;
+    use System\Reflection\_BindingFlags;
     {
         /**
          * Provides basic functionalities for objects.
@@ -13,12 +16,29 @@
         trait ObjectBase
         {
             /**
+             * The default bindingflags for searching public type-members.
+             * @var int
+             */
+            private static $publicBindingFlags =
+                _BindingFlags::Instance |
+                _BindingFlags::Public;
+            
+            /**
+             * The default bindingflags for searching private type-members.
+             * @var int
+             */
+            private static $privateBindingFlags =
+                _BindingFlags::Instance |
+                _BindingFlags::Public |
+                _BindingFlags::NonPublic;
+
+            /**
              * Returns the type of the current constructor-level.
              *
              * @var _Type
              */
             private $constructorLevelType;
-
+            
             /**
              * The type of this object.
              *
@@ -64,7 +84,7 @@
              */
             public final function __call($name, $args)
             {
-                $callerClass = $this->GetCallerClass();
+                $callerType = _Type::GetByName($this->GetCallerClass());
                 $argumentTypes = array();
                 
                 foreach ($args as $arg)
@@ -80,19 +100,25 @@
                     }
                 }
 
-                $method = $this->type->GetMethod($name, $argumentTypes);
-
+                $type = $this->type;
+                
+                $method = $this->VerifyMethod(
+                    function(?string $name, ?array $types, ?int $bindingAttr, ?_Binder $binder) use ($type)
+                    {
+                        return $type->GetMethod($name, $types, $bindingAttr, $binder);
+                    },
+                    $callerType,
+                    $name,
+                    $argumentTypes);
+                
                 if ($method !== null)
                 {
-                    if ($this->IsAccessible($callerClass, $method))
+                    if (!$method->isPublic())
                     {
-                        if (!$method->isPublic())
-                        {
-                            $method->setAccessible(true);
-                        }
-    
-                        return $method->invokeArgs($this, $args);
+                        $method->setAccessible(true);
                     }
+    
+                    return $method->invokeArgs($this, $args);
                 }
                 else
                 {
@@ -139,7 +165,7 @@
              */
             public function GetType() : ?_Type
             {
-                return $this->type;
+                return _Type::GetByName(get_class($this));
             }
 
             /**
@@ -151,7 +177,7 @@
             {
                 $types = array();
 
-                for ($type = $this->type; $type != null; $type = $type->getBaseType())
+                for ($type = _Type::GetByName(get_class($this)); $type != null; $type = $type->getBaseType())
                 {
                     array_splice($types, 0, 0, array($type));
                 }
@@ -185,7 +211,7 @@
                                 }
                                 else
                                 {
-                                    // Trigger a php-error
+                                    // TODO: Trigger a php-error
                                     $class->newInstanceWithoutConstructor()->$propertyName = $value;
                                 }
                             }
@@ -424,7 +450,16 @@
                     }
                 }
 
-                $constructor = $this->constructorLevelType->GetConstructor($argumentTypes);
+                $constructorLevelType = $this->constructorLevelType;
+
+                $constructor = $this->VerifyMethod(
+                    function(?string $name, ?array $types, ?int $bindingAttr, ?_Binder $binder) use ($constructorLevelType)
+                    {
+                        return $constructorLevelType->GetConstructor($types, $bindingAttr, $binder);
+                    },
+                    _Type::GetByName($callerClass),
+                    null,
+                    $argumentTypes);
 
                 if (
                     $constructor != null ||
@@ -452,17 +487,9 @@
 
                     if ($constructor != null)
                     {
-                        if ($this->IsAccessible($callerClass, $constructor))
+                        if (!$constructor->isPublic())
                         {
-                            if (!$constructor->isPublic())
-                            {
-                                $constructor->setAccessible(true);
-                            }
-                        }
-                        else
-                        {
-                            trigger_error('Call to '.($constructor->isPrivate() ? 'private ' : $constructor->isProtected() ? 'protected ' : '').$constructor->class.'::'.$constructor->name.' from invalid context.', E_USER_ERROR);
-                            exit;
+                            $constructor->setAccessible(true);
                         }
 
                         $constructor->invokeArgs($this, $args);
@@ -470,7 +497,109 @@
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    
+                }
+            }
+
+            /**
+             * Verifies whether the `$selector` returns a method with the specified BindingFlags and Binder.
+             * 
+             * If not the selector will be invoked in order to find an inaccessible version of the method and trigger a propper error.
+             *
+             * @param \Closure $selector
+             * A callable variable that selects a method.
+             * 
+             * @param _Type $callerType
+             * The type that tries to call the method.
+             * 
+             * @param array $types
+             * The types of the arguments to call the method.
+             * 
+             * @param int $bindingAttr
+             * The binding-flags to look for the method.
+             * 
+             * @param _Binder $binder
+             * The binder to look for the method.
+             * 
+             * @return \ReflectionMethod
+             * The method with the propper name, accessor and argument-types.
+             */
+            private function VerifyMethod(\Closure $selector, ?_Type $callerType, ?string $name, ?array $types) : ?\ReflectionMethod
+            {
+                $bindingAttr = ($callerType !== null && $callerType->IsAssignableFrom($this->type)) ? self::$privateBindingFlags : self::$publicBindingFlags;
+
+                $binder =
+                    new class($callerType) extends _Binder
+                    {
+                        /**
+                         * The type that is to be checked for accessibility.
+                         *
+                         * @var _Type
+                         */
+                        private $type;
+                        
+                        public function __construct($type)
+                        {
+                            $this->type = $type;
+                        }
+
+                        /**
+                         * Selects a method from the given set of methods, based on the argument type.
+                         *
+                         * @param int $bindingAttr
+                         * A bitwise combination of `_BindingFlags` values.
+                         * 
+                         * @param \ReflectionMethod[] $match
+                         * The set of methods that are candidates for matching.
+                         * For example, when a `Binder` object is used by Type.GetMethod,
+                         * this parameter specifies the set of methods that reflection has determined to be possible matches,
+                         * typically because they have the correct member name. 
+                         * 
+                         * @param array $types
+                         * The parameter types used to locate a matching method.
+                         * 
+                         * @return \ReflectionMethod
+                         * The matching method, if found; otherwise, **null**.
+                         */
+                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?\ReflectionMethod
+                        {
+                            $result = array();
+
+                            /**
+                             * @var \ReflectionMethod $method
+                             */
+                            foreach ($match as $method)
+                            {
+                                if (
+                                    $method->isPublic() ||
+                                    ($method->isProtected() && $this->type->IsAssignableFrom(_Type::GetByName($method->class))) ||
+                                    ($method->isPrivate() && ($method->class == $this->type->getFullName())))
+                                $result[] = $method;
+                            }
+
+                            return _Type::$DefaultBinder->SelectMethod($bindingAttr, $result, $types);
+                        }
+                    };
+
+                $method = $selector($name, $types, $bindingAttr, $binder);
+
+                if ($method !== null)
+                {
+                    return $method;
+                }
+                else
+                {
+                    $method = $selector($name, $types, self::$privateBindingFlags, _Type::$DefaultBinder);
+
+                    if ($method != null)
+                    {
+                        trigger_error('Call to '.($method->isPrivate() ? 'private ' : ($method->isProtected() ? 'protected ' : '')).$method->class.'::'.$method->name.' from invalid context.', E_USER_ERROR);
+                        exit;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
         }
