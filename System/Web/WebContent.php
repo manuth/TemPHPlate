@@ -10,36 +10,48 @@
     {
         /**
          * Represents content of a website.
+         * 
+         * @property string $Title
+         * Gets or sets the title of the page.
+         * 
+         * @property CultureInfo $Locale
+         * Gets or sets the locale of the content.
+         * 
+         * @property string $Icon
+         * Gets or sets the icon of the content.
+         * 
+         * @property string $AppleTouchIcon
+         * Gets or sets the iOS-icon of the content.
          */
         abstract class WebContent extends Drawable
         {
             /**
-             * Gets or sets the title of the page.
-             * 
+             * The title of the page.
+             *
              * @var string
              */
-            public $Title;
+            private $title;
 
             /**
-             * Gets or sets the locale of the content.
+             * The locale of the content.
              *
              * @var CultureInfo
              */
-            public $Locale;
+            private $locale;
 
             /**
-             * Gets or sets the icon of the content.
+             * The icon of the content.
              *
              * @var string
              */
-            public $Icon;
+            private $icon;
 
             /**
-             * Gets or sets the iOS-icon of the content.
+             * The iOS-icon of the content.
              *
              * @var string
              */
-            public $AppleTouchIcon;
+            public $appleTouchIcon;
 
             /**
              * Gets or sets the style-definitions of the content.
@@ -83,14 +95,6 @@
             }
 
             /**
-             * @ignore
-             */
-            private function __Initialize() : array
-            {
-                return array('Locale' => new CultureInfo('inv'));
-            }
-
-            /**
              * Gets the head of the content.
              *
              * @return string
@@ -99,6 +103,126 @@
             {
                 return '
                     <meta charset="utf-8" />';
+            }
+
+            /**
+             * @ignore
+             */
+            public function getTitle() : ?string
+            {
+                return $this->title;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setTitle(?string $value)
+            {
+                $this->title = $value;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getLocale() : ?CultureInfo
+            {
+                return $this->locale;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setLocale(?CultureInfo $value)
+            {
+                $this->locale = $value;
+            }
+            
+            /**
+             * @ignore
+             */
+            public function getIcon() : ?string
+            {
+                return $this->icon;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setIcon(?string $value)
+            {
+                $this->icon = $value;
+            }
+            
+            /**
+             * @ignore
+             */
+            public function getAppleTouchIcon() : ?string
+            {
+                return $this->appleTouchIcon;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setAppleTouchIcon(?string $value)
+            {
+                $this->appleTouchIcon = $value;
+            }
+            
+            /**
+             * Draws the object.
+             *
+             * @return string
+             * The content of the drawable object.
+             */
+            public final function Draw() : string
+            {
+                $content;
+                $formatter;
+
+                if ($this->Template === null)
+                {
+                    $content = parent::Draw();
+
+                    $formatter = function (string $content)
+                    {
+                        return
+                        '<!DOCTYPE html>
+                            <html'.($this->Locale !== null ? ' lang="'.htmlspecialchars($this->Locale).'"' : '').'>
+                                <head>'.$this->FetchHead().(
+                                    $this->Title !== null ? '
+                                    <title>'.htmlspecialchars($this->Title).'</title>' : ''
+                                ).(
+                                    $this->Icon !== null ? '
+                                    <link rel="icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->Icon)).'" />'
+                                    :
+                                    ''
+                                ).(
+                                    $this->AppleTouchIcon !== null ? '
+                                    <link rel="apple-touch-icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->AppleTouchIcon)).'" />'
+                                    :
+                                    ''
+                                ).'
+                                    '.$this->FetchStyles()->Draw().'
+                                </head>
+                                <body>
+                                    '.$content.'
+                                    '.$this->FetchScripts()->Draw().'
+                                </body>
+                            </html>';
+                    };
+                }
+                else
+                {
+                    $content = $this->Template->Draw();
+
+                    $formatter = function ($content)
+                    {
+                        return $content;
+                    };
+                }
+
+                return $formatter($content);
             }
             
             /**
@@ -157,61 +281,13 @@
                 $collection->AddRange($scripts->Distinct());
                 return $collection;
             }
-
+            
             /**
-             * Draws the object.
-             *
-             * @return string
-             * The content of the drawable object.
+             * @ignore
              */
-            public final function Draw() : string
+            private function __Initialize() : array
             {
-                $content;
-                $formatter;
-
-                if ($this->Template === null)
-                {
-                    $content = parent::Draw();
-
-                    $formatter = function (string $content)
-                    {
-                        return
-                        '<!DOCTYPE html>
-                            <html'.($this->Locale !== null ? ' lang="'.htmlspecialchars($this->Locale).'"' : '').'>
-                                <head>'.$this->FetchHead().(
-                                    $this->Title !== null ? '
-                                    <title>'.htmlspecialchars($this->Title).'</title>' : ''
-                                ).(
-                                    $this->Icon !== null ? '
-                                    <link rel="icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->Icon)).'" />'
-                                    :
-                                    ''
-                                ).(
-                                    $this->AppleTouchIcon !== null ? '
-                                    <link rel="apple-touch-icon" href="'.htmlspecialchars(Path::MakeRelativeWebPath($this->AppleTouchIcon)).'" />'
-                                    :
-                                    ''
-                                ).'
-                                    '.$this->FetchStyles()->Draw().'
-                                </head>
-                                <body>
-                                    '.$content.'
-                                    '.$this->FetchScripts()->Draw().'
-                                </body>
-                            </html>';
-                    };
-                }
-                else
-                {
-                    $content = $this->Template->Draw();
-
-                    $formatter = function ($content)
-                    {
-                        return $content;
-                    };
-                }
-
-                return $formatter($content);
+                return array('Locale' => new CultureInfo('inv'));
             }
         }
     }

@@ -165,10 +165,6 @@
              */
             private function __Initialize() : array
             {
-                unset($this->Title);
-                unset($this->Locale);
-                unset($this->Icon);
-                unset($this->AppleTouchIcon);
                 return array('Renderer' => new Renderer());
             }
             
