@@ -205,18 +205,8 @@
                             }
                             else
                             {
-                                $method = $type->GetMethod('set'.$propertyName);
-
-                                if ($method != null && (!$method->isPrivate() || $method->class == $type->getFullName()))
-                                {
-                                    $method->setAccessible(true);
-                                    $method->invoke($this, $value);
-                                }
-                                else
-                                {
-                                    trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
-                                    exit;
-                                }
+                                trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
+                                exit;
                             }
                         }
                     }
