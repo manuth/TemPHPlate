@@ -38,8 +38,6 @@
             public function Template1(WebContent $content)
             {
                 $this->Content = $content;
-                $this->Page->Renderer->Paint->CopyTo($this->Renderer->Paint);
-                $this->Page->Renderer = $this->Renderer;
             }
 
             /**
@@ -56,14 +54,6 @@
             public function setContent(WebContent $content)
             {
                 $this->content = $content;
-            }
-
-            /**
-             * @ignore
-             */
-            public function getPage() : Page
-            {
-                return $this->Content;
             }
 
             /**
@@ -158,6 +148,15 @@
             public function getSupportsMenuBar()
             {
                 return $this->Content->SupportsMenuBar;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setRenderer(Renderer $value)
+            {
+                parent::setRenderer($value);
+                $this->Content->Renderer = $value;
             }
             
             /**

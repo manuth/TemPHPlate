@@ -14,11 +14,14 @@
     {
         /**
          * Provides the functionality to render renderable items.
+         * 
+         * @property-read PaintEventHandler $Paint
+         * Occurs when a control is rendered.
          */
         class Renderer extends Object implements IRenderer
         {
             /**
-             * The paint-eventhandler.
+             * Occurs when a control is rendered.
              *
              * @var PaintEventHandler
              */
@@ -37,14 +40,6 @@
             public function getPaint()
             {
                 return $this->paint;
-            }
-
-            /**
-             * @ignore
-             */
-            private function setPaint($value)
-            {
-                $this->paint = $value;
             }
 
             /**

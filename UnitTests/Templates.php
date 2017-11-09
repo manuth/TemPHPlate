@@ -36,12 +36,12 @@
         echo "
             <h3>Checking values of <code>\$template1</code>...</h3>";
         RunTest('$template1->Locale->ToString()', 'de-CH');
-        RunTest('$template1->Page->Locale', $page->Locale);
+        RunTest('$template1->Locale', $page->Locale);
         RunTest('$template1->Content->Locale', $page->Locale);
         echo "
             <h3>Checking values of <code>\$template2</code>...</h3>";
         RunTest('$template2->Locale->ToString()', 'de-CH');
-        RunTest('$template2->Page->Locale', $page->Locale);
+        RunTest('$template2->Locale', $page->Locale);
         RunTest('$template2->Content->Locale', $template1->Locale);
         echo "
             <h3>Checking values of <code>\$page</code>...</h3>";
