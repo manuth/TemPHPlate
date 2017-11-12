@@ -510,7 +510,7 @@
              * @param _Type $callerType
              * The type that tries to call the method.
              * 
-             * @param array $types
+             * @param _Type[] $types
              * The types of the arguments to call the method.
              * 
              * @param int $bindingAttr

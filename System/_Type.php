@@ -350,7 +350,7 @@
              * @param string $name
              * The string containing the name of the method to get.
              * 
-             * @param array $types
+             * @param self[] $types
              * An array of Type objects representing the number, order, and type of the parameters for the method to get.
              * 
              * @param _Binder $binder
@@ -556,13 +556,13 @@
                          * @param int $bindingAttr
                          * A bitwise combination of `_BindingFlags` values.
                          * 
-                         * @param array $match
+                         * @param \ReflectionMethod[] $match
                          * The set of methods that are candidates for matching.
                          * For example, when a `Binder` object is used by Type.GetMethod,
                          * this parameter specifies the set of methods that reflection has determined to be possible matches,
                          * typically because they have the correct member name. 
                          * 
-                         * @param array $types
+                         * @param self[] $types
                          * The parameter types used to locate a matching method.
                          * 
                          * @return \ReflectionMethod
