@@ -403,11 +403,6 @@
                 }
 
                 $match = array();
-                
-                if ($name == 'Enumerator')
-                {
-                    echo "";
-                }
 
                 foreach ($methods as $method)
                 {
