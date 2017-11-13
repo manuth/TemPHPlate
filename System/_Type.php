@@ -320,9 +320,9 @@
                 if ($this->phpType instanceof \ReflectionClass)
                 {
                     foreach ($this->phpType->getInterfaceNames() as $interfaceName)
-                        {
+                    {
                         $result[] = self::GetByName($interfaceName);
-                }
+                    }
                 }
                 
                 return $result;

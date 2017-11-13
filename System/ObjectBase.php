@@ -105,18 +105,16 @@
                 $type = $this->type;
                 
                 $method = $this->VerifyMethod(
-                    function(?string $name, ?array $types, ?int $bindingAttr, ?_Binder $binder) use ($type)
+                    function(?int $bindingAttr, ?_Binder $binder) use ($type, $name, $argumentTypes)
                     {
-                        return $type->GetMethod($name, $types, $bindingAttr, $binder);
+                        return $type->GetMethod($name, $argumentTypes, $bindingAttr, $binder);
                     },
-                    $callerType,
-                    $name,
-                    $argumentTypes);
+                    $callerType);
                 
                 if ($method !== null)
                 {
                     return $method->Invoke($this, $args);
-                    }
+                }
                 else
                 {
                     trigger_error('Call to undefined method '.get_class($this).'::'.$name.'()', E_USER_ERROR);
@@ -436,13 +434,11 @@
                 $constructorLevelType = $this->constructorLevelType;
 
                 $constructor = $this->VerifyMethod(
-                    function(?string $name, ?array $types, ?int $bindingAttr, ?_Binder $binder) use ($constructorLevelType)
+                    function(?int $bindingAttr, ?_Binder $binder) use ($constructorLevelType, $argumentTypes)
                     {
-                        return $constructorLevelType->GetConstructor($types, $bindingAttr, $binder);
+                        return $constructorLevelType->GetConstructor($argumentTypes, $bindingAttr, $binder);
                     },
-                    _Type::GetByName($callerClass),
-                    null,
-                    $argumentTypes);
+                    _Type::GetByName($callerClass));
 
                 if (($constructor === null) && (count($argumentTypes) != 0))
                 {
@@ -510,7 +506,7 @@
              * @return _MethodInfo
              * The method with the propper name, accessor and argument-types.
              */
-            private function VerifyMethod(\Closure $selector, ?_Type $callerType, ?string $name, ?array $types) : ?_MethodInfo
+            private function VerifyMethod(\Closure $selector, ?_Type $callerType, string $errorMessage = null) : ?_MethodInfo
             {
                 $bindingAttr = ($callerType !== null && $callerType->IsAssignableFrom($this->type)) ? self::$privateBindingFlags : self::$publicBindingFlags;
 
@@ -567,7 +563,7 @@
                         }
                     };
 
-                $method = $selector($name, $types, $bindingAttr, $binder);
+                $method = $selector($bindingAttr, $binder);
 
                 if ($method !== null)
                 {
@@ -575,11 +571,12 @@
                 }
                 else
                 {
-                    $method = $selector($name, $types, self::$privateBindingFlags, _Type::$DefaultBinder);
+                    $method = $selector(self::$privateBindingFlags, _Type::$DefaultBinder);
 
                     if ($method != null)
                     {
-                        trigger_error('Call to '.($method->isPrivate() ? 'private ' : ($method->isProtected() ? 'protected ' : '')).$method->class.'::'.$method->name.' from invalid context.', E_USER_ERROR);
+                        $errorMessage = $errorMessage ?? 'Call to%s '.$method->class.'::'.$method->name.' from invalid context.';
+                        trigger_error(sprintf($errorMessage, $method->isPrivate() ? 'private ' : ($method->isProtected() ? 'protected ' : '')), E_USER_ERROR);
                         exit;
                     }
                     else
