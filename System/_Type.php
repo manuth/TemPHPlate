@@ -245,7 +245,31 @@
              */
             public function GetConstructor(array $types, $bindingAttr = null, $binder = null) : ?_MethodInfo
             {
-                return $this->GetMethod($this->getName(), $types, $bindingAttr, $binder);
+                $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
+                $binder = $binder ?? self::$DefaultBinder;
+                $methods = $this->GetConstructors();
+                $expression = "/^{$this->getName()}\d*$/".((($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ? 'i' : '');
+                $nameComparer =
+                    function ($methodName) use ($expression)
+                    {
+                        return preg_match($expression, $methodName) === 1;
+                    };
+                    
+                $match = array();
+
+                foreach ($methods as $method)
+                {
+                    if (
+                        self::FilterMethod(
+                                $method,
+                                $bindingAttr,
+                                $nameComparer))
+                    {
+                        $match[] = $method;
+                    }
+                }
+
+                return $binder->SelectMethod($bindingAttr, $match, $types);
             }
 
             /**
@@ -736,7 +760,7 @@
                  */
                 foreach ($this->phpType->getMethods() as $method)
                 {
-                    if (!$strictClass || $method->class === $this->phpType->name)
+                    if (!$strictClass || ($method->class === $this->phpType->name))
                     {
                         if (preg_match($expression, $method->name))
                         {
