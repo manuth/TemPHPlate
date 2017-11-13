@@ -361,7 +361,7 @@
                     }
                     else
                     {
-                        trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
+                        trigger_error('Cannot access'.($method->isPrivate() ? ' private' : ($method->isProtected() ? ' protected' : '')).' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
                         exit;
                     }
                 }
