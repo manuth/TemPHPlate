@@ -245,7 +245,7 @@
              */
             public function GetConstructor(array $types, $bindingAttr = null, $binder = null) : ?_MethodInfo
             {
-                $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
+                $bindingAttr = $bindingAttr ?? self::defaultBindingAttrs;
                 $binder = $binder ?? self::$DefaultBinder;
                 $methods = $this->GetConstructors();
                 $expression = "/^{$this->getName()}\d*$/".((($bindingAttr & _BindingFlags::IgnoreCase) == _BindingFlags::IgnoreCase) ? 'i' : '');
@@ -392,7 +392,7 @@
              */
             public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null, _Binder $binder = null) : ?_MethodInfo
             {
-                $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
+                $bindingAttr = $bindingAttr ?? self::defaultBindingAttrs;
                 $binder = $binder ?? self::$DefaultBinder;
                 $methods;
                 $nameComparer;

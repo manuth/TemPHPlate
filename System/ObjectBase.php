@@ -180,7 +180,7 @@
 
                 foreach ($types as $type)
                 {
-                    if (($method = $type->GetMethod('__Initialize')) && $method->getDeclaringType()->getFullName() == $type->getFullName())
+                    if (($method = $type->GetMethod('__Initialize', null, self::$privateBindingFlags)) && $method->getDeclaringType()->getFullName() == $type->getFullName())
                     {
                         $reflectionMethod = $method->getReflectionMethod();
 
