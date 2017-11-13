@@ -655,7 +655,7 @@
                                                 }
                                             }
 
-                                            $result[$specificity][$getSpecificity(_Type::GetByName($method->getReflectionMethod()->class))][] = $method;
+                                            $result[$specificity][$getSpecificity($method->getDeclaringType())][] = $method;
                                         }
                                     }
                                     
@@ -704,12 +704,12 @@
                 return
                     (
                         (
-                            ((($bindingAttr & _BindingFlags::Instance) == _BindingFlags::Instance) && !$method->getReflectionMethod()->isStatic()) ||
-                            ((($bindingAttr & _BindingFlags::Static) == _BindingFlags::Static) && $method->getReflectionMethod()->isStatic())
+                            ((($bindingAttr & _BindingFlags::Instance) == _BindingFlags::Instance) && !$method->getIsStatic()) ||
+                            ((($bindingAttr & _BindingFlags::Static) == _BindingFlags::Static) && $method->getIsStatic())
                         ) &&
                         (
-                            ((($bindingAttr & _BindingFlags::Public) == _BindingFlags::Public) && $method->getReflectionMethod()->isPublic()) ||
-                            ((($bindingAttr & _BindingFlags::NonPublic) == _BindingFlags::NonPublic) && !$method->getReflectionMethod()->isPublic())
+                            ((($bindingAttr & _BindingFlags::Public) == _BindingFlags::Public) && $method->getIsPublic()) ||
+                            ((($bindingAttr & _BindingFlags::NonPublic) == _BindingFlags::NonPublic) && !$method->getIsPublic())
                         ) &&
                         $nameComparer($method->getName())
                     );

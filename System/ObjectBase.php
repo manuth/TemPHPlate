@@ -115,13 +115,8 @@
                 
                 if ($method !== null)
                 {
-                    if (!$method->getReflectionMethod()->isPublic())
-                    {
-                        $method->getReflectionMethod()->setAccessible(true);
+                    return $method->Invoke($this, $args);
                     }
-    
-                    return $method->getReflectionMethod()->invokeArgs($this, $args);
-                }
                 else
                 {
                     trigger_error('Call to undefined method '.get_class($this).'::'.$name.'()', E_USER_ERROR);
@@ -187,14 +182,16 @@
 
                 foreach ($types as $type)
                 {
-                    if (($method = $type->GetMethod('__Initialize')) && $method->getReflectionMethod()->class == $type->getFullName())
+                    if (($method = $type->GetMethod('__Initialize')) && $method->getDeclaringType()->getFullName() == $type->getFullName())
                     {
-                        if (!$method->getReflectionMethod()->isPublic())
+                        $reflectionMethod = $method->getReflectionMethod();
+
+                        if (!$reflectionMethod->isPublic())
                         {
-                            $method->getReflectionMethod()->setAccessible(true);
+                            $reflectionMethod->setAccessible(true);
                         }
 
-                        $values = $method->getReflectionMethod()->invoke($this);
+                        $values = $reflectionMethod->invoke($this);
 
                         foreach ($values as $propertyName => $value)
                         {
@@ -478,17 +475,15 @@
 
                     if ($constructor != null)
                     {
-                        if (!$constructor->getReflectionMethod()->isPublic())
+                        $reflectionMethod = $constructor->getReflectionMethod();
+
+                        if (!$reflectionMethod->isPublic())
                         {
-                            $constructor->getReflectionMethod()->setAccessible(true);
+                            $reflectionMethod->setAccessible(true);
                         }
 
-                        $constructor->getReflectionMethod()->invokeArgs($this, $args);
+                        $reflectionMethod->invokeArgs($this, $args);
                     }
-                }
-                else
-                {
-                    
                 }
             }
 
@@ -562,9 +557,9 @@
                             foreach ($match as $method)
                             {
                                 if (
-                                    $method->getReflectionMethod()->isPublic() ||
-                                    ($method->getReflectionMethod()->isProtected() && $this->type->IsAssignableFrom(_Type::GetByName($method->getReflectionMethod()->class))) ||
-                                    ($method->getReflectionMethod()->isPrivate() && ($method->getReflectionMethod()->class == $this->type->getFullName())))
+                                    $method->getIsPublic() ||
+                                    ($method->getIsFamily() && $this->type->IsAssignableFrom($method->getDeclaringType())) ||
+                                    ($method->getIsPrivate() && ($method->getReflectionMethod()->class == $this->type->getFullName())))
                                 $result[] = $method;
                             }
 
