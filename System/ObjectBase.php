@@ -467,20 +467,12 @@
              * @param _Binder $binder
              * The binder to look for the method.
              * 
-             * @param \Closure $messageGenerator
-             * A function that generates messages for inaccessible methods.
-             * 
              * @return _MethodInfo
              * The method with the propper name, accessor and argument-types.
              */
-            private function VerifyMethod(\Closure $selector, ?_Type $callerType, \Closure $messageGenerator = null) : ?_MethodInfo
+            private function VerifyMethod(\Closure $selector, ?_Type $callerType) : ?_MethodInfo
             {
                 $bindingAttr = ($callerType !== null && $callerType->IsAssignableFrom($this->type)) ? self::$privateBindingFlags : self::$publicBindingFlags;
-                $messageGenerator = $messageGenerator ??
-                    function (_MethodInfo $method) : string
-                    {
-                        return 'Call to'.($method->getIsPrivate() ? 'private ' : ($method->getIsProtected() ? 'protected ' : '')).$method->getReflectionMethod()->class.'::'.$method->getName().' from invalid context.';
-                    };
 
                 $binder =
                     new class($callerType) extends _Binder
@@ -547,8 +539,7 @@
 
                     if ($method != null)
                     {
-                        $errorMessage = $errorMessage ?? 'Call to%s '.$method->class.'::'.$method->name.' from invalid context.';
-                        trigger_error($messageGenerator($method), E_USER_ERROR);
+                        trigger_error('Call to'.($method->getIsPrivate() ? 'private ' : ($method->getIsProtected() ? 'protected ' : '')).$method->getReflectionMethod()->class.'::'.$method->getName().' from invalid context.', E_USER_ERROR);
                         exit;
                     }
                     else
