@@ -55,8 +55,7 @@
                 if (($this->phpType instanceof \ReflectionClass) && !$this->getIsInterface() && $this->phpType->getParentClass())
                 {
                     $type = new _Type();
-                    $parentType = $this->phpType->getParentClass();
-                    $type->phpType = $parentType;
+                    $type->phpType = $this->phpType->getParentClass();
                     return $type;
                 }
                 else
@@ -73,7 +72,7 @@
             {
                 if ($this->phpType instanceof \ReflectionClass)
                 {
-                    return $this->phpType->getName();
+                    return $this->phpType->name;
                 }
                 else
                 {
@@ -286,15 +285,17 @@
             public function GetInterface(string $name, bool $ignoreCase = false) : ?self
             {
                 $expression = "/^$name$/".($ignoreCase ? 'i' : '');
-                $interfaces = array_filter(
-                    $this->GetInterfaces(),
-                    function (_Type $interface) use ($expression, $name)
+
+                foreach ($this->GetInterfaces() as $interface)
+                {
+                    if (
+                        (preg_match($expression, $interface->getName()) === 1) ||
+                        (preg_match($expression, $interface->getFullName())) ||
+                        self::GetByName($name) == $interface)
                     {
-                        return 
-                            (preg_match($expression, $interface->getName()) > 0) ||
-                            (preg_match($expression, $interface->getFullName())) ||
-                            self::GetByName($name) == $interface;
-                    });
+                        $interfaces[] = $interface;
+                    }
+                }
 
                 if (count($interfaces) == 1)
                 {
@@ -314,19 +315,17 @@
              */
             public function GetInterfaces() : array
             {
+                $result = array();
+
                 if ($this->phpType instanceof \ReflectionClass)
                 {
-                    return array_map(
-                        function ($interfaceName)
+                    foreach ($this->phpType->getInterfaceNames() as $interfaceName)
                         {
-                            return self::GetByName($interfaceName);
-                        },
-                        $this->phpType->getInterfaceNames());
+                        $result[] = self::GetByName($interfaceName);
                 }
-                else
-                {
-                    return array();
                 }
+                
+                return $result;
             }
             
             /**
