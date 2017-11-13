@@ -518,9 +518,11 @@
                             {
                                 if (
                                     $method->getIsPublic() ||
-                                    ($method->getIsFamily() && $this->type->IsAssignableFrom($method->getDeclaringType())) ||
+                                    ($method->getIsFamily() && $method->GetBaseDefinition()->getDeclaringType()->IsAssignableFrom($this->type)) ||
                                     ($method->getIsPrivate() && ($method->getReflectionMethod()->class == $this->type->getFullName())))
-                                $result[] = $method;
+                                {
+                                    $result[] = $method;
+                                }
                             }
 
                             return _Type::$DefaultBinder->SelectMethod($bindingAttr, $result, $types);

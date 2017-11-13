@@ -174,14 +174,20 @@
              */
             public function GetBaseDefinition() : _MethodInfo
             {
-                $result;
+                $result = $this->method;
 
-                for ($method = $this; $method !== null; $method = $method->getDeclaringType()->getBaseType()->GetMethod($this->getName()))
+                for (
+                    $method = $result;
+                    $method !== null;
+                    $method =
+                        method_exists($method->getDeclaringClass()->getParentClass()->name, $method->name) ?
+                            $method->getDeclaringClass()->getParentClass()->getMethod($method->name) :
+                            null)
                 {
                     $result = $method;
                 }
 
-                return $result;
+                return new self($result);
             }
 
             /**
