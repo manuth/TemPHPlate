@@ -230,14 +230,21 @@
                 /**
                  * @var _RuntimeMethodInfo $method
                  */
-                $method = _Type::GetByName(get_class($obj))->GetMethod($this->getName());
-                
-                if (!$method->method->isPublic())
+                if ($this->getIsPrivate())
                 {
-                    $method->method->setAccessible(true);
+                    $method = $this->method;
+                }
+                else
+                {
+                    $method = new \ReflectionMethod($obj, $this->method->name);
+                }
+                
+                if (!$method->isPublic())
+                {
+                    $method->setAccessible(true);
                 }
 
-                return $method->method->invokeArgs($obj, $parameters);
+                return $method->invokeArgs($obj, $parameters);
             }
         }
     }
