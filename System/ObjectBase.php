@@ -541,7 +541,7 @@
 
                     if ($method != null)
                     {
-                        trigger_error('Call to '.($method->getIsPrivate() ? 'private ' : ($method->getIsFamily() ? 'protected ' : '')).$method->getReflectionMethod()->class.'::'.$method->getName().' from invalid context.', E_USER_ERROR);
+                        trigger_error('Call to '.($method->getIsPrivate() ? 'private ' : ($method->getIsFamily() ? 'protected ' : '')).'method '.$method->getReflectionMethod()->class.'::'.$method->getName().'() from invalid context.', E_USER_ERROR);
                         exit;
                     }
                     else
