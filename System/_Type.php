@@ -213,6 +213,7 @@
                             case 'int':
                             case 'iterable':
                             case 'NULL':
+                            case 'mixed':
                             case 'string':
                                 $type->phpType = $typeName;
                                 break;
