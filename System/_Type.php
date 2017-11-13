@@ -363,7 +363,7 @@
              * -or-
              * A **null** reference, to use the `DefaultBinder`.
              * 
-             * @return \ReflectionMethod
+             * @return _MethodInfo
              * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
              */
             public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null, _Binder $binder = null) : ?_MethodInfo

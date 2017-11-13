@@ -232,12 +232,12 @@
                  */
                 $method = _Type::GetByName(get_class($obj))->GetMethod($this->getName());
                 
-                if (!$method->isPublic())
+                if (!$method->method->isPublic())
                 {
                     $method->method->setAccessible(true);
                 }
 
-                return $method->invokeArgs($obj, $parameters);
+                return $method->method->invokeArgs($obj, $parameters);
             }
         }
     }
