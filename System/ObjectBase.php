@@ -294,34 +294,6 @@
             }
 
             /**
-             * Determines whether a method is accessible for a class.
-             *
-             * @param string $class
-             * The class whose access to the method is to be checked.
-             * 
-             * @param \ReflectionMethod $method
-             * The method whose accessibility is to be checked.
-             * 
-             * @return bool
-             * Returns a value indicating whether $methodName is accessible for the $class.
-             */
-            private function IsAccessible(string $class, \ReflectionMethod $method) : bool
-            {
-                if ($method->isPrivate())
-                {
-                    return $method->getDeclaringClass() == new \ReflectionClass($class);
-                }
-                else if ($method->isProtected())
-                {
-                    return !empty($class) && _Type::GetByName($class)->IsAssignableFrom($this->type);
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            /**
              * Determines the \Reflectionmethod that is to be called.
              *
              * @param string $class
@@ -338,67 +310,59 @@
              */
             private function InvokeProperty(string $class, string $requestType, string $propertyName, &$value)
             {
-                $verify = function (string $propertyName, ?\ReflectionMethod $method, string $callerClass, bool $throwErrors) : bool
-                {
-                    if ($method === null)
-                    {
-                        if ($throwErrors)
-                        {
-                            trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
-                            exit;
-                        }
-
-                        return false;
-                    }
-                    else if (!$this->IsAccessible($callerClass, $method))
-                    {
-                        if ($throwErrors)
-                        {
-                            trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
-                            exit;
-                        }
-
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                };
-                $result;
+                $method;
 
                 if (
                     $class &&
                     _Type::GetByName($class)->IsAssignableFrom($this->type) &&
                     method_exists($class, $requestType.$propertyName) &&
-                    ($method = new \ReflectionMethod($class, $requestType.$propertyName))->getDeclaringClass() == new \ReflectionClass($class) &&
-                    $method->isPrivate())
+                    ($m = new \ReflectionMethod($class, $requestType.$propertyName))->getDeclaringClass() == new \ReflectionClass($class) &&
+                    $m->isPrivate())
                 {
-                    $result = $method;
+                    $method = $m;
                 }
                 else if (method_exists($this, $requestType.$propertyName))
                 {
-                    $result = new \ReflectionMethod($this, $requestType.$propertyName);
+                    $method = new \ReflectionMethod($this, $requestType.$propertyName);
                 }
                 else
                 {
-                    $result = null;
+                    $method = null;
                 }
-
-                if ($verify($propertyName, $result, $class, true))
+                
+                if ($method == null)
                 {
-                    if (!$result->isPublic())
+                    trigger_error('Undefined property: '.get_class($this).'::$'.$propertyName, E_USER_ERROR);
+                    exit;
+                }
+                else
+                {
+                    if (
+                        $method->isPublic() ||
+                        (
+                            !empty($class) &&
+                            (
+                                ($method->isProtected() && _Type::GetByName($class)->IsAssignableFrom($this->type)) ||
+                                ($method->isPrivate() && ($method->getDeclaringClass() == new \ReflectioNClass($class))))))
                     {
-                        $result->setAccessible(true);
-                    }
+                        if (!$method->isPublic())
+                        {
+                            $method->setAccessible(true);
+                        }
 
-                    if ($requestType == 'get')
-                    {
-                        $value = $result->invokeArgs($this, array());
+                        if ($requestType == 'get')
+                        {
+                            $value = $method->invokeArgs($this, array());
+                        }
+                        else if ($requestType == 'set')
+                        {
+                            $method->invokeArgs($this, array($value));
+                        }
                     }
-                    else if ($requestType == 'set')
+                    else
                     {
-                        $result->invokeArgs($this, array($value));
+                        trigger_error('Cannot access'.($method->isPrivate() ? ' private' : $method->isProtected() ? ' protected' : '').' property '.$method->class.'::$'.$propertyName, E_USER_ERROR);
+                        exit;
                     }
                 }
             }
