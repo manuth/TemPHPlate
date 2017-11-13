@@ -7,6 +7,8 @@
     use System\Reflection\_Binder;
     use System\Reflection\_BindingFlags;
     use System\Reflection\AmbiguousMatchException;
+    use System\Reflection\_RuntimeMethodInfo;
+    use System\Reflection\_MethodInfo;
     {
         /**
          * Represents type declarations: class types, interface types, array types, value types and enumeration types.
@@ -238,10 +240,10 @@
              * @param _Type[] $types
              * An array of Type objects representing the number, order, and type of the parameters for the desired constructor.
              * 
-             * @return \ReflectionMethod
+             * @return _MethodInfo
              * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
              */
-            public function GetConstructor(array $types, $bindingAttr = null, $binder = null) : ?\ReflectionMethod
+            public function GetConstructor(array $types, $bindingAttr = null, $binder = null) : ?_MethodInfo
             {
                 return $this->GetMethod($this->getName(), $types, $bindingAttr, $binder);
             }
@@ -249,7 +251,7 @@
             /**
              * Returns all the constructors defined for the current _Type.
              *
-             * @return \ReflectionMethod[]
+             * @return _MethodInfo[]
              * An array of ConstructorInfo objects representing all the instance constructors defined for the current _Type.
              */
             public function GetConstructors() : array
@@ -329,19 +331,22 @@
             /**
              * Returns all the methods of the current _Type.
              *
-             * @return \ReflectionMethod[]
+             * @return _MethodInfo[]
              * An array of \ReflectionMethod objects representing all the methods defined for the current _Type.
              */
             public function GetMethods() : array
             {
+                $result = array();
+
                 if ($this->phpType instanceof \ReflectionClass)
                 {
-                    return $this->phpType->getMethods();
+                    foreach ($this->phpType->getMethods() as $method)
+                    {
+                        $result[] = new _RuntimeMethodInfo($method);
+                    }
                 }
-                else
-                {
-                    return array();
-                }
+
+                return $result;
             }
 
             /**
@@ -361,7 +366,7 @@
              * @return \ReflectionMethod
              * An object representing the method whose parameters match the specified argument types, if found; otherwise, **null**.
              */
-            public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null, _Binder $binder = null) : ?\ReflectionMethod
+            public function GetMethod(string $name, ?array $types = null, int $bindingAttr = null, _Binder $binder = null) : ?_MethodInfo
             {
                 $bindingAttr = $bindingAttr ?? (self::defaultBindingAttrs | _BindingFlags::NonPublic);
                 $binder = $binder ?? self::$DefaultBinder;
@@ -372,7 +377,7 @@
                 {
                     if ($this->phpType->hasMethod($name))
                     {
-                        $methods = array($this->phpType->getMethod($name));
+                        $methods = array(new _RuntimeMethodInfo($this->phpType->getMethod($name)));
                     }
                     else
                     {
@@ -556,7 +561,7 @@
                          * @param int $bindingAttr
                          * A bitwise combination of `_BindingFlags` values.
                          * 
-                         * @param \ReflectionMethod[] $match
+                         * @param _MethodInfo[] $match
                          * The set of methods that are candidates for matching.
                          * For example, when a `Binder` object is used by Type.GetMethod,
                          * this parameter specifies the set of methods that reflection has determined to be possible matches,
@@ -565,10 +570,10 @@
                          * @param self[] $types
                          * The parameter types used to locate a matching method.
                          * 
-                         * @return \ReflectionMethod
+                         * @return _MethodInfo
                          * The matching method, if found; otherwise, **null**.
                          */
-                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?\ReflectionMethod
+                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?_MethodInfo
                         {
                             if ($types === null)
                             {
@@ -613,7 +618,7 @@
                                         };
                                     
                                     /**
-                                     * @var \ReflectionMethod $method
+                                     * @var _MethodInfo $method
                                      */
                                     foreach ($match as $method)
                                     {
@@ -649,7 +654,7 @@
                                                 }
                                             }
 
-                                            $result[$specificity][$getSpecificity(_Type::GetByName($method->class))][] = $method;
+                                            $result[$specificity][$getSpecificity(_Type::GetByName($method->getReflectionMethod()->class))][] = $method;
                                         }
                                     }
                                     
@@ -684,7 +689,7 @@
             /**
              * Determines whether a method matches the specified bindingflags.
              *
-             * @param \ReflectionMethod $method
+             * @param _RuntimeMethodInfo $method
              * The method to check.
              * 
              * @param int $bindingAttr
@@ -693,17 +698,17 @@
              * @return bool
              * A value indicating whether the method matches the specified bindingflags.
              */
-            private static function FilterMethod(\ReflectionMethod $method, int $bindingAttr, callable $nameComparer) : bool
+            private static function FilterMethod(_RuntimeMethodInfo $method, int $bindingAttr, callable $nameComparer) : bool
             {
                 return
                     (
                         (
-                            ((($bindingAttr & _BindingFlags::Instance) == _BindingFlags::Instance) && !$method->isStatic()) ||
-                            ((($bindingAttr & _BindingFlags::Static) == _BindingFlags::Static) && $method->isStatic())
+                            ((($bindingAttr & _BindingFlags::Instance) == _BindingFlags::Instance) && !$method->getReflectionMethod()->isStatic()) ||
+                            ((($bindingAttr & _BindingFlags::Static) == _BindingFlags::Static) && $method->getReflectionMethod()->isStatic())
                         ) &&
                         (
-                            ((($bindingAttr & _BindingFlags::Public) == _BindingFlags::Public) && $method->isPublic()) ||
-                            ((($bindingAttr & _BindingFlags::NonPublic) == _BindingFlags::NonPublic) && !$method->isPublic())
+                            ((($bindingAttr & _BindingFlags::Public) == _BindingFlags::Public) && $method->getReflectionMethod()->isPublic()) ||
+                            ((($bindingAttr & _BindingFlags::NonPublic) == _BindingFlags::NonPublic) && !$method->getReflectionMethod()->isPublic())
                         ) &&
                         $nameComparer($method->getName())
                     );
@@ -735,7 +740,7 @@
                     {
                         if (preg_match($expression, $method->name))
                         {
-                            $result[] = $method;
+                            $result[] = new _RuntimeMethodInfo($method);
                         }
                     }
                 }

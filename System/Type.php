@@ -1,9 +1,11 @@
 <?php
+
     /**
      * @author Manuel Thalmann <m@nuth.ch>
      * @license Apache-2.0
      */
-    namespace System
+    namespace System;
+    use System\Reflection\_MethodInfo;
     {
         /**
          * Represents type declarations: class types, interface types, array types, value types and enumeration types.
@@ -200,10 +202,10 @@
              * @param Type[] $types
              * An array of Type objects representing the number, order, and type of the parameters for the desired constructor.
              * 
-             * @return \ReflectionMethod
+             * @return _MethodInfo
              * An object representing the instance constructor whose parameters match the types in the parameter type array, if found; otherwise, null.
              */
-            public function GetConstructor(array $types) : ?\ReflectionMethod
+            public function GetConstructor(array $types) : ?_MethodInfo
             {
                 return $this->type->GetConstructor(
                     array_map(
@@ -217,7 +219,7 @@
             /**
              * Returns all the constructors defined for the current `Type`.
              *
-             * @return \ReflectionMethod[]
+             * @return _MethodInfo[]
              * An array of ConstructorInfo objects representing all the instance constructors defined for the current `Type`.
              */
             public function GetConstructors() : array

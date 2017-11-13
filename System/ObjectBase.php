@@ -9,6 +9,8 @@
     use System\_Type;
     use System\Reflection\AmbiguousMatchException;
     use System\Reflection\_BindingFlags;
+    use System\Reflection\_MethodInfo;
+    use System\Reflection\_RuntimeMethodInfo;
     {
         /**
          * Provides basic functionalities for objects.
@@ -113,12 +115,12 @@
                 
                 if ($method !== null)
                 {
-                    if (!$method->isPublic())
+                    if (!$method->getReflectionMethod()->isPublic())
                     {
-                        $method->setAccessible(true);
+                        $method->getReflectionMethod()->setAccessible(true);
                     }
     
-                    return $method->invokeArgs($this, $args);
+                    return $method->getReflectionMethod()->invokeArgs($this, $args);
                 }
                 else
                 {
@@ -185,14 +187,14 @@
 
                 foreach ($types as $type)
                 {
-                    if (($method = $type->GetMethod('__Initialize')) && $method->class == $type->getFullName())
+                    if (($method = $type->GetMethod('__Initialize')) && $method->getReflectionMethod()->class == $type->getFullName())
                     {
-                        if (!$method->isPublic())
+                        if (!$method->getReflectionMethod()->isPublic())
                         {
-                            $method->setAccessible(true);
+                            $method->getReflectionMethod()->setAccessible(true);
                         }
 
-                        $values = $method->invoke($this);
+                        $values = $method->getReflectionMethod()->invoke($this);
 
                         foreach ($values as $propertyName => $value)
                         {
@@ -259,24 +261,15 @@
             /**
              * Determines whether the constructor calls another constructor.
              *
-             * @param \ReflectionMethod $constructor
+             * @param _RuntimeMethodInfo $constructor
              * A constructor.
              * 
              * @return bool
              * A value indicating whether the constructor calls another constructor.
              */
-            private static function HasConstructorCall(\ReflectionMethod $constructor) : bool
+            private static function HasConstructorCall(_RuntimeMethodInfo $constructor) : bool
             {
-                $sourceCode = implode(
-                    "",
-                    array_slice(
-                        file($constructor->getFileName()),
-                        $constructor->getStartLine(),
-                        $constructor->getEndLine() - $constructor->getStartLine()
-                    )
-                );
-
-                return preg_match('/\{[\s]*\$this[\s]*->[\s]*(?:Base|This)[\s]*\(.*\)[\s\S]*\}/', $sourceCode);
+                return preg_match('/\{[\s]*\$this[\s]*->[\s]*(?:Base|This)[\s]*\(.*\)[\s\S]*\}/', $constructor->GetMethodBody());
             }
             
             /**
@@ -485,12 +478,12 @@
 
                     if ($constructor != null)
                     {
-                        if (!$constructor->isPublic())
+                        if (!$constructor->getReflectionMethod()->isPublic())
                         {
-                            $constructor->setAccessible(true);
+                            $constructor->getReflectionMethod()->setAccessible(true);
                         }
 
-                        $constructor->invokeArgs($this, $args);
+                        $constructor->getReflectionMethod()->invokeArgs($this, $args);
                     }
                 }
                 else
@@ -519,10 +512,10 @@
              * @param _Binder $binder
              * The binder to look for the method.
              * 
-             * @return \ReflectionMethod
+             * @return _MethodInfo
              * The method with the propper name, accessor and argument-types.
              */
-            private function VerifyMethod(\Closure $selector, ?_Type $callerType, ?string $name, ?array $types) : ?\ReflectionMethod
+            private function VerifyMethod(\Closure $selector, ?_Type $callerType, ?string $name, ?array $types) : ?_MethodInfo
             {
                 $bindingAttr = ($callerType !== null && $callerType->IsAssignableFrom($this->type)) ? self::$privateBindingFlags : self::$publicBindingFlags;
 
@@ -547,7 +540,7 @@
                          * @param int $bindingAttr
                          * A bitwise combination of `_BindingFlags` values.
                          * 
-                         * @param \ReflectionMethod[] $match
+                         * @param _MethodInfo[] $match
                          * The set of methods that are candidates for matching.
                          * For example, when a `Binder` object is used by Type.GetMethod,
                          * this parameter specifies the set of methods that reflection has determined to be possible matches,
@@ -556,22 +549,22 @@
                          * @param array $types
                          * The parameter types used to locate a matching method.
                          * 
-                         * @return \ReflectionMethod
+                         * @return _MethodInfo
                          * The matching method, if found; otherwise, **null**.
                          */
-                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?\ReflectionMethod
+                        public function SelectMethod(int $bindingAttr, array $match, array $types = null) : ?_MethodInfo
                         {
                             $result = array();
 
                             /**
-                             * @var \ReflectionMethod $method
+                             * @var _MethodInfo $method
                              */
                             foreach ($match as $method)
                             {
                                 if (
-                                    $method->isPublic() ||
-                                    ($method->isProtected() && $this->type->IsAssignableFrom(_Type::GetByName($method->class))) ||
-                                    ($method->isPrivate() && ($method->class == $this->type->getFullName())))
+                                    $method->getReflectionMethod()->isPublic() ||
+                                    ($method->getReflectionMethod()->isProtected() && $this->type->IsAssignableFrom(_Type::GetByName($method->getReflectionMethod()->class))) ||
+                                    ($method->getReflectionMethod()->isPrivate() && ($method->getReflectionMethod()->class == $this->type->getFullName())))
                                 $result[] = $method;
                             }
 

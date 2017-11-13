@@ -79,8 +79,8 @@
     RunTest('$iterable->Namespace', null);
     RunTest('$array->Namespace', null);
     RunTest('$int->Namespace', null);
-    RunTest('$arrayList->GetConstructor(array())->name', 'ArrayList');
-    RunTest('$arrayList->GetConstructor(array($array))->name', 'ArrayList1');
+    RunTest('$arrayList->GetConstructor(array())->getReflectionMethod()->name', 'ArrayList');
+    RunTest('$arrayList->GetConstructor(array($array))->getReflectionMethod()->name', 'ArrayList1');
     RunTest('count($arrayList->GetConstructors())', 2);
     RunTest('$arrayList->GetInterface("\ArrayAccess")->Name', 'ArrayAccess');
     RunTest('$arrayList->IsAssignableFrom($arrayList)', true);
