@@ -404,7 +404,7 @@
                     },
                     _Type::GetByName($callerClass));
 
-                if (($constructor === null) && (count($argumentTypes) != 0))
+                if (($constructor === null) && ((count($argumentTypes) != 0) || count($this->type->GetConstructors() != 0)))
                 {
                     trigger_error('Call to undefined method '.$this->type->getFullName().'::'.$this->type->getName().'()', E_USER_ERROR);
                     exit;
