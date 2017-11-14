@@ -104,10 +104,27 @@
              */
             public function ToString() : string
             {
-                $result = '';
+                $class = new \ReflectionClass($this);
+                $enum = $class->newInstance();
+                $enum->Value = $this->Value;
                 $values = array();
 
-                foreach ((new \ReflectionClass($this))->getProperties() as $property)
+                $comparer =
+                    function ($x, $y)
+                    {
+                        if ($x->getValue() == $y->getValue())
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            return ($x->getValue() < $y->getValue()) ? 1 : -1;
+                        }
+                    };
+                $properties = $class->getProperties();
+                uasort($properties, $comparer);
+
+                foreach ($properties as $key => $property)
                 {
                     /**
                      * @var \ReflectionProperty $property
@@ -116,13 +133,15 @@
                     {
                         $value = $property->getValue();
                         
-                        if ($this->HasFlag($value))
+                        if ($enum->HasFlag($value) && (($value->Value > 0) || ($this->Value == 0)))
                         {
-                            $values[] = $property->getName();
+                            $values[$key] = $property->getName();
+                            $enum->ClearFlag($value);
                         }
                     }
                 }
 
+                ksort($values);
                 return join(', ', $values);
             }
             
