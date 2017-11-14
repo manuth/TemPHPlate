@@ -40,7 +40,20 @@
              */
             private function setValue($value)
             {
-                $this->Value = $value;
+                /* Reset all enum-values as soon as a value of an instance is set */
+                $class = new \ReflectionClass($this);
+                
+                foreach ($class->getProperties() as $property)
+                {
+                    if ($property->isStatic())
+                    {
+                        $entry = $class->newInstance();
+                        $entry->value = $property->getValue()->value;
+                        $property->setValue($entry);
+                    }
+                }
+
+                $this->value = $value;
             }
 
             /**
@@ -152,7 +165,6 @@
             {
                 $counter = 0;
                 $class = new \ReflectionClass($this);
-                $className = $class->name;
                 $properties = $class->getProperties();
                 
                 foreach ($properties as $property)
@@ -173,7 +185,7 @@
                             $value = $counter;
                         }
 
-                        $entry = new $className();
+                        $entry = $class->newInstance();
                         $entry->value = $value;
 
                         $property->setValue($entry);
