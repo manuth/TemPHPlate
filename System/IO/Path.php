@@ -159,7 +159,7 @@ use System\Environment;
          * @return string
          * The relative path.
          */
-        public static function MakeRelativeWebPath()
+        public static function MakeRelativeWebPath(string $from, ?string $to = null) : string
         {
             return str_replace(
                 DIRECTORY_SEPARATOR,
