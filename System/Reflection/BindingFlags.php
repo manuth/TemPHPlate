@@ -5,6 +5,7 @@
      */
     namespace System\Reflection;
     use System\Enum;
+    use System\Reflection\_BindingFlags;
     {
         /**
          * Specifies flags that control binding and the way in which the search for members and types is conducted by reflection.
@@ -14,32 +15,32 @@
             /**
              * Specifies that no binding flags are defined.
              */
-            public static $Default = 0;
+            public static $Default = _BindingFlags::Default;
 
             /**
              * Specifies that the case of the member name should not be considered when binding.
              */
-            public static $IgnoreCase = 1;
+            public static $IgnoreCase = _BindingFlags::IgnoreCase;
 
             /**
              * Specifies that instance members are to be included in the search.
              */
-            public static $Instance = 2;
+            public static $Instance = _BindingFlags::Instance;
 
             /**
              * Specifies that non-public members are to be included in the search.
              */
-            public static $NonPublic = 4;
+            public static $NonPublic = _BindingFlags::NonPublic;
 
             /**
              * Specifies that public members are to be included in the search.
              */
-            public static $Public = 8;
+            public static $Public = _BindingFlags::Public;
 
             /**
              * Specifies that static members are to be included in the search.
              */
-            public static $Static = 16;
+            public static $Static = _BindingFlags::Static;
         }
     }
 ?>
