@@ -20,6 +20,7 @@
             public function Page()
             {
                 $this->Template = new BootstrapTemplate($this);
+                $this->Title = 'TemPHPlate - Home';
             }
 
             /**
