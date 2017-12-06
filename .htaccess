@@ -1,26 +1,9 @@
 RewriteEngine On
-    # Remove trainling index-file
-    RewriteCond %{REQUEST_URI} ^(.*)index\.\w*$
-        RewriteRule ^ %1  [R=301,L]
-    
-    # Redirect to the file or folder if it exists or a page is provided
-    RewriteCond %{QUERY_STRING} ^.*Page=([^&]*)$  [OR]
-    RewriteCond %{REQUEST_FILENAME} -f  [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-        RewriteRule ^ -  [L]
-
-    # Remove trailing slash
-    RewriteCond %{REQUEST_URI} ^(.*)/$
-    RewriteCond %{REQUEST_URI} ^(.*?)/?$
-        RewriteRule ^ %1  [R=301,L]
-        
-    RewriteCond %{IS_SUBREQ} ^true$
-        RewriteRule ^ -  [F,L]
-
+    # Storing the request-URI if the current request isn't a Sub-Request
     RewriteCond %{IS_SUBREQ} ^false$
-        RewriteRule ^(.*)$ %1  [E=RequestURI:$1]
-
-
+        RewriteRule ^(.*)$ -  [E=RequestURI:$1]
+    
+    # Checking whether a page with the given name exists if current request isn't a sub-request
     RewriteCond %{IS_SUBREQ} ^false$
     RewriteCond Pages/%{ENV:RequestURI}.php -F  [OR]
     RewriteCond Pages/%{ENV:RequestURI}.php3 -F  [OR]
@@ -39,6 +22,26 @@ RewriteEngine On
     RewriteCond Pages/%{ENV:RequestURI}.txt -F  [OR]
     RewriteCond Pages/%{ENV:RequestURI}.php -F
         RewriteRule ^ ?Page=%{ENV:RequestURI}  [QSA,L]
+
+    # Redirecting to the file located in `Pages` if it exists
+    RewriteCond %{IS_SUBREQ} ^false$
     RewriteCond Pages/%{ENV:RequestURI} -F
         RewriteRule ^ Pages/%{ENV:RequestURI}  [QSA,L]
+
+    # Remove trainling index-file
+    RewriteCond %{REQUEST_URI} ^(.*)index\.\w*$
+        RewriteRule ^ %1  [R=301,L]
+    
+    # Redirect to the file or folder if it exists or a page is provided
+    RewriteCond %{QUERY_STRING} ^.*Page=([^&]*)$  [OR]
+    RewriteCond %{REQUEST_FILENAME} -f  [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+        RewriteRule ^ -  [L]
+
+    # Remove trailing slash
+    RewriteCond %{REQUEST_URI} ^(.*)/$
+    RewriteCond %{REQUEST_URI} ^(.*?)/?$
+        RewriteRule ^ %1  [R=301,L]
+    
+    # Showing a 404-error if the requested URI doesn't exist
     RewriteRule ^ -  [R=404,L]
