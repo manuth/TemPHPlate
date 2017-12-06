@@ -3,7 +3,7 @@
      * @author Manuel Thalmann <m@nuth.ch>
      * @license Apache-2.0
      */
-    namespace ManuTh\TemPHPlate\Pages;
+    namespace MyCompany\MyWebsite\Pages;
     use System\Web;
     use System\Web\Forms\Rendering\PaintEventArgs;
     use System\Web\Forms\MenuItem;
@@ -20,7 +20,6 @@
             public function Page()
             {
                 $this->Template = new BootstrapTemplate($this);
-                $this->Title = 'TemPHPlate - Home';
             }
 
             /**
