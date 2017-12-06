@@ -18,27 +18,27 @@ RewriteEngine On
         RewriteRule ^ -  [F,L]
 
     RewriteCond %{IS_SUBREQ} ^false$
-        RewriteRule ^(.*)$ %1  [E=PagePath:$1]
+        RewriteRule ^(.*)$ %1  [E=RequestURI:$1]
 
 
     RewriteCond %{IS_SUBREQ} ^false$
-    RewriteCond Pages/%{ENV:PagePath}.php -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.php3 -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.php4 -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.php5 -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.inc.php -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.inc -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.markdown -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.mkdown -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.mkdn -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.mkd -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.md -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.html -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.htm -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.xhtml -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.txt -F  [OR]
-    RewriteCond Pages/%{ENV:PagePath}.php -F
-        RewriteRule ^ ?Page=%{ENV:PagePath}  [QSA,L]
-    RewriteCond Pages/%{ENV:PagePath} -F
-        RewriteRule ^ Pages/%{ENV:PagePath}  [QSA,L]
+    RewriteCond Pages/%{ENV:RequestURI}.php -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.php3 -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.php4 -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.php5 -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.inc.php -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.inc -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.markdown -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.mkdown -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.mkdn -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.mkd -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.md -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.html -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.htm -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.xhtml -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.txt -F  [OR]
+    RewriteCond Pages/%{ENV:RequestURI}.php -F
+        RewriteRule ^ ?Page=%{ENV:RequestURI}  [QSA,L]
+    RewriteCond Pages/%{ENV:RequestURI} -F
+        RewriteRule ^ Pages/%{ENV:RequestURI}  [QSA,L]
     RewriteRule ^ -  [R=404,L]
