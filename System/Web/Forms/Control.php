@@ -7,6 +7,9 @@
     use System\Object;
     use System\Web\Forms\Rendering\IRenderable;
     {
+        /**
+         * Defines the base class for controls, which are components with visual representation.
+         */
         abstract class Control extends Object implements IRenderable
         {
             /**
