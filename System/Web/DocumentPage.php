@@ -88,7 +88,8 @@
                         case 'Template':
                             $templateClasses = new ArrayList(array(
                                 DefaultNamespace.'\\Templates\\'.$this->Data['Template'],
-                                TemPHPlateNamespace.'\\Templates\\'.$this->Data['Template']));
+                                TemPHPlateNamespace.'\\Templates\\'.$this->Data['Template'],
+                                'Templates\\'.$this->Data['Template']));
                             
                             $templateClass = $templateClasses->First(
                                 function ($class)
