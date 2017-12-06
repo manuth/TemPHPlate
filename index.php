@@ -13,6 +13,7 @@
 
     require('autoload.php');
     use System\{
+        _Type,
         Environment,
         Exception,
         Globalization\CultureInfo,
@@ -65,7 +66,7 @@
             {
                 $pageClass = $namespace.'\\'.$pageName;
 
-                if (class_exists($pageClass))
+                if (class_exists($pageClass) && _Type::GetByName('System\Web\IDrawable')->IsAssignableFrom(_Type::GetByName($pageClass)))
                 {
                     return new $pageClass();
                 }
