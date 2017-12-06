@@ -8,6 +8,9 @@
     use System\IO\Path;
     use System\Collections\ArrayList;
     use System\Globalization\CultureInfo;
+    use System\Web\StyleCollection;
+    use System\Web\ScriptCollection;
+    use System\Web\Template;
     {
         /**
          * Represents content of a website.
@@ -23,6 +26,15 @@
          * 
          * @property string $AppleTouchIcon
          * Gets or sets the iOS-icon of the content.
+         * 
+         * @property-read StyleCollection $StyleDefinitions
+         * Gets the style-definitions of the content.
+         * 
+         * @property-read ScriptCollection $ScriptDefinitions
+         * Gets the script-definitions of the content.
+         * 
+         * @property Template $Template
+         * Gets or sets the template of the content.
          */
         abstract class WebContent extends Drawable
         {
@@ -52,36 +64,34 @@
              *
              * @var string
              */
-            public $appleTouchIcon;
+            private $appleTouchIcon;
 
             /**
-             * Gets or sets the style-definitions of the content.
+             * The style-definitions of the content.
              *
              * @var StyleCollection
              */
-            public $StyleDefinitions;
+            private $styleDefinitions;
 
             /**
-             * Gets or sets the script-definitions of the content.
+             * The script-definitions of the content.
              *
              * @var ScriptCollection
              */
-            public $ScriptDefinitions;
+            private $scriptDefinitions;
 
             /**
-             * Gets or sets the template of the content.
+             * The template of the content.
              *
              * @var Template
              */
-            public $Template;
+            private $template;
 
             /**
              * Initializes a new instance of the WebContent class.
              */
             public function WebContent()
             {
-                $this->StyleDefinitions = new StyleCollection();
-                $this->ScriptDefinitions = new ScriptCollection();
             }
 
             /**
@@ -168,6 +178,38 @@
             public function setAppleTouchIcon(?string $value)
             {
                 $this->appleTouchIcon = $value;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getStyleDefinitions() : ?StyleCollection
+            {
+                return $this->styleDefinitions;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getScriptDefinitions() : ?ScriptCollection
+            {
+                return $this->scriptDefinitions;
+            }
+
+            /**
+             * @ignore
+             */
+            public function getTemplate() : ?Template
+            {
+                return $this->template;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setTemplate(?Template $value)
+            {
+                $this->template = $value;
             }
             
             /**
@@ -292,7 +334,9 @@
                     'title' => "",
                     'locale' => CultureInfo::GetCurrentCulture(),
                     'icon' => Settings::$Icon,
-                    'appleTouchIcon' => Settings::$AppleTouchIcon,);
+                    'appleTouchIcon' => Settings::$AppleTouchIcon,
+                    'styleDefinitions' => new StyleCollection(),
+                    'scriptDefinitions' => new ScriptCollection());
             }
         }
     }
