@@ -5,6 +5,7 @@
      */
     namespace System;
     use System\Collections\ArrayList;
+    use System\EventArgs;
     {
         /**
          * Represents the method that will handle an event that has no event data.
@@ -16,10 +17,10 @@
              *
              * @param object $sender
              * The source of the event.
-             * @param object $e
+             * @param EventArgs $e
              * An object that contains no event data.
              */
-            public function __invoke($sender, $e)
+            public function __invoke($sender, EventArgs $e)
             {
                 foreach ($this as $callback)
                 {
