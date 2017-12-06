@@ -1,9 +1,11 @@
 ---
 Template: BootstrapTemplate
 Title: PHP
+CustomVariable: Custom
 ---
+<h1><?=$this->Title?></h1>
 <?php
-    echo '<h1>'.$this->Data['Title'].'</h1>';
+    echo $this->Data['CustomVariable'].'<br />';
     foreach (range(0, 10) as $number)
     {
         echo $number.'<br />';
