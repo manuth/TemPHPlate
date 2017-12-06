@@ -50,7 +50,7 @@
             /**
              * @ignore
              */
-            public function getMenuBar()
+            public function getMenuBar() : ?MenuBar
             {
                 return $this->menuBar;
             }
@@ -58,7 +58,7 @@
             /**
              * @ignore
              */
-            public function setMenuBar(MenuBar $value)
+            public function setMenuBar(?MenuBar $value)
             {
                 $this->menuBar = $value;
             }
@@ -74,7 +74,7 @@
             /**
              * @ignore
              */
-            public function getRenderer() : Renderer
+            public function getRenderer() : ?Renderer
             {
                 return $this->renderer;
             }
@@ -82,7 +82,7 @@
             /**
              * @ignore
              */
-            public function setRenderer(Renderer $value)
+            public function setRenderer(?Renderer $value)
             {
                 $this->renderer = $value;
             }

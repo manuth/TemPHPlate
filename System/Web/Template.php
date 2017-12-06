@@ -129,7 +129,7 @@
             /**
              * @ignore
              */
-            public function getMenuBar()
+            public function getMenuBar() : ?MenuBar
             {
                 return $this->Content->MenuBar;
             }
@@ -137,7 +137,7 @@
             /**
              * @ignore
              */
-            public function setMenuBar(MenuBar $value)
+            public function setMenuBar(?MenuBar $value)
             {
                 $this->Content->MenuBar = $value;
             }
@@ -153,9 +153,16 @@
             /**
              * @ignore
              */
-            public function setRenderer(Renderer $value)
+            public function getRenderer() : ?Renderer
             {
-                parent::setRenderer($value);
+                return $this->Content->Renderer;
+            }
+
+            /**
+             * @ignore
+             */
+            public function setRenderer(?Renderer $value)
+            {
                 $this->Content->Renderer = $value;
             }
             
