@@ -187,7 +187,19 @@
              */
             public function DrawInternal()
             {
-                return $this->Content->DrawInternal();
+                ob_start();
+                $this->Content->DrawInternal();
+                $this->DrawWrapper(ob_get_clean());
+            }
+
+            /**
+             * Draws the object.
+             *
+             * @return void
+             */
+            protected function DrawWrapper($content)
+            {
+                echo $content;
             }
             
             /**

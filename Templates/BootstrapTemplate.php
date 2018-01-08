@@ -59,12 +59,12 @@
              *
              * @return void
              */
-            function DrawInternal()
+            protected function DrawWrapper($content)
             {
                 echo $this->Render($this->MenuBar);
                 echo '
                     <div class="container">';
-                parent::DrawInternal();
+                echo $content;
                 echo '
                     </div>';
             }
