@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Build",
+            "label": "Build",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -19,7 +19,7 @@
             "dependsOn": "Install"
         },
         {
-            "taskName": "Install",
+            "label": "Install",
             "command": "composer.bat",
             "args": [
                 "install"
