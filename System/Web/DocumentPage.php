@@ -220,19 +220,18 @@
                     $expression = substr($expression, strlen($phpIndicator));
                     
                     ob_start();
-                    eval($expression);                    
+                    eval($expression.';');                    
                     return ob_get_clean().preg_replace_callback(self::functionExpression, $functionReplacer, substr($match[0], strlen('{%'.$expression.'%}')));
                 };
 
+                $dir = getcwd();
+                chdir(dirname($this->FileName));
                 $content = $this->document->Content;
 
                 if ($this->DocumentType == DocumentType::$PHP)
                 {
                     ob_start();
-                    $dir = getcwd();
-                    chdir(dirname($this->FileName));
                     include $this->FileName;
-                    chdir($dir);
                     $this->document = YAMLParser::$Default->Parse(ob_get_clean());
                     $content = $this->document->Content;
                 }
@@ -245,13 +244,13 @@
                     {
                         $content = (new ParsedownParser())->parse($content);
                     }
+                    else if ($this->DocumentType == DocumentType::$Other)
+                    {
+                        $content = nl2br(htmlspecialchars($content));
+                    }
                 }
-
-                if ($this->DocumentType == DocumentType::$Other)
-                {
-                    $content = nl2br(htmlspecialchars($content));
-                }
-
+                
+                chdir($dir);
                 echo $content;
             }
         }
