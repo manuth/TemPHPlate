@@ -38,7 +38,7 @@
             /**
              * The regular expression for searching for functions.
              */
-            private const functionExpression = '/{%[\\s]*([\\s\\S]*?)[\\s]*%}/';
+            private const functionExpression = '/{%([\\s\\S]*)%}/';
             
             /**
              * The document that is wrapped by this page.
@@ -193,11 +193,35 @@
                     }
                 };
 
-                $functionReplacer = function (array $match)
+                $functionReplacer = function (array $match) use (&$functionReplacer)
                 {
+                    $phpIndicator = '<?php ';
+                    $tokens = token_get_all($phpIndicator.$match[1]);
+                    $expression = '';
+
+                    for (
+                        $i = 1;
+                        $i - 1 < count($tokens) &&
+                        !(
+                            (is_string($tokens[$i - 1]) && $tokens[$i - 1] === '%') &&
+                            (isset($tokens[$i]) && is_string($tokens[$i]) && $tokens[$i] === '}'));
+                        $i++)
+                    {
+                        if (is_string($tokens[$i - 1]))
+                        {
+                            $expression .= $tokens[$i - 1];
+                        }
+                        else
+                        {
+                            $expression .= $tokens[$i - 1][1];
+                        }
+                    }
+                    
+                    $expression = substr($expression, strlen($phpIndicator));
+                    
                     ob_start();
-                    eval($match[1]);
-                    return ob_get_clean();
+                    eval($expression);                    
+                    return ob_get_clean().preg_replace_callback(self::functionExpression, $functionReplacer, substr($match[0], strlen('{%'.$expression.'%}')));
                 };
 
                 $content = $this->document->Content;
