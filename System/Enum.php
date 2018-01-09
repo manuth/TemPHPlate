@@ -40,12 +40,12 @@
              */
             private function setValue($value)
             {
-                /* Reset all enum-values as soon as a value of an instance is set */
+                /* Reset the proper enum-value as soon as a value of an instance is set */
                 $class = new \ReflectionClass($this);
                 
                 foreach ($class->getProperties() as $property)
                 {
-                    if ($property->isStatic())
+                    if ($property->isStatic() && ($property->getValue() === $this))
                     {
                         $entry = $class->newInstance();
                         $entry->value = $property->getValue()->value;
