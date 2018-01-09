@@ -10,22 +10,22 @@
             /**
              * The PHP document-type.
              */
-            static $PHP;
+            static $PHP = 1;
 
             /**
              * The MarkDown document-type.
              */
-            static $MarkDown;
+            static $MarkDown = 2;
 
             /**
              * The HTML document-type.
              */
-            static $HTML;
+            static $HTML = 4;
 
             /**
              * Other documet-types.
              */
-            static $Other;
+            static $Other = 8;
         }
     }
 ?>

@@ -19,7 +19,7 @@
 
     echo 'Testing string-representations.<br />';
 
-    RunTest('$php->ToString()', 'PHP');
-    RunTest('$php->SetFlag($markdown)');
-    RunTest('strpos($php, "PHP") !== false && strpos($php, "MarkDown") !== false', true);
+    RunTest('$html->ToString()', 'HTML');
+    RunTest('$html->SetFlag(System\Web\DocumentType::$Other)');
+    RunTest('strpos($html, "HTML") !== false && strpos($html, "Other") !== false', true);
 ?>
