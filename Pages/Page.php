@@ -19,6 +19,7 @@
              */
             public function Page()
             {
+                $this->Title = 'TemPHPlate';
                 $this->Template = new BootstrapTemplate($this);
             }
 
@@ -30,7 +31,7 @@
             protected function DrawInternal()
             {
                 echo '
-                    <h1>TemPHPlate</h1>
+                    <h1>'.$this->Title.'</h1>
                     <p>
                         <img src="./meme.jpg" />
                     </p>
