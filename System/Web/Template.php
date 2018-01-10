@@ -41,6 +41,16 @@
             }
 
             /**
+             * Gets the head of the content.
+             *
+             * @return string
+             */
+            public function getHead() : string
+            {
+                return '';
+            }
+
+            /**
              * @ignore
              */
             public function getContent() : WebContent
